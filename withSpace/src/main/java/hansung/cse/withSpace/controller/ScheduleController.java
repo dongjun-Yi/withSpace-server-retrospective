@@ -44,8 +44,7 @@ public class ScheduleController {
         Optional<Schedule> schedule = scheduleService.findSchedule(scheduleId);
         List<ScheduleDto> collect = schedule.stream().map(s -> new ScheduleDto(schedule.get()))
                 .collect(Collectors.toList());
-        BasicResponse basicResponse = new BasicResponse<>(collect.size(), "스케줄 요청 성공", collect);
-
+        BasicResponse basicResponse = new BasicResponse<>(collect.size(), "스케줄 요청 성공", collect.get(0));
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
