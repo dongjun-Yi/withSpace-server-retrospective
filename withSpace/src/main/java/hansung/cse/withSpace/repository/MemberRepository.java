@@ -13,5 +13,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @EntityGraph(attributePaths = "memberTeams") //팀을 생성한 멤버 전용
     Optional<Member> findById(Long id);
 
-
+    Optional<Member> findByEmail(String email);
 }

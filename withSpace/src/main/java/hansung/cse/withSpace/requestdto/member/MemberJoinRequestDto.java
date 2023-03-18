@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MemberJoinRequestDto {
 
-    private String memberName;
     private String email;
+    private String memberName;
     private String password;
 
 }

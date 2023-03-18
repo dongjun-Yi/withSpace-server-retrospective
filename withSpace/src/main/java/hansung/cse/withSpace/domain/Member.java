@@ -37,6 +37,7 @@ public class Member {   //회원
     private List<FriendShip> friendReceiver = new ArrayList<>();//친구 신청 받은 사람
 
 
+    @Column(unique = true)
     private String email;
     private String password;
     private String memberName;
