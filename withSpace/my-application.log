@@ -1,0 +1,29 @@
+2023-03-21T00:07:39.323+09:00  INFO 6264 --- [main] h.cse.withSpace.WithSpaceApplication     : Starting WithSpaceApplication using Java 17.0.6 with PID 6264 (/Users/dongjun/Desktop/capston/withSpace-server/withSpace/build/classes/java/main started by dongjun in /Users/dongjun/Desktop/capston/withSpace-server/withSpace)
+2023-03-21T00:07:39.324+09:00  INFO 6264 --- [main] h.cse.withSpace.WithSpaceApplication     : No active profile set, falling back to 1 default profile: "default"
+2023-03-21T00:07:39.772+09:00  INFO 6264 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-03-21T00:07:39.821+09:00  INFO 6264 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 40 ms. Found 10 JPA repository interfaces.
+2023-03-21T00:07:40.086+09:00  INFO 6264 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2023-03-21T00:07:40.091+09:00  INFO 6264 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-03-21T00:07:40.092+09:00  INFO 6264 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.5]
+2023-03-21T00:07:40.136+09:00  INFO 6264 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-03-21T00:07:40.136+09:00  INFO 6264 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 792 ms
+2023-03-21T00:07:40.215+09:00  INFO 6264 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-03-21T00:07:40.240+09:00  INFO 6264 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.1.7.Final
+2023-03-21T00:07:40.381+09:00  INFO 6264 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2023-03-21T00:07:40.523+09:00  INFO 6264 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4afcae7
+2023-03-21T00:07:40.524+09:00  INFO 6264 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2023-03-21T00:07:40.534+09:00  INFO 6264 --- [main] SQL dialect                              : HHH000400: Using dialect: org.hibernate.dialect.MySQL8Dialect
+2023-03-21T00:07:40.535+09:00  WARN 6264 --- [main] org.hibernate.orm.deprecation            : HHH90000026: MySQL8Dialect has been deprecated; use org.hibernate.dialect.MySQLDialect instead
+2023-03-21T00:07:40.704+09:00  WARN 6264 --- [main] org.hibernate.mapping.RootClass          : HHH000038: Composite-id class does not override equals(): hansung.cse.withSpace.domain.MemberTeamId
+2023-03-21T00:07:40.705+09:00  WARN 6264 --- [main] org.hibernate.mapping.RootClass          : HHH000039: Composite-id class does not override hashCode(): hansung.cse.withSpace.domain.MemberTeamId
+2023-03-21T00:07:41.262+09:00  INFO 6264 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-03-21T00:07:41.266+09:00  INFO 6264 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-03-21T00:07:42.657+09:00  WARN 6264 --- [main] o.h.e.i.StatefulPersistenceContext       : HHH000179: Narrowing proxy to class hansung.cse.withSpace.domain.space.MemberSpace - this operation breaks ==
+2023-03-21T00:07:42.665+09:00  WARN 6264 --- [main] o.h.e.i.StatefulPersistenceContext       : HHH000179: Narrowing proxy to class hansung.cse.withSpace.domain.space.MemberSpace - this operation breaks ==
+2023-03-21T00:07:42.696+09:00  WARN 6264 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2023-03-21T00:07:42.828+09:00  INFO 6264 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@466a5b80, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@f6921b7, org.springframework.security.web.context.SecurityContextHolderFilter@38769b6c, org.springframework.security.web.header.HeaderWriterFilter@6a6a60f3, org.springframework.security.web.authentication.logout.LogoutFilter@567412db, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@3a892b9f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4d57fc11, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@582ce329, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@19cee7ed, org.springframework.security.web.access.ExceptionTranslationFilter@76d9fe26, org.springframework.security.web.access.intercept.AuthorizationFilter@676beb9f]
+2023-03-21T00:07:42.944+09:00  INFO 6264 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2023-03-21T00:07:42.948+09:00  INFO 6264 --- [main] h.cse.withSpace.WithSpaceApplication     : Started WithSpaceApplication in 3.872 seconds (process running for 4.116)
+2023-03-21T00:31:38.333+09:00  INFO 6264 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-03-21T00:31:38.336+09:00  INFO 6264 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2023-03-21T00:31:38.340+09:00  INFO 6264 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
