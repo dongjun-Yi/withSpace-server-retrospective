@@ -10,6 +10,7 @@ import hansung.cse.withSpace.requestdto.member.MemberJoinRequestDto;
 import hansung.cse.withSpace.requestdto.member.MemberUpdateRequestDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,29 +24,15 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final SpaceRepository spaceRepository;
     private final ScheduleRepository scheduleRepository;
-    //private final SpaceService spaceService;
 
-//    @Transactional
-//    public Long join(String memberName, String email, String password) { //회원가입
-//        Member member = new Member(memberName, email, password);
-//        memberRepository.save(member);
-//
-//        //회원가입시 스페이스 생성 + 부여
-//        MemberSpace memberSpace = new MemberSpace();
-//            //spaceService.assignSpace(member);
-//        member.setMemberSpace(memberSpace);
-//        spaceRepository.save(memberSpace);
-//
-//        //스페이스 생성했으니 바로 스케줄도 만들어서 줌..
-//        Schedule schedule = new Schedule(memberSpace);
-//        scheduleRepository.save(schedule);
-//
-//        return member.getId();
-//    }
+    final private PasswordEncoder passwordEncoder; //비밀번호 암호화
+
+
 
     @Transactional
     public Long join(MemberJoinRequestDto joinRequestDto) { //회원가입
-        Member member = new Member(joinRequestDto.getMemberName(),joinRequestDto.getEmail(),joinRequestDto.getPassword());
+        String encodedPassword = passwordEncoder.encode(joinRequestDto.getPassword()); // 비밀번호 암호화
+        Member member = new Member(joinRequestDto.getMemberName(), joinRequestDto.getEmail(), encodedPassword);
         memberRepository.save(member);
 
         //회원가입시 스페이스 생성 + 부여
@@ -104,4 +91,7 @@ public class MemberService {
     }
 
 
+    public Optional<Member> findByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
 }
