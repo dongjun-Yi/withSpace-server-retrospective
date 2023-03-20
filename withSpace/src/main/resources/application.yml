@@ -3,7 +3,7 @@ spring:
     #    url: jdbc:mysql://localhost:3306/withSpacedb?serverTimezone=Asia/Seoul
     #    username: withSpaceAdmin
     #    password: hansung369
-    url: jdbc:mysql://withspace-api.cneerh3s692r.ap-northeast-2.rds.amazonaws.com:3306/withSpacedb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://withspace-api.cneerh3s692r.ap-northeast-2.rds.amazonaws.com:3306/withspace-rds?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: dongjun
     password: hansung1234
     driver-class-name: com.mysql.cj.jdbc.Driver
