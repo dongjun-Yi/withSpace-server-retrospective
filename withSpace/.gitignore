@@ -2,6 +2,7 @@ application.yml
 
 HELP.md
 my-application.log/
+my-application.log
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar

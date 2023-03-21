@@ -8,8 +8,8 @@ spring:
   jpa:
     database: mysql
     hibernate:
-      ddl-auto: none
-    database-platform: org.hibernate.dialect.MySQL8Dialect
+      ddl-auto: create
+    database-platform: org.hibernate.dialect.MySQLDialect
     properties:
       hibernate:
         show_sql: true
