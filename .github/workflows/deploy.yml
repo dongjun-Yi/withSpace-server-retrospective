@@ -34,9 +34,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x ./withSpace/gradlew
       shell: bash
-      
-    - name : 폴더 이동
-      run: cd /home/runner/work/withSpace-server/withSpace-server/withSpace
     
     - name: Build with Gradle
+      working-directory: ./withSpace
       run: ./gradlew clean build -x test
