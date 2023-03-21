@@ -30,6 +30,12 @@ jobs:
         distribution: 'temurin'
     - name: 파일들 확인
       run : ls -al
+      
+    - name : 폴더 이동
+      run : cd withSpace
+      
+    - name: 파일들 확인
+      run : ls -al
         
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
