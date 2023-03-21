@@ -17,6 +17,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions: 
+      contents: read 
+      packages: write
 
     steps:
     - uses: actions/checkout@v3
@@ -25,12 +28,6 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        
-    - name : gradlew 위치로 이동
-      run : cd withSpace
-    
-    - name : 현재 위치 확인
-      run : pwd
         
     - name: Grant execute permission for gradlew
       run: chmod +x ./gradlew
