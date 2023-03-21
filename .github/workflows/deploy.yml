@@ -34,4 +34,4 @@ jobs:
       shell: bash
     
     - name: Build with Gradle
-      run: ./gradlew --debug build
+      run: ./gradlew clean build
