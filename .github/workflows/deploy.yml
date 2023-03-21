@@ -25,6 +25,8 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+    - name : pwd로 경로 확인
+      run : pwd
         
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
