@@ -51,10 +51,9 @@ public class TestDB {
     }
 
 
-
     @Transactional
     public void pageInit() {
-        MemberJoinRequestDto mj = new MemberJoinRequestDto("pageMember", "page@naver.com", "비밀번호");
+        MemberJoinRequestDto mj = new MemberJoinRequestDto("page@naver.com", "pageMember", "password");
         Long join = memberService.join(mj);
         Long spaceId = memberService.findOne(join).get().getMemberSpace().getId();
 
@@ -62,10 +61,10 @@ public class TestDB {
 
         Long firstPageId = pageService.makePage(spaceId, firstPageDto);
 
-        PageCreateRequestDto secondPageDto= new PageCreateRequestDto("페이지 제목2", Optional.ofNullable(firstPageId));
+        PageCreateRequestDto secondPageDto = new PageCreateRequestDto("페이지 제목2", Optional.ofNullable(firstPageId));
         pageService.makePage(spaceId, secondPageDto);
 
-        PageCreateRequestDto thirdPageDto= new PageCreateRequestDto("페이지 제목3", Optional.ofNullable(firstPageId));
+        PageCreateRequestDto thirdPageDto = new PageCreateRequestDto("페이지 제목3", Optional.ofNullable(firstPageId));
         pageService.makePage(spaceId, thirdPageDto);
 
         //블록생성
@@ -77,9 +76,9 @@ public class TestDB {
     @Transactional
     public void teamInit() {
 
-        MemberJoinRequestDto  mj1 = new MemberJoinRequestDto("memberA_makeTeam", "aaaT@naver.com", "비밀번호1");
-        MemberJoinRequestDto  mj2 = new MemberJoinRequestDto("memberB_makeTeam", "bbbT@naver.com", "비밀번호2");
-        MemberJoinRequestDto  mj3 = new MemberJoinRequestDto("memberC_makeTeam", "cccT@naver.com", "비밀번호3");
+        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("aaaT@naver.com", "memberA_makeTeam", "password1");
+        MemberJoinRequestDto mj2 = new MemberJoinRequestDto("bbbT@naver.com", "memberB_makeTeam", "password2");
+        MemberJoinRequestDto mj3 = new MemberJoinRequestDto("cccT@naver.com", "memberC_makeTeam", "password3");
 
         Long join1 = memberService.join(mj1);
         Long join2 = memberService.join(mj2);
@@ -105,9 +104,9 @@ public class TestDB {
     @Transactional
     public void friendInit() {
 
-        MemberJoinRequestDto  mj1 = new MemberJoinRequestDto("memberA", "aaa@naver.com", "비밀번호1");
-        MemberJoinRequestDto  mj2 = new MemberJoinRequestDto("memberB", "bbb@naver.com", "비밀번호1");
-        MemberJoinRequestDto  mj3 = new MemberJoinRequestDto("memberC", "ccc@naver.com", "비밀번호3");
+        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("aaa@naver.com", "memberA", "password1");
+        MemberJoinRequestDto mj2 = new MemberJoinRequestDto("bbb@naver.com", "memberB", "password2");
+        MemberJoinRequestDto mj3 = new MemberJoinRequestDto("ccc@naver.com", "memberC", "password3");
 
         Long join1 = memberService.join(mj1);
         Long join2 = memberService.join(mj2);
@@ -137,7 +136,7 @@ public class TestDB {
     @Transactional
     public void scheduleInit() {
 
-        MemberJoinRequestDto  mj1 = new MemberJoinRequestDto("memberD", "ddd@naver.com", "비밀번호4");
+        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("ddd@naver.com", "memberD", "password4");
         Long join = memberService.join(mj1);
 
         Member memberA = memberService.findOne(join).get();
