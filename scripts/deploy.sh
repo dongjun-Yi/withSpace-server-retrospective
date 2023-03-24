@@ -5,7 +5,7 @@ PROJECT_NAME=withSpace-server/withSpace
 
 echo "> Build 파일복사"
 
-cp $REPOSITORY/zip/build/libs/*.jar $REPOSITORY/
+cp $REPOSITORY/zip/withSpace/build/libs/*.jar $REPOSITORY/
 
 echo "> 현재 구동중인 애플리케이션 pid 확인"
 
