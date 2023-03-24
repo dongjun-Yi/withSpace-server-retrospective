@@ -26,10 +26,12 @@ public class SecurityConfig{
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable().cors().disable()  //csrf와 cors disable
+
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/status", "/", "/home", "/signup", "/member").permitAll()
+                                //.requestMatchers("/status", "/", "/home", "/signup", "/member").permitAll()
+                        .anyRequest().permitAll() //임시로 모든 페이지 접근 허용
                         //로그인 안 해도 위 url들은 접근 가능
-                        .anyRequest().authenticated() // 어떠한 요청이라도 인증이 필요
+                                //.anyRequest().authenticated() // 어떠한 요청이라도 인증이 필요
                 )
                 .formLogin((form) -> form // form 방식 로그인 사용
                         .loginPage("/login")  //로그인 페이지
