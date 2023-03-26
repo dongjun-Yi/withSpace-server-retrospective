@@ -47,6 +47,14 @@ jobs:
     - name: Show Current Time
       run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}" 
       shell: bash
+      
+    # Jar 파일 Copy
+    - name: Copy Jar
+      run: cp ./withSpace/build/libs/*.jar .
+
+    # script file Copy
+    - name: Copy shell
+      run: cp ./scripts/* .
 
     - name: Make zip file
       run: zip -r ./$PROJECT_NAME.zip . 
