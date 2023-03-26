@@ -11,9 +11,9 @@ REPOSITORY=/home/ec2-user/app/deploy
 PROJECT_NAME=withSpace-server/withSpace
 
 echo "> Build 파일 복사"
-echo "> cp $REPOSITORY/zip/build/libs/*.jar $REPOSITORY/"
+echo "> cp $REPOSITORY/zip/withSpace/build/libs/*.jar $REPOSITORY/"
 
-cp $REPOSITORY/zip/*.jar $REPOSITORY/
+cp $REPOSITORY/zip/withSpace/build/libs/*.jar $REPOSITORY/
 
 echo "> 새 어플리케이션 배포"
 JAR_NAME=$(ls -tr $REPOSITORY/*.jar | grep -v "plain" | tail -n 1)
