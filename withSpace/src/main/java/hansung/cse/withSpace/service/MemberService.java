@@ -3,6 +3,9 @@ package hansung.cse.withSpace.service;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.space.MemberSpace;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
+import hansung.cse.withSpace.exception.member.MemberNotFoundException;
+import hansung.cse.withSpace.exception.member.MemberUpdateException;
+import hansung.cse.withSpace.exception.member.join.DuplicateEmailException;
 import hansung.cse.withSpace.repository.MemberRepository;
 import hansung.cse.withSpace.repository.ScheduleRepository;
 import hansung.cse.withSpace.repository.SpaceRepository;
@@ -28,10 +31,19 @@ public class MemberService {
 
     final private PasswordEncoder passwordEncoder; //비밀번호 암호화
 
-
+    public boolean existsByEmail(String email) {
+        if (memberRepository.existsByEmail(email)) {
+            throw new DuplicateEmailException("이미 존재하는 email 입니다.");
+        }
+        return false;
+    }
 
     @Transactional
     public Long join(MemberJoinRequestDto joinRequestDto) { //회원가입
+
+        // 중복 이메일 검사
+        existsByEmail(joinRequestDto.getEmail());
+
         String encodedPassword = passwordEncoder.encode(joinRequestDto.getPassword()); // 비밀번호 암호화
         Member member = new Member(joinRequestDto.getMemberName(), joinRequestDto.getEmail(), encodedPassword);
         memberRepository.save(member);
@@ -73,7 +85,7 @@ public class MemberService {
     public Long update(Long memberId, MemberUpdateRequestDto memberUpdateRequestDto) {
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("회원이 없습니다"));
+                .orElseThrow(() -> new MemberUpdateException("회원 정보를 업데이트할 수 없습니다. - 회원 조회 실패"));
 
         // Update member properties based on the DTO values
         if (memberUpdateRequestDto.getEmail() != null) {
@@ -97,4 +109,6 @@ public class MemberService {
     public Optional<Member> findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
+
+
 }
