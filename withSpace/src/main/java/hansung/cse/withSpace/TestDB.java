@@ -136,12 +136,12 @@ public class TestDB {
     @Transactional
     public void scheduleInit() {
 
-        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("ddd@naver.com", "memberD", "password4");
+        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("test1@naver.com", "memberD", "password4");
         Long join = memberService.join(mj1);
 
-        Member memberA = memberService.findOne(join).get();
+        Member memberD = memberService.findOne(join).get();
 
-        Schedule schedule = memberA.getMemberSpace().getSchedule();
+        Schedule schedule = memberD.getMemberSpace().getSchedule();
 
         Category studyCategory = new Category(schedule, "공부");
         Category workOutCategory = new Category(schedule, "운동");
@@ -157,6 +157,44 @@ public class TestDB {
 
         ToDo healthToDo = new ToDo(workOutCategory, "헬스", false, LocalDateTime.now());
         toDoService.makeTodo(healthToDo);
+
+        // 팀+친구 데이터 추가
+        MemberJoinRequestDto mj2 = new MemberJoinRequestDto("test2@naver.com", "memberA : D의 팀원+D의 친구", "password1");
+        MemberJoinRequestDto mj3 = new MemberJoinRequestDto("test3@naver.com", "memberB : D의 팀원+D의 친구", "password2");
+        MemberJoinRequestDto mj4 = new MemberJoinRequestDto("test4@naver.com", "memberC : D의 팀원", "password3");
+
+        Long join1 = memberService.join(mj2);
+        Long join2 = memberService.join(mj3);
+        Long join3 = memberService.join(mj4);
+
+        Member memberA = memberService.findOne(join1).get();
+        Member memberB = memberService.findOne(join2).get();
+        Member memberC = memberService.findOne(join3).get();
+
+        //D가 A,B와 친구
+        FriendShip friendShip1 = new FriendShip(memberA, memberD);
+        FriendShip friendShip2 = new FriendShip(memberD, memberA);
+        FriendShip friendShip3 = new FriendShip(memberD, memberB);
+        FriendShip friendShip4 = new FriendShip(memberB, memberD);
+        friendShipService.addFriend(friendShip1);
+        friendShipService.addFriend(friendShip2);
+        friendShipService.addFriend(friendShip3);
+        friendShipService.addFriend(friendShip4);
+
+
+        //D가 팀을 생성
+        Long teamId1 = teamService.makeTeam(memberD, "D(member1)가 만든 팀 1");
+        Long teamId2 = teamService.makeTeam(memberD, "D(member1)가 만든 팀 2");
+
+        //팀 1 - A와 B가 가입
+        //Team team1 = teamService.findOne(teamId1).get();
+        teamService.join(memberA, teamId1);
+        teamService.join(memberB, teamId1);
+
+        //팀2  - C가 가입
+        //Team team2 = teamService.findOne(teamId2).get();
+        teamService.join(memberC, teamId2);
+
     }
 
 
