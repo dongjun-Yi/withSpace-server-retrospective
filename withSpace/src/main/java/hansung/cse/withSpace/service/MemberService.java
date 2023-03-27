@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -84,6 +85,8 @@ public class MemberService {
         if (memberUpdateRequestDto.getMemberName() != null) {
             member.setMemberName(memberUpdateRequestDto.getMemberName());
         }
+
+        member.setUpdatedAt(LocalDateTime.now());
 
         // 업데이트
         memberRepository.save(member);
