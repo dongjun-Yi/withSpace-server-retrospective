@@ -1,5 +1,9 @@
 package hansung.cse.withSpace.requestdto.member;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,8 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MemberJoinRequestDto {
 
+    @NotEmpty(message = "이메일을 입력해주세요.")
     private String email;
+
+    @NotEmpty(message = "이름을 입력해주세요.")
     private String memberName;
+
+    @NotEmpty(message = "비밀번호를 입력해주세요.")
+    @Size(min = 6, message = "비밀번호는 6자 이상 입력해주세요.")
     private String password;
 
 }

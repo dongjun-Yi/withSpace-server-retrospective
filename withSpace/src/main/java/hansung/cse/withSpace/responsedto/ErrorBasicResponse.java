@@ -2,11 +2,11 @@ package hansung.cse.withSpace.responsedto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
 
 @Data
 @AllArgsConstructor
-public class BasicResponse<T> {
-    private Integer count;
+public class ErrorBasicResponse {
+    private int status;
     private String message;
-    private T data;
 }
