@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import hansung.cse.withSpace.domain.*;
 import hansung.cse.withSpace.domain.space.TeamSpace;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
+import hansung.cse.withSpace.exception.team.TeamNotFoundException;
 import hansung.cse.withSpace.repository.MemberTeamRepository;
 import hansung.cse.withSpace.repository.ScheduleRepository;
 import hansung.cse.withSpace.repository.SpaceRepository;
@@ -25,6 +26,12 @@ public class TeamService {
     private final MemberTeamRepository memberTeamRepository;
     private final SpaceRepository spaceRepository;
     private final ScheduleRepository scheduleRepository;
+
+    public Team findOne(Long teamId) {
+        return teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("팀 조회 실패"));
+    }
+
 
     @Transactional
     public Long makeTeam(Member member, String teamName) { //팀 생성 - 팀을 생성하는 회원에게는 바로 팀 부여
@@ -52,10 +59,7 @@ public class TeamService {
 
     @Transactional
     public Long join(Member member, Long teamId) { //팀 가입
-        Optional<Team> teamOptional = teamRepository.findById(teamId);
-        Team team = teamOptional.orElseThrow(()
-                -> new EntityNotFoundException("팀이 없음 - teamService.join / teamId: " + teamId));
-
+        Team team = findOne(teamId);
 
         MemberTeamId memberTeamId = new MemberTeamId(member.getId(), teamId);
         Optional<MemberTeam> memberTeamOptional = memberTeamRepository.findById(memberTeamId);
@@ -64,8 +68,6 @@ public class TeamService {
         if (memberTeam == null) { //이미 가입되어있는 경우
             makeMemberTeamRelation(member, team);
         }
-
-        System.out.println(team.getMemberCount()+"============================================================================");
 
         return teamId;
     }
@@ -85,15 +87,10 @@ public class TeamService {
 
     }
 
-    public Optional<Team> findOne(Long temaId) {
-        return teamRepository.findById(temaId);
-    }
 
     @Transactional
     public void deleteTeam(Long teamId) {
-        Optional<Team> teamOptional = teamRepository.findById(teamId);
-        Team team = teamOptional.orElseThrow(()
-                -> new EntityNotFoundException("팀이 없음 - teamService.deleteTeam / teamId: " + teamId));
+        Team team = findOne(teamId);
 
         QMemberTeam memberTeam = QMemberTeam.memberTeam;
         BooleanExpression teamIdEquals = memberTeam.team.id.eq(teamId);

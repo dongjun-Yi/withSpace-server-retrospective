@@ -51,4 +51,23 @@ public class Block {
         updatedBy = member; //일단 생성시에는 만든사람이 곧 최근에 업데이트한 사람으로
 
     }
+
+    public void update(Member updatedBy, String content) {
+
+        this.updatedBy = updatedBy;
+        this.updatedAt = LocalDateTime.now();
+        this.content = content;
+
+//        if (updatedBy != null) {
+//            this.updatedBy = updatedBy;
+//        }
+//        if (updatedAt != null) {
+//            this.updatedAt = updatedAt;
+//        }
+//        if (content != null) {
+//            this.content = content;
+//        }
+    }
+
+
 }

@@ -62,8 +62,9 @@ public class MemberService {
     }
 
 
-    public Optional<Member> findOne(Long memberId){
-        return memberRepository.findById(memberId);
+    public Member findOne(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
     }
 
 //    public Optional<Member> findOneWithMemberTeams(Long memberId){
@@ -72,20 +73,14 @@ public class MemberService {
 
     @Transactional
     public void delete(Long memberId) {
-        Optional<Member> memberOptional = memberRepository.findById(memberId);
-        if (memberOptional.isPresent()) {
-            Member member = memberOptional.get();
-            memberRepository.delete(member);
-        } else {
-            throw new RuntimeException("Member not found for id: " + memberId);
-        }
+        Member member = findOne(memberId);
+        memberRepository.delete(member);
     }
 
     @Transactional
     public Long update(Long memberId, MemberUpdateRequestDto memberUpdateRequestDto) {
 
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberUpdateException("회원 정보를 업데이트할 수 없습니다. - 회원 조회 실패"));
+        Member member = findOne(memberId);
 
         // Update member properties based on the DTO values
         if (memberUpdateRequestDto.getEmail() != null) {
