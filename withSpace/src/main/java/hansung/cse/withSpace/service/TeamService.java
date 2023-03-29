@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import hansung.cse.withSpace.domain.*;
 import hansung.cse.withSpace.domain.space.TeamSpace;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
+import hansung.cse.withSpace.exception.team.TeamNotFoundException;
 import hansung.cse.withSpace.repository.MemberTeamRepository;
 import hansung.cse.withSpace.repository.ScheduleRepository;
 import hansung.cse.withSpace.repository.SpaceRepository;
@@ -85,8 +86,9 @@ public class TeamService {
 
     }
 
-    public Optional<Team> findOne(Long temaId) {
-        return teamRepository.findById(temaId);
+    public Team findOne(Long teamId) {
+        return teamRepository.findById(teamId)
+                .orElseThrow(() -> new TeamNotFoundException("팀 조회 실패"));
     }
 
     @Transactional

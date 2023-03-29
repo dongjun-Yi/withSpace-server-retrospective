@@ -37,8 +37,7 @@ public class PageController {
     public ResponseEntity<BasicResponse> createBlock(@PathVariable Long pageId, @RequestBody BlockCreateRequestDto blockCreateRequestDto) {
         Long memberId = blockCreateRequestDto.getMemberId();
         Long blockId = blockService.makeBlock(pageId, memberId);
-        Block block = blockService.findOne(blockId)
-                .orElseThrow(() -> new EntityNotFoundException("블럭이 없습니다. blockId: " + blockId));
+        Block block = blockService.findOne(blockId);
 
         BasicResponse basicResponse = new BasicResponse(1, "블럭 생성 성공", new BlockDto(block));
 
@@ -47,9 +46,7 @@ public class PageController {
 
     @GetMapping("/page/{pageId}") //페이지 조회
     public ResponseEntity<PageDetailDto> getPage(@PathVariable Long pageId) {
-        Optional<Page> optionalPage = pageService.findOne(pageId);
-        Page page = optionalPage.orElseThrow(() -> new EntityNotFoundException("페이지를 찾을 수 없습니다. pageId: " + pageId));
-
+        Page page = pageService.findOne(pageId);
         PageDetailDto pageDetailDto = new PageDetailDto(page);
 
         return ResponseEntity.ok(pageDetailDto);
@@ -67,16 +64,16 @@ public class PageController {
 
     @PatchMapping("/block/{blockId}") //블럭 업데이트
     public ResponseEntity<BasicResponse> updateBlock(@PathVariable Long blockId, @RequestBody BlockUpdateRequestDto requestDto) {
-        Optional<Block> optionalBeforeBlock = blockService.findOne(blockId);
-        Block beforUpdateBlock = optionalBeforeBlock.orElseThrow(() -> new EntityNotFoundException("블럭을 찾을 수 없습니다. blockId: " + blockId));
+//        Optional<Block> optionalBeforeBlock = blockService.findOne(blockId);
+//        Block beforUpdateBlock = optionalBeforeBlock.orElseThrow(() -> new EntityNotFoundException("블럭을 찾을 수 없습니다. blockId: " + blockId));
 
-        Optional<Member> optionalMember = memberService.findOne(requestDto.getMemberId());
-        Member member = optionalMember.orElseThrow(() -> new EntityNotFoundException("멤버를 찾을 수 없습니다. in 블럭 업데이트"));
+        Member member = memberService.findOne(requestDto.getMemberId());
 
         // 업데이트
         Long updateBlockId = blockService.updateBlock(blockId, requestDto);
-        Optional<Block> optionalBlock = blockService.findOne(blockId);
-        Block block = optionalBlock.orElseThrow(() -> new EntityNotFoundException("블럭을 찾을 수 없습니다. blockId: " + blockId));
+        Block block = blockService.findOne(updateBlockId);
+//        Optional<Block> optionalBlock = blockService.findOne(blockId);
+//        Block block = optionalBlock.orElseThrow(() -> new EntityNotFoundException("블럭을 찾을 수 없습니다. blockId: " + blockId));
 
         BasicResponse basicResponse = new BasicResponse(1, "블럭 업데이트 성공", new BlockDto(block));
 
@@ -95,11 +92,7 @@ public class PageController {
 
     @DeleteMapping("/block/{blockId}") //블록 삭제
     public ResponseEntity<BasicResponse> deleteBlock(@PathVariable Long blockId) {
-        Optional<Block> optionalBlock = blockService.findOne(blockId);
-        Block block = optionalBlock.orElseThrow(()
-                -> new EntityNotFoundException("블럭이 없습니다. blockId: " + blockId));
-
-        blockService.deleteBlock(block.getId());
+        blockService.deleteBlock(blockId);
 
         BasicResponse basicResponse = new BasicResponse(1, "블럭 삭제 성공", null);
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);

@@ -2,6 +2,9 @@ package hansung.cse.withSpace.controller;
 
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.Team;
+import hansung.cse.withSpace.exception.member.MemberNotFoundException;
+import hansung.cse.withSpace.exception.member.MemberUpdateException;
+import hansung.cse.withSpace.exception.team.TeamNotFoundException;
 import hansung.cse.withSpace.requestdto.team.CreateTeamRequestDto;
 import hansung.cse.withSpace.requestdto.team.JoinTeamRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
@@ -27,8 +30,7 @@ public class TeamController {
 
     @PostMapping("/team") //팀생성
     public ResponseEntity<CreateTeamResponse> createTeam(@RequestBody CreateTeamRequestDto teamRequest) {
-        Optional<Member> memberOptional = memberService.findOne(teamRequest.getMemberId());
-        Member member = memberOptional.orElseThrow(() -> new EntityNotFoundException("회원 조회 실패"));
+        Member member = memberService.findOne(teamRequest.getMemberId());
 
         Long teamId = teamService.makeTeam(member, teamRequest.getTeamName());
         CreateTeamResponse createTeamResponse = new CreateTeamResponse(teamId, CREATED, "팀 생성 완료");
@@ -37,12 +39,10 @@ public class TeamController {
 
     @PostMapping("/team/{teamId}/members") //팀 가입
     public ResponseEntity<BasicResponse> joinTeam(@PathVariable Long teamId, @RequestBody JoinTeamRequestDto teamRequest) {
-        Optional<Member> memberOptional = memberService.findOne(teamRequest.getMemberId());
-        Member member = memberOptional.orElseThrow(() -> new EntityNotFoundException("회원 조회 실패"));
+        Member member = memberService.findOne(teamRequest.getMemberId());
         teamService.join(member, teamId);
 
-        Optional<Team> teamOptional = teamService.findOne(teamId);
-        Team team= teamOptional.orElseThrow(() -> new EntityNotFoundException("팀 조회 실패"));
+        Team team = teamService.findOne(teamId);
 
         TeamListDto teamListDto = new TeamListDto(team);
 
@@ -53,8 +53,7 @@ public class TeamController {
 
     @GetMapping("/team/{teamId}") //팀 조회
     public ResponseEntity<BasicResponse> getTeam(@PathVariable Long teamId) {
-        Optional<Team> teamOptional = teamService.findOne(teamId);
-        Team team= teamOptional.orElseThrow(() -> new EntityNotFoundException("팀 조회 실패"));
+        Team team = teamService.findOne(teamId);
 
         TeamListDto teamListDto = new TeamListDto(team);
 
@@ -66,8 +65,7 @@ public class TeamController {
 
     @DeleteMapping("/team/{teamId}") //팀 삭제
     public ResponseEntity<BasicResponse> deleteTeam(@PathVariable Long teamId) {
-        Optional<Team> teamOptional = teamService.findOne(teamId);
-        Team team = teamOptional.orElseThrow(() -> new EntityNotFoundException("팀 조회 실패"));
+        Team team = teamService.findOne(teamId);
 
         teamService.deleteTeam(team.getId());
 

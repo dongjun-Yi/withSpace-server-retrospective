@@ -28,22 +28,19 @@ public class SpaceController {
 
     @PostMapping("/space/{spaceId}/page") //페이지 생성
     public ResponseEntity<BasicResponse> createPage(@PathVariable Long spaceId, @RequestBody PageCreateRequestDto pageCreateRequestDto) {
-        Space space = spaceService.findOne(spaceId)
-                .orElseThrow(() -> new EntityNotFoundException("스페이스가 없습니다. spaceId: " + spaceId));
+        Space space = spaceService.findOne(spaceId);
 
         Long pageId = pageService.makePage(spaceId, pageCreateRequestDto);
-        Optional<Page> optionalPage = pageService.findOne(pageId);
-        Optional<PageDto> page = optionalPage.map(PageDto::new);
+        Page page = pageService.findOne(pageId);
 
-        BasicResponse basicResponse = new BasicResponse<>(1, "페이지 생성 성공",page);
+        BasicResponse basicResponse = new BasicResponse<>(1, "페이지 생성 성공",new PageDto(page));
 
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
     @GetMapping("/space/{spaceId}") //스페이스 조회
     public ResponseEntity<SpaceDto> getSpace(@PathVariable Long spaceId) {
-        Space space = spaceService.findOne(spaceId)
-                .orElseThrow(() -> new EntityNotFoundException("스페이스가 없습니다. spaceId: " + spaceId));
+        Space space = spaceService.findOne(spaceId);
         return ResponseEntity.ok(new SpaceDto(space));
     }
 

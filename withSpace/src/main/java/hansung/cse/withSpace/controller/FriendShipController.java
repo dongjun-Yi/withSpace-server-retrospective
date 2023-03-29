@@ -32,8 +32,8 @@ public class FriendShipController {
 
     @GetMapping("/{memberId}/friend")
     public ResponseEntity<BasicResponse> friend(@PathVariable("memberId") Long memberId) {
-        Optional<Member> member = memberService.findOne(memberId);
-        List<Member> friendList = friendShipService.findFriendList(member.get());
+        Member member = memberService.findOne(memberId);
+        List<Member> friendList = friendShipService.findFriendList(member);
         List<FriendDto> collect = friendList.stream()
                 .map(f -> new FriendDto(f))
                 .collect(Collectors.toList());
@@ -44,15 +44,15 @@ public class FriendShipController {
     @PostMapping("/friend")
     public ResponseEntity<SendFriendShipResponseDto> sendFriendShip(@RequestBody FriendRequestDto friendRequestDto) {
         //친구 요청 보낸 사람
-        Optional<Member> friendRequester = memberService.findOne(friendRequestDto.getId());
+        Member friendRequester = memberService.findOne(friendRequestDto.getId());
         //친구 요청 받은 사람
-        Optional<Member> friendReceiver = memberService.findOne(friendRequestDto.getFriendId());
+        Member friendReceiver = memberService.findOne(friendRequestDto.getFriendId());
 
-        FriendShip friendShip = new FriendShip(friendRequester.get(), friendReceiver .get());
+        FriendShip friendShip = new FriendShip(friendRequester, friendReceiver);
 
         friendShipService.addFriend(friendShip);
 
-        SendFriendShipResponseDto friendResponseDto = new SendFriendShipResponseDto(friendRequester.get().getId(), CREATED, "친구신청을 보냈습니다.");
+        SendFriendShipResponseDto friendResponseDto = new SendFriendShipResponseDto(friendRequester.getId(), CREATED, "친구신청을 보냈습니다.");
         return new ResponseEntity<>(friendResponseDto, HttpStatus.CREATED);
     }
 

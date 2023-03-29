@@ -55,7 +55,7 @@ public class TestDB {
     public void pageInit() {
         MemberJoinRequestDto mj = new MemberJoinRequestDto("page@naver.com", "pageMember", "password");
         Long join = memberService.join(mj);
-        Long spaceId = memberService.findOne(join).get().getMemberSpace().getId();
+        Long spaceId = memberService.findOne(join).getMemberSpace().getId();
 
         PageCreateRequestDto firstPageDto = new PageCreateRequestDto("페이지 제목", null);
 
@@ -88,13 +88,13 @@ public class TestDB {
 //        Long join2 = memberService.join("memberB_joinTeam", "bbbT@naver.com", "비밀번호2");
 //        Long join3 = memberService.join("memberC_joinTeam", "cccT@naver.com", "비밀번호3");
 
-        Member memberA = memberService.findOne(join1).get();
-        Member memberB = memberService.findOne(join2).get();
-        Member memberC = memberService.findOne(join3).get();
+        Member memberA = memberService.findOne(join1);
+        Member memberB = memberService.findOne(join2);
+        Member memberC = memberService.findOne(join3);
 
         //팀생성 - A가 만듦
         Long teamId = teamService.makeTeam(memberA, "A가 만든 팀");
-        Team team = teamService.findOne(teamId).get();
+        Team team = teamService.findOne(teamId);
 
         // A가 만든 팀에 B,C 가입
         teamService.join(memberB, teamId);
@@ -112,9 +112,9 @@ public class TestDB {
         Long join2 = memberService.join(mj2);
         Long join3 = memberService.join(mj3);
 
-        Member memberA = memberService.findOne(join1).get();
-        Member memberB = memberService.findOne(join2).get();
-        Member memberC = memberService.findOne(join3).get();
+        Member memberA = memberService.findOne(join1);
+        Member memberB = memberService.findOne(join2);
+        Member memberC = memberService.findOne(join3);
 
 
         //A와 B가 친구
@@ -139,7 +139,7 @@ public class TestDB {
         MemberJoinRequestDto mj1 = new MemberJoinRequestDto("test1@naver.com", "memberD", "password4");
         Long join = memberService.join(mj1);
 
-        Member memberD = memberService.findOne(join).get();
+        Member memberD = memberService.findOne(join);
 
         Schedule schedule = memberD.getMemberSpace().getSchedule();
 
@@ -167,9 +167,9 @@ public class TestDB {
         Long join2 = memberService.join(mj3);
         Long join3 = memberService.join(mj4);
 
-        Member memberA = memberService.findOne(join1).get();
-        Member memberB = memberService.findOne(join2).get();
-        Member memberC = memberService.findOne(join3).get();
+        Member memberA = memberService.findOne(join1);
+        Member memberB = memberService.findOne(join2);
+        Member memberC = memberService.findOne(join3);
 
         //D가 A,B와 친구
         FriendShip friendShip1 = new FriendShip(memberA, memberD);

@@ -45,19 +45,12 @@ public class MemberController {
         return new ResponseEntity<>(joinMemberResponse, HttpStatus.CREATED);
     }
 
-    // 회원가입 예외처리 메서드
-//    @ExceptionHandler({DuplicateEmailException.class, InvalidPasswordException.class, RequiredValueMissingException.class})
-//    public ResponseEntity<String> handleJoinMemberException(RuntimeException e) {
-//        return ResponseEntity.badRequest().body(e.getMessage());
-//    }
 
 
 
     @GetMapping("/member/{memberId}") //회원 단건 조회
     public ResponseEntity<BasicResponse> getMember(@PathVariable("memberId") Long memberId) {
-        Optional<Member> memberOptional = memberService.findOne(memberId);
-
-        Member member = memberOptional.orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다"));
+        Member member = memberService.findOne(memberId);
 
         GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(member);
         BasicResponse basicResponse = new BasicResponse<>(1, "회원 조회 성공", getMemberResponseDto);
@@ -67,8 +60,7 @@ public class MemberController {
 
     @GetMapping("/member/{memberId}/space") //회원 스페이스 조회
     public ResponseEntity<BasicResponse> getMemberSpace(@PathVariable("memberId") Long memberId) {
-        Optional<Member> memberOptional = memberService.findOne(memberId);
-        Member member = memberOptional.orElseThrow(() -> new EntityNotFoundException("회원 조회 실패"));
+        Member member = memberService.findOne(memberId);
 
         MemberSpaceDto memberSpaceDto = new MemberSpaceDto(member);
         BasicResponse basicResponse = new BasicResponse<>(1, "스페이스 조회 성공", memberSpaceDto);

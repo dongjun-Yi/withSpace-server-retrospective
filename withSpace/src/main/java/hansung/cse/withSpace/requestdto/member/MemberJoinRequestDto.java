@@ -1,9 +1,6 @@
 package hansung.cse.withSpace.requestdto.member;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class MemberJoinRequestDto {
 
     @NotEmpty(message = "이메일을 입력해주세요.")
+    @Pattern(regexp = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+$", message = "올바른 이메일 형식을 사용해주세요")
     private String email;
 
     @NotEmpty(message = "이름을 입력해주세요.")

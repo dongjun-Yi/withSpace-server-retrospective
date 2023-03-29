@@ -3,6 +3,7 @@ package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.domain.space.Page;
 import hansung.cse.withSpace.domain.space.Space;
+import hansung.cse.withSpace.exception.page.PageNotFoundException;
 import hansung.cse.withSpace.repository.BlockRepository;
 import hansung.cse.withSpace.repository.MemberRepository;
 import hansung.cse.withSpace.repository.PageRepository;
@@ -57,14 +58,15 @@ public class PageService {
         space.getPageList().add(page);
     }
 
-    public Optional<Page>findOne(Long pageId) {
-        return pageRepository.findById(pageId);
+    public Page findOne(Long pageId) {
+        return pageRepository.findById(pageId).orElseThrow(()
+                -> new PageNotFoundException("페이지를 찾을 수 없습니다."));
+
     }
 
     @Transactional
     public void updatePage(Long pageId, PageUpdateRequestDto requestDto) {
-        Optional<Page> optionalPage = pageRepository.findById(pageId);
-        Page page = optionalPage.orElseThrow(() -> new EntityNotFoundException("페이지를 찾을 수 없습니다. pageId: " + pageId));
+        Page page = findOne(pageId);
 
         if (requestDto.getTitle() != null) {
             page.setTitle(requestDto.getTitle());
@@ -75,10 +77,7 @@ public class PageService {
 
     @Transactional
     public void deletePage(Long pageId) {
-        Optional<Page> optionalPage = pageRepository.findById(pageId);
-        Page page = optionalPage.orElseThrow(()
-                -> new EntityNotFoundException("페이지를 찾을 수 없습니다. pageId: " + pageId));
-
+        Page page = findOne(pageId);
         pageRepository.delete(page);
     }
 
