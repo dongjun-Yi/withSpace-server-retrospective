@@ -24,24 +24,25 @@ import java.util.Optional;
 public class PageService {
 
     private final PageRepository pageRepository;
-    private final MemberRepository memberRepository;
-    private final BlockRepository blockRepository;
-    private final SpaceRepository spaceRepository;
+    private final SpaceService spaceService;
 
+    public Page findOne(Long pageId) {
+        return pageRepository.findById(pageId).orElseThrow(()
+                -> new PageNotFoundException("페이지를 찾을 수 없습니다."));
+
+    }
 
     @Transactional
     public Long makePage(Long spaceId, PageCreateRequestDto pageCreateRequestDto) {
-        Space space = spaceRepository.findById(spaceId)
-                .orElseThrow(() -> new EntityNotFoundException("스페이스 조회 실패 >> at PageService.makePage() "));
+        Space space = spaceService.findOne(spaceId);
         Page page = new Page(pageCreateRequestDto.getTitle());
 
         setPageSpace(page, space);
 
-        // Find parent page, if specified
         if (pageCreateRequestDto.getParentPageId() != null && pageCreateRequestDto.getParentPageId().isPresent()) {
             Long parentPageId = pageCreateRequestDto.getParentPageId().orElse(null);
             Page parentPage = pageRepository.findById(parentPageId)
-                    .orElseThrow(() -> new EntityNotFoundException("페이지 찾기 실패. parentPageId: " + parentPageId));
+                    .orElseThrow(() -> new PageNotFoundException("부모 페이지 찾기 실패."));
             parentPage.addchildPage(page);
             page.setParentPage(parentPage);
         }
@@ -58,11 +59,7 @@ public class PageService {
         space.getPageList().add(page);
     }
 
-    public Page findOne(Long pageId) {
-        return pageRepository.findById(pageId).orElseThrow(()
-                -> new PageNotFoundException("페이지를 찾을 수 없습니다."));
 
-    }
 
     @Transactional
     public void updatePage(Long pageId, PageUpdateRequestDto requestDto) {

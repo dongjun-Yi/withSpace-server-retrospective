@@ -22,7 +22,7 @@ public class SpaceService {
 
     public Space findOne(Long spaceId) {
         return spaceRepository.findById(spaceId).orElseThrow(()
-                -> new SpaceNotFoundException("스페이스 조회 실패: 해당하는 스페이스가 존재하지 않습니다."));
+                -> new SpaceNotFoundException("해당하는 스페이스가 존재하지 않습니다."));
     }
 
 //    public Space assignSpace(Object obj) { //스페이스 할당
