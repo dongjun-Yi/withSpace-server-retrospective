@@ -4,6 +4,10 @@ spring:
     username: withSpaceAdmin
     password: hansung369
     driver-class-name: com.mysql.cj.jdbc.Driver
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
 
   jpa:
     database: mysql
@@ -16,6 +20,8 @@ spring:
         format_sql: true
 
 logging:
+  level:
+    org.springframework.security: DEBUG
   file:
     name: my-application.log
     path: /path/to/log/file

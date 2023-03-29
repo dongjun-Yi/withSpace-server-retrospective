@@ -43,6 +43,9 @@ dependencies {
 
     implementation 'org.springframework.session:spring-session-jdbc'
 
+    implementation 'org.springframework.session:spring-session-core'
+
+
 }
 
 tasks.named('test') {
