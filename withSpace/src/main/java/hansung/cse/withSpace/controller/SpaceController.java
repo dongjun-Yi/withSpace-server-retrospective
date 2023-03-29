@@ -1,18 +1,26 @@
 package hansung.cse.withSpace.controller;
 
 
+import hansung.cse.withSpace.domain.Member;
+import hansung.cse.withSpace.domain.Team;
+import hansung.cse.withSpace.domain.space.MemberSpace;
 import hansung.cse.withSpace.domain.space.Page;
 import hansung.cse.withSpace.domain.space.Space;
+import hansung.cse.withSpace.domain.space.TeamSpace;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
 import hansung.cse.withSpace.responsedto.space.SpaceDto;
 import hansung.cse.withSpace.responsedto.space.page.PageDto;
+import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.PageService;
 import hansung.cse.withSpace.service.SpaceService;
+import hansung.cse.withSpace.service.TeamService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -25,6 +33,9 @@ public class SpaceController {
 
     private final SpaceService spaceService;
     private final PageService pageService;
+
+    private final MemberService memberService;
+    private final TeamService teamService;
 
     @PostMapping("/space/{spaceId}/page") //페이지 생성
     public ResponseEntity<BasicResponse> createPage(@PathVariable Long spaceId, @RequestBody PageCreateRequestDto pageCreateRequestDto) {
@@ -43,6 +54,27 @@ public class SpaceController {
         Space space = spaceService.findOne(spaceId);
         return ResponseEntity.ok(new SpaceDto(space));
     }
+
+//    @GetMapping("/space/{spaceId}") //스페이스 조회
+//    @PreAuthorize("hasPermission(#spaceId, 'hansung.cse.withSpace.domain.space.Space', 'read')")
+//    public ResponseEntity<SpaceDto> getSpace(@PathVariable Long spaceId) {
+//        Space space = spaceService.findOne(spaceId);
+//
+////        if (space instanceof MemberSpace) {
+////            MemberSpace memberSpace = (MemberSpace) space;
+////            Member member = memberSpace.getMember();
+////            //...
+////        } else if (space instanceof TeamSpace) {
+////            TeamSpace teamSpace = (TeamSpace) space;
+////            Team team = teamSpace.getTeam();
+////            //...
+////        } else {
+////            throw new IllegalStateException("Invalid space type");
+////        }
+//
+//        return ResponseEntity.ok(new SpaceDto(space));
+//    }
+
 
     //제거는 어차피 멤버나 팀 사라지면 스페이스 싹 날아가니깐 생략
 

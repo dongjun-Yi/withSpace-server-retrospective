@@ -17,9 +17,16 @@ public class TeamSpace extends Space {
     //@Id @GeneratedValue
     //private Long id;
 
+//    @Id
+//    private Long id;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "team_id")
     private Team team;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "space_id")
+//    private Space space;
 
     public TeamSpace(Team team) {
         this.team = team;

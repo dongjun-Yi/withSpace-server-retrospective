@@ -25,6 +25,8 @@ public class SpaceService {
                 -> new SpaceNotFoundException("해당하는 스페이스가 존재하지 않습니다."));
     }
 
+
+
 //    public Space assignSpace(Object obj) { //스페이스 할당
 //        if (obj instanceof Member) {
 //            MemberSpace memberSpace = new MemberSpace((Member) obj);

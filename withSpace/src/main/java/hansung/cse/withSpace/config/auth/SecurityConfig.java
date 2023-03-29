@@ -1,6 +1,7 @@
 package hansung.cse.withSpace.config.auth;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,12 +28,22 @@ public class SecurityConfig{
         http
                 .csrf().disable().cors().disable()  //csrf와 cors disable
 
-                .authorizeHttpRequests((requests) -> requests
+                .authorizeHttpRequests((requests) -> requests //로그인 전
                                 //.requestMatchers("/status", "/", "/home", "/signup", "/member").permitAll()
-                        .anyRequest().permitAll() //임시로 모든 페이지 접근 허용
+                                .anyRequest().permitAll() //임시로 모든 페이지 접근 허용
                         //로그인 안 해도 위 url들은 접근 가능
                                 //.anyRequest().authenticated() // 어떠한 요청이라도 인증이 필요
                 )
+
+//                .authorizeHttpRequests(requests -> requests
+//                        .requestMatchers("/status", "/", "/home", "/signup", "/member", "/login", "/login-process").permitAll()
+//                        //.requestMatchers("/main").hasRole("USER") //로그인후에는 /main페이지 허용
+//                        //.anyRequest().permitAll() //임시로 모든 페이지 접근 허용
+//                        //로그인 안 해도 위 url들은 접근 가능
+//                        .anyRequest().authenticated() // 어떠한 요청이라도 인증이 필요
+//                )
+
+
                 .formLogin((form) -> form // form 방식 로그인 사용
                         .loginPage("/login")  //로그인 페이지
                         .loginProcessingUrl("/login-process") //submit을 받을 url - 시큐리티가 처리해줌(MyMemberDetailService로 넘겨준것을)
