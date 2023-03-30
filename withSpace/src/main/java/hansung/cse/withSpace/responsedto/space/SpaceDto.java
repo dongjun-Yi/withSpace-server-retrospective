@@ -1,10 +1,12 @@
 package hansung.cse.withSpace.responsedto.space;
 
+import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.space.Space;
 import hansung.cse.withSpace.responsedto.schedule.ScheduleDto;
 import hansung.cse.withSpace.responsedto.space.page.PageDto;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +17,9 @@ public class SpaceDto {
     private String type;
 
     private ScheduleDto schedule;
-    private List<PageDto> pageList;
+
+    private List<PageDto> pageList = new ArrayList<>();
+
 
 //    public SpaceDto(Space space) {
 //        this.spaceId = space.getId();
@@ -39,7 +43,7 @@ public class SpaceDto {
         this.schedule = new ScheduleDto(space.getSchedule());
         pageList = space.getPageList().stream()
                 .filter(page -> page.getParentPage() == null)
-                .map(page -> new PageDto(page, false))
+                .map(page -> new PageDto(page))
                 .collect(Collectors.toList());
     }
 

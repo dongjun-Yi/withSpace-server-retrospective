@@ -31,6 +31,11 @@ public class MemberService {
 
     final private PasswordEncoder passwordEncoder; //비밀번호 암호화
 
+    public Member findOne(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
+    }
+
     public boolean existsByEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
             throw new DuplicateEmailException("이미 존재하는 email 입니다.");
@@ -62,10 +67,7 @@ public class MemberService {
     }
 
 
-    public Member findOne(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
-    }
+
 
 //    public Optional<Member> findOneWithMemberTeams(Long memberId){
 //        return memberRepository.findByIdWithMemberTeams(memberId);
@@ -101,8 +103,9 @@ public class MemberService {
     }
 
 
-    public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
     }
 
 

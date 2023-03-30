@@ -42,14 +42,24 @@ public class Page {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private Long parentId;
+
 
     public Page(String title) {
         this.title = title;
     }
 
     public void addchildPage(Page childPage) {
-        childPage.setParentPage(this);
+        childPage.parentPage = this;
+        //childPage.setParentPage(this);
         this.childPages.add(childPage);
+        childPage.parentId = this.getId();
     }
+
+//    public void makeChildParentRelation(Page parentPage) {
+//        this.parentPage = parentPage;
+//        this.parentId = parentPage.getId();
+//
+//    }
 
 }
