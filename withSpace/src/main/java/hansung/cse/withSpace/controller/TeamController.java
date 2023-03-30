@@ -2,12 +2,15 @@ package hansung.cse.withSpace.controller;
 
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.Team;
+import hansung.cse.withSpace.domain.space.Space;
 import hansung.cse.withSpace.exception.member.MemberNotFoundException;
 import hansung.cse.withSpace.exception.member.MemberUpdateException;
 import hansung.cse.withSpace.exception.team.TeamNotFoundException;
 import hansung.cse.withSpace.requestdto.team.CreateTeamRequestDto;
 import hansung.cse.withSpace.requestdto.team.JoinTeamRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
+import hansung.cse.withSpace.responsedto.space.MemberSpaceDto;
+import hansung.cse.withSpace.responsedto.space.TeamSpaceDto;
 import hansung.cse.withSpace.responsedto.team.CreateTeamResponse;
 import hansung.cse.withSpace.responsedto.team.TeamListDto;
 import hansung.cse.withSpace.service.MemberService;
@@ -16,6 +19,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -63,7 +67,17 @@ public class TeamController {
 
     }
 
+    @GetMapping("/team/{teamId}/space") //팀 스페이스 조회
+    @PreAuthorize("@customSecurityUtil.isMemberInTeam(#teamId)") // 현재 로그인한 사용자가 team에 가입되어있는 경우에만 접근 허용
+    public ResponseEntity<BasicResponse> getTeamSpace(@PathVariable Long teamId) {
+        Team team = teamService.findOne(teamId);
+        TeamSpaceDto teamSpaceDto = new TeamSpaceDto(team);
+        BasicResponse basicResponse = new BasicResponse<>(1, "스페이스 조회 성공", teamSpaceDto);
+        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+    }
+
     @DeleteMapping("/team/{teamId}") //팀 삭제
+    @PreAuthorize("@customSecurityUtil.isTeamHost(#teamId)")
     public ResponseEntity<BasicResponse> deleteTeam(@PathVariable Long teamId) {
         Team team = teamService.findOne(teamId);
 

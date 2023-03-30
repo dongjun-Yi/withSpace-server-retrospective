@@ -32,13 +32,16 @@ public class Team {
 
     private String teamName;
 
+    private Long host;
+
     //연관관계 편의 메소드//
     public void setTeamSpace(TeamSpace teamSpace) {
         this.teamSpace = teamSpace;
         teamSpace.setTeam(this);
     }
 
-    public Team(String teamName) {
+    public Team(String teamName, Long id) { //팀 생성
+        this.host = id; //팀 만든사람이 호스트(MemberId)
         this.teamName = teamName;
         memberCount = 0;
     }

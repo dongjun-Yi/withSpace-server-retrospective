@@ -50,6 +50,7 @@ public class SpaceController {
     }
 
     @GetMapping("/space/{spaceId}") //스페이스 조회
+    @PreAuthorize("@customSecurityUtil.isSpaceOwner(#spaceId)")
     public ResponseEntity<SpaceDto> getSpace(@PathVariable Long spaceId) {
         Space space = spaceService.findOne(spaceId);
         return ResponseEntity.ok(new SpaceDto(space));

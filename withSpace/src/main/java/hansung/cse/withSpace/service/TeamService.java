@@ -36,7 +36,7 @@ public class TeamService {
     @Transactional
     public Long makeTeam(Member member, String teamName) { //팀 생성 - 팀을 생성하는 회원에게는 바로 팀 부여
 
-        Team team = new Team(teamName);
+        Team team = new Team(teamName, member.getId());
 
         teamRepository.save(team);
 
@@ -50,8 +50,6 @@ public class TeamService {
         //스페이스 생성했으니 바로 스케줄도 만들어서 줌..
         Schedule schedule = new Schedule(teamSpace);
         scheduleRepository.save(schedule);
-
-        System.out.println(team.getMemberCount()+"============================================================================");
 
 
         return team.getId();

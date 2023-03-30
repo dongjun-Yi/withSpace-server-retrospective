@@ -39,12 +39,16 @@ public class PageService {
 
         setPageSpace(page, space);
 
+        //parent 페이지가 있는 경우
         if (pageCreateRequestDto.getParentPageId() != null && pageCreateRequestDto.getParentPageId().isPresent()) {
             Long parentPageId = pageCreateRequestDto.getParentPageId().orElse(null);
             Page parentPage = pageRepository.findById(parentPageId)
                     .orElseThrow(() -> new PageNotFoundException("부모 페이지 찾기 실패."));
             parentPage.addchildPage(page);
-            page.setParentPage(parentPage);
+
+
+            //pageRepository.save(parentPage);
+
         }
 
         pageRepository.save(page);

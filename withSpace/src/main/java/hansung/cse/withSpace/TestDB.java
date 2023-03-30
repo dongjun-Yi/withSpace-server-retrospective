@@ -136,6 +136,7 @@ public class TestDB {
     @Transactional
     public void scheduleInit() {
 
+        //member_id 1번 애
         MemberJoinRequestDto mj1 = new MemberJoinRequestDto("test1@naver.com", "memberD", "password4");
         Long join = memberService.join(mj1);
 
@@ -183,8 +184,8 @@ public class TestDB {
 
 
         //D가 팀을 생성
-        Long teamId1 = teamService.makeTeam(memberD, "D(member1)가 만든 팀 1");
-        Long teamId2 = teamService.makeTeam(memberD, "D(member1)가 만든 팀 2");
+        Long teamId1 = teamService.makeTeam(memberD, "D(member1)가 만든 팀 1");   //팀 pk1
+        Long teamId2 = teamService.makeTeam(memberD, "D(member1)가 만든 팀 2");   //팀 pk2
 
         //팀 1 - A와 B가 가입
         //Team team1 = teamService.findOne(teamId1).get();
@@ -194,6 +195,37 @@ public class TestDB {
         //팀2  - C가 가입
         //Team team2 = teamService.findOne(teamId2).get();
         teamService.join(memberC, teamId2);
+
+        //회원에게 페이지 추가
+        Long spaceId = memberService.findOne(join).getMemberSpace().getId();
+
+        PageCreateRequestDto firstPageDto = new PageCreateRequestDto("페이지 제목", null);
+
+        Long firstPageId = pageService.makePage(spaceId, firstPageDto);
+
+        PageCreateRequestDto secondPageDto = new PageCreateRequestDto("페이지 제목2", Optional.ofNullable(firstPageId));
+        pageService.makePage(spaceId, secondPageDto);
+
+        PageCreateRequestDto thirdPageDto = new PageCreateRequestDto("페이지 제목3", Optional.ofNullable(firstPageId));
+        pageService.makePage(spaceId, thirdPageDto);
+
+        //블록생성
+        Long blockId1 = blockService.makeBlock(firstPageId, join);
+        Long blockId2 = blockService.makeBlock(firstPageId, join);
+
+        //팀 1 스페이스에게 페이지 할당
+
+        Long teamSpaceId = teamService.findOne(teamId1).getTeamSpace().getId();
+
+        PageCreateRequestDto teamPageDto1 = new PageCreateRequestDto("팀에게 줄 페이지1", null);
+        Long teamPageId1 = pageService.makePage(teamSpaceId, teamPageDto1);
+
+        PageCreateRequestDto teamPageDto2 = new PageCreateRequestDto("팀에게 줄 페이지2", Optional.ofNullable(teamPageId1));
+        pageService.makePage(teamSpaceId, teamPageDto2);
+
+        PageCreateRequestDto teamPageDto3 = new PageCreateRequestDto("팀에게 줄 페이지3", Optional.ofNullable(teamPageId1));
+        pageService.makePage(teamSpaceId, teamPageDto3);
+
 
     }
 

@@ -18,14 +18,22 @@ public class MyMemberDetailService implements UserDetailsService {
     private final MemberService memberService;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Member> findOne = memberService.findByEmail(email);
-        Member member = findOne.orElseThrow(() -> new UsernameNotFoundException("없는 회원입니다"));
+        Member member = memberService.findByEmail(email);
 
-        return User.builder()
-                .username(member.getEmail())
-                .password(member.getPassword())
-                .roles("USER")
-                .build();
+//        return User.builder()
+//                .username(member.getEmail())
+//                .password(member.getPassword())
+//                .roles("USER")
+//                .build();
+
+
+        return new CustomUserDetails(
+                member.getId(),
+                member.getEmail(),
+                member.getPassword(),
+                member.getMemberName()
+        );
+
     }
 
 }
