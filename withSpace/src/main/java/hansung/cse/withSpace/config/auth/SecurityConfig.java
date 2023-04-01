@@ -75,7 +75,7 @@ public class SecurityConfig{
                         .permitAll()  // 로그인 페이지 이동이 막히면 안되므로 관련된애들 모두 허용
                 )
                 .logout(withDefaults()); // 로그아웃은 기본설정으로 (/logout으로 인증해제)
-                 //.httpBasic();  //테스트 진행을 위해 잠시 설정
+                //.httpBasic();  //테스트 진행을 위해 잠시 설정
 
 
         //.logout((logout) -> logout.permitAll());
