@@ -5,13 +5,11 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import hansung.cse.withSpace.domain.Member;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberSpace extends Space {
 
 
@@ -30,9 +28,9 @@ public class MemberSpace extends Space {
 //    @JoinColumn(name = "space_id")
 //    private Space space;
 
-    public void setMember(Member member) {
-        this.member = member;
-    }
+//    public void setMember(Member member) {
+//        this.member = member;
+//    }
 
 
     public MemberSpace(Member member) {

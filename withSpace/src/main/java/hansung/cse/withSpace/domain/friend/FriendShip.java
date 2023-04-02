@@ -5,13 +5,11 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import hansung.cse.withSpace.domain.Member;
 
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FriendShip {
 
@@ -34,5 +32,9 @@ public class FriendShip {
     public FriendShip(Member member, Member friend) {
         this.member = member;
         this.friend = friend;
+    }
+
+    public void setStatus(FriendStatus accepted) {
+        this.status = accepted;
     }
 }

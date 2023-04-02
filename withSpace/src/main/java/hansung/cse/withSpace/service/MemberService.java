@@ -54,9 +54,7 @@ public class MemberService {
         memberRepository.save(member);
 
         //회원가입시 스페이스 생성 + 부여
-        MemberSpace memberSpace = new MemberSpace();
-        //spaceService.assignSpace(member);
-        member.setMemberSpace(memberSpace);
+        MemberSpace memberSpace = member.getMemberSpace();
         spaceRepository.save(memberSpace);
 
         //스페이스 생성했으니 바로 스케줄도 만들어서 줌..
@@ -84,18 +82,14 @@ public class MemberService {
 
         Member member = findOne(memberId);
 
-        // Update member properties based on the DTO values
-        if (memberUpdateRequestDto.getEmail() != null) {
-            member.setEmail(memberUpdateRequestDto.getEmail());
-        }
-        if (memberUpdateRequestDto.getPassword() != null) {
-            member.setPassword(memberUpdateRequestDto.getPassword());
-        }
-        if (memberUpdateRequestDto.getMemberName() != null) {
-            member.setMemberName(memberUpdateRequestDto.getMemberName());
-        }
+        String email = memberUpdateRequestDto.getEmail();
+        String password = memberUpdateRequestDto.getPassword();
+        String memberName = memberUpdateRequestDto.getMemberName();
 
-        member.setUpdatedAt(LocalDateTime.now());
+        if (email != null || password != null || memberName != null) {
+            member.update(email, password, memberName);
+            memberRepository.save(member);
+        }
 
         // 업데이트
         memberRepository.save(member);

@@ -37,7 +37,8 @@ public class PageService {
         Space space = spaceService.findOne(spaceId);
         Page page = new Page(pageCreateRequestDto.getTitle());
 
-        setPageSpace(page, space);
+        //setPageSpace(page, space);
+        page.makeRelationPageSpace(page, space);
 
         //parent 페이지가 있는 경우
         if (pageCreateRequestDto.getParentPageId() != null && pageCreateRequestDto.getParentPageId().isPresent()) {
@@ -57,23 +58,24 @@ public class PageService {
     }
 
 
-    @Transactional
-    public void setPageSpace(Page page, Space space) {
-        page.setSpace(space);
-        space.getPageList().add(page);
-    }
+//    @Transactional
+//    public void setPageSpace(Page page, Space space) {
+//        page.setSpace(space);
+//        space.getPageList().add(page);
+//    }
 
 
 
     @Transactional
     public void updatePage(Long pageId, PageUpdateRequestDto requestDto) {
         Page page = findOne(pageId);
+        page.updatePage(requestDto.getTitle());
 
-        if (requestDto.getTitle() != null) {
-            page.setTitle(requestDto.getTitle());
-        }
-
-        page.setUpdatedAt(LocalDateTime.now());
+//        if (requestDto.getTitle() != null) {
+//            page.setTitle(requestDto.getTitle());
+//        }
+//
+//        page.setUpdatedAt(LocalDateTime.now());
     }
 
     @Transactional

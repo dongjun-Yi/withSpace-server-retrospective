@@ -4,10 +4,7 @@ import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.MemberTeam;
 import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.space.Page;
-import hansung.cse.withSpace.service.BlockService;
-import hansung.cse.withSpace.service.MemberService;
-import hansung.cse.withSpace.service.PageService;
-import hansung.cse.withSpace.service.TeamService;
+import hansung.cse.withSpace.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,8 +25,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CustomSecurityUtil{
 
+    /**
+     * 권한 제어 전에 해당 객체가 먼저 존재하는건지 확인하기
+     */
+
     private final TeamService teamService;
     private final MemberService memberService;
+    private final SpaceService spaceService;
     private final PageService pageService;
     private final BlockService blockService;
 
@@ -39,6 +41,8 @@ public class CustomSecurityUtil{
     }
 
     public boolean isMemberOwner(Long memberId) { //memberId를 가지고 본인소유인지 파악
+
+        memberService.findOne(memberId); //회원 먼저 확인
 
         Authentication authentication = getAuthentication();
 
@@ -61,6 +65,8 @@ public class CustomSecurityUtil{
 
     public boolean isTeamHost(Long teamId) { //팀장인지 확인
 
+        teamService.findOne(teamId); //팀이 있는지 먼저 확인
+
         Authentication authentication = getAuthentication();
 
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
@@ -77,6 +83,8 @@ public class CustomSecurityUtil{
     }
 
     public boolean isMemberInTeam(Long teamId) { //팀에 가입되었는지 확인
+
+        teamService.findOne(teamId); //팀이 있는지 먼저 확인
 
         Authentication authentication = getAuthentication();
 
@@ -96,6 +104,8 @@ public class CustomSecurityUtil{
     }
 
     public boolean isSpaceOwner(Long spaceId) { //본인 스페이스인지 확인
+
+        spaceService.findOne(spaceId); //먼저 스페이스가 있는지 확인해줌
 
         Authentication authentication = getAuthentication();
 

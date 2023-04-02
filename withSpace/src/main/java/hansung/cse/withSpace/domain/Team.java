@@ -5,15 +5,12 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import hansung.cse.withSpace.domain.space.TeamSpace;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Team {
 
@@ -35,15 +32,25 @@ public class Team {
     private Long host;
 
     //연관관계 편의 메소드//
-    public void setTeamSpace(TeamSpace teamSpace) {
-        this.teamSpace = teamSpace;
-        teamSpace.setTeam(this);
-    }
+//    public void setTeamSpace(TeamSpace teamSpace) {
+//        this.teamSpace = teamSpace;
+//        teamSpace.setTeam(this);
+//    }
 
     public Team(String teamName, Long id) { //팀 생성
         this.host = id; //팀 만든사람이 호스트(MemberId)
         this.teamName = teamName;
         memberCount = 0;
+
+        //바로 스페이스 생성+부여
+        TeamSpace teamSpace = new TeamSpace(this);
+        this.teamSpace = teamSpace;
+
+        //spaceRepository.save(teamSpace);
+
     }
 
+    public void joinTeam(Team team) {
+        this.memberCount = getMemberCount() +1;
+    }
 }

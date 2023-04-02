@@ -43,9 +43,12 @@ public class TeamService {
         makeMemberTeamRelation(member, team); //멤버팀 연관관계 생성
 
         //팀 생성시 스페이스 생성 + 부여
-        TeamSpace teamSpace = new TeamSpace(team);
-        team.setTeamSpace(teamSpace);
+        TeamSpace teamSpace = team.getTeamSpace();
         spaceRepository.save(teamSpace);
+
+//        TeamSpace teamSpace = new TeamSpace(team);
+//        team.setTeamSpace(teamSpace);
+//        spaceRepository.save(teamSpace);
 
         //스페이스 생성했으니 바로 스케줄도 만들어서 줌..
         Schedule schedule = new Schedule(teamSpace);
@@ -75,7 +78,7 @@ public class TeamService {
 
         // 멤버-팀 관계 생성
         MemberTeam memberTeam = new MemberTeam(member, team);
-        team.setMemberCount(team.getMemberCount() + 1);
+        team.joinTeam(team);
         memberTeamRepository.save(memberTeam);
 
         // 멤버 - 멤버팀 - 팀 이어주기

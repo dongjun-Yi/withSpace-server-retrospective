@@ -1,17 +1,15 @@
 package hansung.cse.withSpace.domain.space;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
-
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Space {
 
     @Id
@@ -26,9 +24,8 @@ public abstract class Space {
             , cascade = CascadeType.ALL)
     private Schedule schedule;
 
-
-    public Space() {
-        //this.schedule = new Schedule(this); //스페이스 생성시 바로 만들어서 넣어줌
+    public void makeRelation(Schedule schedule) {
+        this.schedule = schedule;
     }
 
 

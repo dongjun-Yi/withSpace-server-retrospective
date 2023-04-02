@@ -6,11 +6,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TeamSpace extends Space {
 
@@ -27,6 +25,8 @@ public class TeamSpace extends Space {
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "space_id")
 //    private Space space;
+
+
 
     public TeamSpace(Team team) {
         this.team = team;

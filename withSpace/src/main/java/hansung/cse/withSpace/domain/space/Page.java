@@ -5,14 +5,11 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Page {
@@ -54,6 +51,16 @@ public class Page {
         //childPage.setParentPage(this);
         this.childPages.add(childPage);
         childPage.parentId = this.getId();
+    }
+
+    public void makeRelationPageSpace(Page page, Space space) {
+        this.space = space;
+        space.getPageList().add(page);
+    }
+
+    public void updatePage(String title) {
+        this.title = title;
+        this.updatedAt = LocalDateTime.now();
     }
 
 //    public void makeChildParentRelation(Page parentPage) {

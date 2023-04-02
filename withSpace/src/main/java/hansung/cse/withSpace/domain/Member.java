@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Member {   //회원
 
@@ -46,10 +44,10 @@ public class Member {   //회원
     private Boolean status;
 
     //연관관계 편의 메소드//
-    public void setMemberSpace(MemberSpace memberSpace) {
-        this.memberSpace = memberSpace;
-        memberSpace.setMember(this);
-    }
+//    public void makeMemberSpace(MemberSpace memberSpace) {
+//        this.memberSpace = memberSpace;
+//        memberSpace.setMember(this);
+//    }
 
     public Member( String memberName, String email, String password) {
         this.memberName = memberName;
@@ -59,6 +57,23 @@ public class Member {   //회원
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;
         this.updatedAt = now;
+
+        //스페이스
+        MemberSpace memberSpace = new MemberSpace(this);
+        this.memberSpace = memberSpace;
+    }
+
+    public void update(String email, String password, String memberName) {
+        if (email != null) {
+            this.email = email;
+        }
+        if (password != null) {
+            this.password = password;
+        }
+        if (memberName != null) {
+            this.memberName = memberName;
+        }
+        this.updatedAt = LocalDateTime.now();
     }
 
 
