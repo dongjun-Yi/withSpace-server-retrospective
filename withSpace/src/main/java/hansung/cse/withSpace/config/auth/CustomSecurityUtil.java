@@ -3,7 +3,10 @@ package hansung.cse.withSpace.config.auth;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.MemberTeam;
 import hansung.cse.withSpace.domain.Team;
+import hansung.cse.withSpace.domain.space.Page;
+import hansung.cse.withSpace.service.BlockService;
 import hansung.cse.withSpace.service.MemberService;
+import hansung.cse.withSpace.service.PageService;
 import hansung.cse.withSpace.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -27,6 +30,8 @@ public class CustomSecurityUtil{
 
     private final TeamService teamService;
     private final MemberService memberService;
+    private final PageService pageService;
+    private final BlockService blockService;
 
     // 현재 인증된 사용자의 정보를 가져오는 메소드
     public Authentication getAuthentication() {
@@ -80,10 +85,6 @@ public class CustomSecurityUtil{
             Long currentUserId = Long.valueOf(userDetails.getId()); //현재 로그인한 유저의 id
 
             Member member = memberService.findOne(currentUserId);
-//
-//            Team team = teamService.findOne(teamId);
-//            List<MemberTeam> memberTeamList = member.getMemberTeams();
-//            List<Team> teamList = new ArrayList<>();
 
             boolean isMemberOfTeam = member.getMemberTeams().stream()
                     .map(MemberTeam::getTeam)
@@ -94,7 +95,7 @@ public class CustomSecurityUtil{
         return false; // 인증 정보가 없는 경우 false 반환
     }
 
-    public boolean isSpaceOwner(Long spaceId) { //본인 소유 페이지인지 확인
+    public boolean isSpaceOwner(Long spaceId) { //본인 스페이스인지 확인
 
         Authentication authentication = getAuthentication();
 
@@ -118,6 +119,16 @@ public class CustomSecurityUtil{
         return false; // 인증 정보가 없는 경우 false 반환
     }
 
+    public boolean isPageOwner(Long pageId) {
+        Long spaceId = pageService.findOne(pageId).getSpace().getId();
 
+        return isSpaceOwner(spaceId);
+
+    }
+
+    public boolean isBlockOwner(Long blockId) {
+        Long spaceId = blockService.findOne(blockId).getPage().getSpace().getId();
+        return isSpaceOwner(spaceId);
+    }
 
 }

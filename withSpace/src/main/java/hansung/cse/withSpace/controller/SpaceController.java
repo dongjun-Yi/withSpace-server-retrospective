@@ -38,6 +38,7 @@ public class SpaceController {
     private final TeamService teamService;
 
     @PostMapping("/space/{spaceId}/page") //페이지 생성
+    @PreAuthorize("@customSecurityUtil.isSpaceOwner(#spaceId)")
     public ResponseEntity<BasicResponse> createPage(@PathVariable Long spaceId, @RequestBody PageCreateRequestDto pageCreateRequestDto) {
         Space space = spaceService.findOne(spaceId);
 
@@ -55,26 +56,6 @@ public class SpaceController {
         Space space = spaceService.findOne(spaceId);
         return ResponseEntity.ok(new SpaceDto(space));
     }
-
-//    @GetMapping("/space/{spaceId}") //스페이스 조회
-//    @PreAuthorize("hasPermission(#spaceId, 'hansung.cse.withSpace.domain.space.Space', 'read')")
-//    public ResponseEntity<SpaceDto> getSpace(@PathVariable Long spaceId) {
-//        Space space = spaceService.findOne(spaceId);
-//
-////        if (space instanceof MemberSpace) {
-////            MemberSpace memberSpace = (MemberSpace) space;
-////            Member member = memberSpace.getMember();
-////            //...
-////        } else if (space instanceof TeamSpace) {
-////            TeamSpace teamSpace = (TeamSpace) space;
-////            Team team = teamSpace.getTeam();
-////            //...
-////        } else {
-////            throw new IllegalStateException("Invalid space type");
-////        }
-//
-//        return ResponseEntity.ok(new SpaceDto(space));
-//    }
 
 
     //제거는 어차피 멤버나 팀 사라지면 스페이스 싹 날아가니깐 생략

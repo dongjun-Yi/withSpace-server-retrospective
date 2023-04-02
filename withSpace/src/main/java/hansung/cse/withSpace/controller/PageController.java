@@ -17,6 +17,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -34,6 +35,7 @@ public class PageController {
 
 
     @PostMapping("/page/{pageId}/block") //블록 생성
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
     public ResponseEntity<BasicResponse> createBlock(@PathVariable Long pageId, @RequestBody BlockCreateRequestDto blockCreateRequestDto) {
         Long memberId = blockCreateRequestDto.getMemberId();
         Long blockId = blockService.makeBlock(pageId, memberId);
@@ -45,6 +47,7 @@ public class PageController {
     }
 
     @GetMapping("/page/{pageId}") //페이지 조회
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
     public ResponseEntity<PageDetailDto> getPage(@PathVariable Long pageId) {
         Page page = pageService.findOne(pageId);
         PageDetailDto pageDetailDto = new PageDetailDto(page);
@@ -53,6 +56,7 @@ public class PageController {
     }
 
     @PatchMapping("/page/{pageId}")  //페이지 제목 변경
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
     public ResponseEntity<PageBaseResponse> updatePage(@PathVariable Long pageId, @RequestBody PageUpdateRequestDto requestDto){
 
         pageService.updatePage(pageId, requestDto);
@@ -63,6 +67,7 @@ public class PageController {
     }
 
     @PatchMapping("/block/{blockId}") //블럭 업데이트
+    @PreAuthorize("@customSecurityUtil.isBlockOwner(#blockId)")
     public ResponseEntity<BasicResponse> updateBlock(@PathVariable Long blockId, @RequestBody BlockUpdateRequestDto requestDto) {
 //        Optional<Block> optionalBeforeBlock = blockService.findOne(blockId);
 //        Block beforUpdateBlock = optionalBeforeBlock.orElseThrow(() -> new EntityNotFoundException("블럭을 찾을 수 없습니다. blockId: " + blockId));
@@ -81,6 +86,7 @@ public class PageController {
     }
 
     @DeleteMapping("/page/{pageId}") // 페이지 삭제
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
     public ResponseEntity<BasicResponse> deletePage(@PathVariable Long pageId) {
         pageService.deletePage(pageId);
 
@@ -91,6 +97,7 @@ public class PageController {
     }
 
     @DeleteMapping("/block/{blockId}") //블록 삭제
+    @PreAuthorize("@customSecurityUtil.isBlockOwner(#blockId)")
     public ResponseEntity<BasicResponse> deleteBlock(@PathVariable Long blockId) {
         blockService.deleteBlock(blockId);
 
