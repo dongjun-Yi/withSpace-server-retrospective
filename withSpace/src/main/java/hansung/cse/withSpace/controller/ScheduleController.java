@@ -18,6 +18,7 @@ import hansung.cse.withSpace.service.ToDoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -40,6 +41,7 @@ public class ScheduleController {
     private final ToDoService toDoService;
 
     @GetMapping("/schedule/{scheduleId}")
+    @PreAuthorize("@customSecurityUtil.isScheduleOwner(#scheduleId)")
     public ResponseEntity<BasicResponse> schedule(@PathVariable("scheduleId") Long scheduleId) {
         Optional<Schedule> schedule = scheduleService.findSchedule(scheduleId);
         List<ScheduleDto> collect = schedule.stream().map(s -> new ScheduleDto(schedule.get()))

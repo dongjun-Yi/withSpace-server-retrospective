@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import hansung.cse.withSpace.domain.space.Space;
+
 import java.util.ArrayList;
 import java.util.List;
 
