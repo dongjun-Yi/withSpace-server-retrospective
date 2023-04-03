@@ -13,6 +13,7 @@ import hansung.cse.withSpace.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/member") //회원가입
-    public ResponseEntity<JoinMemberResponse> joinMember(@Validated @RequestBody MemberJoinRequestDto memberJoinRequestDto) {
+    public ResponseEntity<JoinMemberResponse> joinMember(@Valid @RequestBody MemberJoinRequestDto memberJoinRequestDto) {
 
         Long memberId = memberService.join(memberJoinRequestDto);
         JoinMemberResponse joinMemberResponse = new JoinMemberResponse(memberId, CREATED, "회원가입 완료");
