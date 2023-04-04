@@ -22,6 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,17 +44,16 @@ public class ScheduleController {
     @GetMapping("/schedule/{scheduleId}")
     @PreAuthorize("@customSecurityUtil.isScheduleOwner(#scheduleId)")
     public ResponseEntity<BasicResponse> schedule(@PathVariable("scheduleId") Long scheduleId) {
-        Optional<Schedule> schedule = scheduleService.findSchedule(scheduleId);
-        List<ScheduleDto> collect = schedule.stream().map(s -> new ScheduleDto(schedule.get()))
-                .collect(Collectors.toList());
+        Schedule schedule = scheduleService.findSchedule(scheduleId);
+        List<ScheduleDto> collect = Collections.singletonList(new ScheduleDto(schedule));
         BasicResponse basicResponse = new BasicResponse<>(collect.size(), "스케줄 요청 성공", collect.get(0));
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
     @PostMapping("/category")
     public ResponseEntity<CategoryBasicResponse> createCategory(@RequestBody CategoryRequestDto categoryRequestDto) {
-        Optional<Schedule> schedule = scheduleService.findSchedule(categoryRequestDto.getScheduleId());
-        Category category = new Category(schedule.get(), categoryRequestDto.getTitle());
+        Schedule schedule = scheduleService.findSchedule(categoryRequestDto.getScheduleId());
+        Category category = new Category(schedule, categoryRequestDto.getTitle());
 
         Long saveCategoryId = categoryService.makeCategory(category);
         CategoryBasicResponse categoryBasicResponse = new CategoryBasicResponse(saveCategoryId, CREATED, "카테고리가 등록되었습니다.");
@@ -61,6 +61,7 @@ public class ScheduleController {
     }
 
     @PatchMapping("/category/{categoryId}")
+    @PreAuthorize("@customSecurityUtil.isCategoryOwner(#categoryId)")
     public ResponseEntity<CategoryBasicResponse> changeCategoryTitle(@PathVariable("categoryId") Long categoryId, @RequestBody CategoryUpdateDto categoryUpdateDto) {
         Long updateCategoryId = categoryService.update(categoryId, categoryUpdateDto.getTitle());
         CategoryBasicResponse categoryBasicResponse = new CategoryBasicResponse(updateCategoryId, SUCCESS, "카테고리 제목이 수정되었습니다.");
@@ -68,6 +69,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/category/{categoryId}")
+    @PreAuthorize("@customSecurityUtil.isCategoryOwner(#categoryId)")
     public ResponseEntity<CategoryBasicResponse> deleteCategory(@PathVariable("categoryId") Long categoryId) {
         categoryService.delete(categoryId);
         CategoryBasicResponse categoryBasicResponse = new CategoryBasicResponse(SUCCESS, "카테고리가 삭제되었습니다.");
@@ -76,8 +78,8 @@ public class ScheduleController {
 
     @PostMapping("/todo")
     public ResponseEntity<ToDoBasicResponse> createToDo(@RequestBody ToDoRequestDto toDoRequestDto) {
-        Optional<Category> findCategory = categoryService.findCategory(toDoRequestDto.getCategoryId());
-        ToDo todo = new ToDo(findCategory.get(), toDoRequestDto.getDescription(), toDoRequestDto.getCompleted(), LocalDateTime.now());
+        Category findCategory = categoryService.findCategory(toDoRequestDto.getCategoryId());
+        ToDo todo = new ToDo(findCategory, toDoRequestDto.getDescription(), toDoRequestDto.getCompleted(), LocalDateTime.now());
 
         Long saveToDoId = toDoService.makeTodo(todo);
         ToDoBasicResponse createResponseDto = new ToDoBasicResponse(saveToDoId, CREATED, "할일이 등록되었습니다.");
@@ -85,6 +87,7 @@ public class ScheduleController {
     }
 
     @PatchMapping("/todo/{todoId}")
+    @PreAuthorize("@customSecurityUtil.isToDoOwner(#todoId)")
     public ResponseEntity<ToDoBasicResponse> updateToDoDescription(@PathVariable("todoId") Long todoId, @RequestBody ToDoDescriptionUpdateDto toDoDescriptionUpdateDto) {
         Long updateToDoId = toDoService.updateDescription(todoId, toDoDescriptionUpdateDto.getDescription());
         ToDoBasicResponse toDoBasicResponse = new ToDoBasicResponse(updateToDoId, SUCCESS, "할일이 수정되었습니다.");
@@ -92,6 +95,7 @@ public class ScheduleController {
     }
 
     @PatchMapping("/todo/{todoId}/completed")
+    @PreAuthorize("@customSecurityUtil.isToDoOwner(#todoId)")
     public ResponseEntity<ToDoBasicResponse> updateToDoCompleted(@PathVariable("todoId") Long todoId, @RequestBody ToDoCompletedUpdateDto toDoCompletedUpdateDto) {
         Long updateCompletedId = toDoService.updateCompleted(todoId, toDoCompletedUpdateDto.getCompleted());
         ToDoBasicResponse toDoBasicResponse = new ToDoBasicResponse(updateCompletedId, SUCCESS, "할일 완료여부가 수정되었습니다.");
@@ -99,6 +103,7 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/todo/{todoId}")
+    @PreAuthorize("@customSecurityUtil.isToDoOwner(#todoId)")
     public ResponseEntity<ToDoBasicResponse> deleteToDo(@PathVariable("todoId") Long todoId) {
         toDoService.deleteToDo(todoId);
         ToDoBasicResponse toDoBasicResponse = new ToDoBasicResponse(SUCCESS, "할일이 삭제되었습니다.");

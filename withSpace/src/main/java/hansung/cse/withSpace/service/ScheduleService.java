@@ -1,6 +1,8 @@
 package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
+import hansung.cse.withSpace.exception.block.BlockNotFoundException;
+import hansung.cse.withSpace.exception.schedule.ScheduleNotFoundException;
 import hansung.cse.withSpace.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,8 +23,9 @@ public class ScheduleService {
         return saveSchedule.getId();
     }
 
-    public Optional<Schedule> findSchedule(Long scheduleId) {
-        Optional<Schedule> findSchedule = scheduleRepository.findById(scheduleId);
+    public Schedule findSchedule(Long scheduleId) {
+        Schedule findSchedule = scheduleRepository.findById(scheduleId).orElseThrow(()
+                -> new ScheduleNotFoundException("해당하는 스케줄이 존재하지 않습니다."));
         return findSchedule;
     }
 
