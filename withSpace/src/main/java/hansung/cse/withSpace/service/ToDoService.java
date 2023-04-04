@@ -1,6 +1,8 @@
 package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
+import hansung.cse.withSpace.exception.schedule.ScheduleNotFoundException;
+import hansung.cse.withSpace.exception.todo.ToDoNotFoundException;
 import hansung.cse.withSpace.repository.ToDoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,23 +23,24 @@ public class ToDoService {
         return saveToDo.getId();
     }
 
-    public Optional<ToDo> findToDo(Long todoId) {
-        Optional<ToDo> findTodo = toDoRepository.findById(todoId);
-        return findTodo;
+    public ToDo findToDo(Long todoId) {
+        ToDo findToDo = toDoRepository.findById(todoId).orElseThrow(()
+                -> new ToDoNotFoundException("해당하는 투두가 존재하지 않습니다."));
+        return findToDo;
     }
 
     @Transactional
     public Long updateDescription(Long id, String description) {
-        Optional<ToDo> findToDo = toDoRepository.findById(id);
-        findToDo.get().changeDescription(description);
-        return findToDo.get().getId();
+        ToDo findToDo = findToDo(id);
+        findToDo.changeDescription(description);
+        return findToDo.getId();
     }
 
     @Transactional
     public Long updateCompleted(Long id, Boolean completed) {
-        Optional<ToDo> findToDo = toDoRepository.findById(id);
-        findToDo.get().updateCompleted(completed);
-        return findToDo.get().getId();
+        ToDo findToDo = findToDo(id);
+        findToDo.updateCompleted(completed);
+        return findToDo.getId();
     }
 
     @Transactional

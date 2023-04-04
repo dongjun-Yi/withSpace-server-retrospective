@@ -145,8 +145,8 @@ public class CustomSecurityUtil{
     }
 
     public boolean isScheduleOwner(Long scheduleId) {
-        Optional<Schedule> schedule = scheduleService.findSchedule(scheduleId);
-        Long spaceId = schedule.get().getSpace().getId();
+        Schedule schedule = scheduleService.findSchedule(scheduleId);
+        Long spaceId = schedule.getSpace().getId();
         return isSpaceOwner(spaceId);
     }
 }

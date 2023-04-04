@@ -35,7 +35,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/member") //회원가입
-    public ResponseEntity<JoinMemberResponse> joinMember(@Valid @RequestBody MemberJoinRequestDto memberJoinRequestDto) {
+    public ResponseEntity<JoinMemberResponse> joinMember(@Validated @RequestBody MemberJoinRequestDto memberJoinRequestDto) {
 
         Long memberId = memberService.join(memberJoinRequestDto);
         JoinMemberResponse joinMemberResponse = new JoinMemberResponse(memberId, CREATED, "회원가입 완료");
