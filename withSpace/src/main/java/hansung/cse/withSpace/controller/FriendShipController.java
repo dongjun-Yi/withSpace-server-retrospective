@@ -12,6 +12,7 @@ import hansung.cse.withSpace.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class FriendShipController {
     private final MemberService memberService;
 
     @GetMapping("/{memberId}/friend")
+    @PreAuthorize("@customSecurityUtil.isMemberOwner(#memberId)")
     public ResponseEntity<BasicResponse> friend(@PathVariable("memberId") Long memberId) {
         Member member = memberService.findOne(memberId);
         List<Member> friendList = friendShipService.findFriendList(member);
@@ -57,6 +59,7 @@ public class FriendShipController {
     }
 
     @DeleteMapping("/friend/{memberId}/{friendId}")
+    @PreAuthorize("@customSecurityUtil.isMemberOwner(#memberId)")
     public ResponseEntity<FriendBasicResponse> deleteFriendShip(@PathVariable("memberId") Long memberId, @PathVariable("friendId") Long friendId) {
         friendShipService.deleteFriendShip(memberId, friendId);
         return new ResponseEntity<>(new FriendBasicResponse(SUCCESS, "친구 삭제가 정상적으로 되었습니다."), HttpStatus.OK);

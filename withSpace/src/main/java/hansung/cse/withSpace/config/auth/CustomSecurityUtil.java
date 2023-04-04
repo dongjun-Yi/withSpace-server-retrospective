@@ -4,7 +4,9 @@ import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.MemberTeam;
 import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.space.Page;
+import hansung.cse.withSpace.domain.space.schedule.Category;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
+import hansung.cse.withSpace.domain.space.schedule.ToDo;
 import hansung.cse.withSpace.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -37,6 +39,8 @@ public class CustomSecurityUtil{
     private final PageService pageService;
     private final BlockService blockService;
     private final ScheduleService scheduleService;
+    private final CategoryService categoryService;
+    private final ToDoService toDoService;
 
     // 현재 인증된 사용자의 정보를 가져오는 메소드
     public Authentication getAuthentication() {
@@ -149,4 +153,15 @@ public class CustomSecurityUtil{
         Long spaceId = schedule.getSpace().getId();
         return isSpaceOwner(spaceId);
     }
+
+    public boolean isCategoryOwner(Long categoryId) {
+        Category category = categoryService.findCategory(categoryId);
+        return isScheduleOwner(category.getSchedule().getId());
+    }
+
+    public boolean isToDoOwner(Long toDoId) {
+        ToDo toDo = toDoService.findToDo(toDoId);
+        return isCategoryOwner(toDo.getCategory().getId());
+    }
+
 }
