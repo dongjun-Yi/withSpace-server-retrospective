@@ -11,6 +11,7 @@ import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
 import hansung.cse.withSpace.service.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,9 @@ public class TestDB {
     private final PageService pageService;
     private final BlockService blockService;
 
+    //회원가입시에 컨트롤러에서 암호화 해주므로 더미데이터 집어넣을땐 암호화를 따로 해줘야함
+    private final PasswordEncoder passwordEncoder;
+
 
     @PostConstruct
     public void postConstruct() {
@@ -53,7 +57,8 @@ public class TestDB {
 
     @Transactional
     public void pageInit() {
-        MemberJoinRequestDto mj = new MemberJoinRequestDto("page@naver.com", "pageMember", "password");
+
+        MemberJoinRequestDto mj = new MemberJoinRequestDto("page@naver.com", "pageMember", passwordEncoder.encode("password"));
         Long join = memberService.join(mj);
         Long spaceId = memberService.findOne(join).getMemberSpace().getId();
 
@@ -76,9 +81,9 @@ public class TestDB {
     @Transactional
     public void teamInit() {
 
-        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("aaaT@naver.com", "memberA_makeTeam", "password1");
-        MemberJoinRequestDto mj2 = new MemberJoinRequestDto("bbbT@naver.com", "memberB_makeTeam", "password2");
-        MemberJoinRequestDto mj3 = new MemberJoinRequestDto("cccT@naver.com", "memberC_makeTeam", "password3");
+        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("aaaT@naver.com", "memberA_makeTeam", passwordEncoder.encode("password1"));
+        MemberJoinRequestDto mj2 = new MemberJoinRequestDto("bbbT@naver.com", "memberB_makeTeam", passwordEncoder.encode("password2"));
+        MemberJoinRequestDto mj3 = new MemberJoinRequestDto("cccT@naver.com", "memberC_makeTeam", passwordEncoder.encode("password3"));
 
         Long join1 = memberService.join(mj1);
         Long join2 = memberService.join(mj2);
@@ -104,9 +109,9 @@ public class TestDB {
     @Transactional
     public void friendInit() {
 
-        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("aaa@naver.com", "memberA", "password1");
-        MemberJoinRequestDto mj2 = new MemberJoinRequestDto("bbb@naver.com", "memberB", "password2");
-        MemberJoinRequestDto mj3 = new MemberJoinRequestDto("ccc@naver.com", "memberC", "password3");
+        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("aaa@naver.com", "memberA", passwordEncoder.encode("password1"));
+        MemberJoinRequestDto mj2 = new MemberJoinRequestDto("bbb@naver.com", "memberB", passwordEncoder.encode("password2"));
+        MemberJoinRequestDto mj3 = new MemberJoinRequestDto("ccc@naver.com", "memberC", passwordEncoder.encode("password3"));
 
         Long join1 = memberService.join(mj1);
         Long join2 = memberService.join(mj2);
@@ -137,7 +142,7 @@ public class TestDB {
     public void scheduleInit() {
 
         //member_id 1번 애
-        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("test1@naver.com", "memberD", "password4");
+        MemberJoinRequestDto mj1 = new MemberJoinRequestDto("test1@naver.com", "memberD", passwordEncoder.encode("password4"));
         Long join = memberService.join(mj1);
 
         Member memberD = memberService.findOne(join);
@@ -160,9 +165,9 @@ public class TestDB {
         toDoService.makeTodo(healthToDo);
 
         // 팀+친구 데이터 추가
-        MemberJoinRequestDto mj2 = new MemberJoinRequestDto("test2@naver.com", "memberA : D의 팀원+D의 친구", "password1");
-        MemberJoinRequestDto mj3 = new MemberJoinRequestDto("test3@naver.com", "memberB : D의 팀원+D의 친구", "password2");
-        MemberJoinRequestDto mj4 = new MemberJoinRequestDto("test4@naver.com", "memberC : D의 팀원", "password3");
+        MemberJoinRequestDto mj2 = new MemberJoinRequestDto("test2@naver.com", "memberA : D의 팀원+D의 친구", passwordEncoder.encode("password1"));
+        MemberJoinRequestDto mj3 = new MemberJoinRequestDto("test3@naver.com", "memberB : D의 팀원+D의 친구", passwordEncoder.encode("password2"));
+        MemberJoinRequestDto mj4 = new MemberJoinRequestDto("test4@naver.com", "memberC : D의 팀원", passwordEncoder.encode("password3"));
 
         Long join1 = memberService.join(mj2);
         Long join2 = memberService.join(mj3);

@@ -21,4 +21,5 @@ public class MemberJoinRequestDto {
     @Size(min = 6, message = "비밀번호는 6자 이상 입력해주세요.")
     private String password;
 
+
 }

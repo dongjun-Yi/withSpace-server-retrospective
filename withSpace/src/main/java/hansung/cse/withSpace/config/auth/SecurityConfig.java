@@ -33,6 +33,7 @@ import org.springframework.security.web.session.ConcurrentSessionFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 
+import javax.sql.DataSource;
 import java.io.IOException;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -44,31 +45,38 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableGlobalMethodSecurity(prePostEnabled = true) //@PreAuthorize @PostAuthorize 활성화
 public class SecurityConfig{
 
+    @Autowired
+    MyMemberDetailService myMemberDetailService;
 
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-        return new SessionFixationProtectionStrategy();
-    }
+    @Autowired
+    private DataSource dataSource;
 
-    private class SessionIdFilter extends OncePerRequestFilter {
-        @Override
-        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-                throws ServletException, IOException {
-            HttpSession session = request.getSession();
-            if (session != null) {
-                String sessionId = session.getId();
-                Cookie cookie = new Cookie("JSESSIONID", sessionId);
-                cookie.setPath(request.getContextPath());
-                response.addCookie(cookie);
-            }
-            filterChain.doFilter(request, response);
-        }
-    }
+
+
+//    @Bean
+//    public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+//        return new SessionFixationProtectionStrategy();
+//    }
+//
+//    private class SessionIdFilter extends OncePerRequestFilter {
+//        @Override
+//        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+//                throws ServletException, IOException {
+//            HttpSession session = request.getSession();
+//            if (session != null) {
+//                String sessionId = session.getId();
+//                Cookie cookie = new Cookie("JSESSIONID", sessionId);
+//                cookie.setPath(request.getContextPath());
+//                response.addCookie(cookie);
+//            }
+//            filterChain.doFilter(request, response);
+//        }
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -101,25 +109,35 @@ public class SecurityConfig{
                         .permitAll()  // 로그인 페이지 이동이 막히면 안되므로 관련된애들 모두 허용
 
                 )
-                .logout(withDefaults()) // 로그아웃은 기본설정으로 (/logout으로 인증해제)
+                .logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
+                //.exceptionHandling(e-> e.accessDeniedPage("/access-denied")) //접근 권한이 없는 페이지에 대한 예외 처리
 
-//                .httpBasic()//postman 사용시 필요
+                .rememberMe() // Remember-Me 기능 활성화
+                .key("mySecretKey")
+                .rememberMeCookieName("my-remember-me-cookie")
+                .tokenValiditySeconds(86400*7) //1일 * 7 = 7일동안 로그인 유지
+                .userDetailsService(myMemberDetailService)
+
 //                .and()
+//                .httpBasic()//postman 사용시 필요
 
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .sessionFixation().migrateSession()
-                .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(false)
-                .expiredUrl("/login?expired")
+
+//                .and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+//                .sessionFixation().migrateSession()
+//                .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
+//                .maximumSessions(1)
+//                .maxSessionsPreventsLogin(false)
+//                .expiredUrl("/login?expired")
 
         ;
 
 
 
         //.logout((logout) -> logout.permitAll());
-        http.addFilterBefore(new SessionIdFilter(), BasicAuthenticationFilter.class); // SessionIdFilter 등록
+        //http.addFilterBefore(new SessionIdFilter(), BasicAuthenticationFilter.class); // SessionIdFilter 등록
+
         return http.build();
     }
 
