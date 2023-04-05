@@ -1,5 +1,11 @@
 package hansung.cse.withSpace.config.auth;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +20,20 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.session.ConcurrentSessionFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+
+import java.io.IOException;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -34,15 +50,25 @@ public class SecurityConfig{
         return new BCryptPasswordEncoder();
     }
 
-    //////////
-    //private final CustomUserDetailsService userDetailsService;
+    @Bean
+    public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
+        return new SessionFixationProtectionStrategy();
+    }
 
-//    @Bean
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userDetailsService);
-//    }
-
-    ////////
+    private class SessionIdFilter extends OncePerRequestFilter {
+        @Override
+        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+                throws ServletException, IOException {
+            HttpSession session = request.getSession();
+            if (session != null) {
+                String sessionId = session.getId();
+                Cookie cookie = new Cookie("JSESSIONID", sessionId);
+                cookie.setPath(request.getContextPath());
+                response.addCookie(cookie);
+            }
+            filterChain.doFilter(request, response);
+        }
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -73,13 +99,27 @@ public class SecurityConfig{
                         .defaultSuccessUrl("/main", true) //성공시
                         .failureUrl("/login") //로그인 실패시 다시 로그인화면
                         .permitAll()  // 로그인 페이지 이동이 막히면 안되므로 관련된애들 모두 허용
+
                 )
-                .logout(withDefaults()); // 로그아웃은 기본설정으로 (/logout으로 인증해제)
-                //.httpBasic();  //테스트 진행을 위해 잠시 설정
+                .logout(withDefaults()) // 로그아웃은 기본설정으로 (/logout으로 인증해제)
+
+//                .httpBasic()//postman 사용시 필요
+//                .and()
+
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .sessionFixation().migrateSession()
+                .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
+                .maximumSessions(1)
+                .maxSessionsPreventsLogin(false)
+                .expiredUrl("/login?expired")
+
+        ;
+
 
 
         //.logout((logout) -> logout.permitAll());
-
+        http.addFilterBefore(new SessionIdFilter(), BasicAuthenticationFilter.class); // SessionIdFilter 등록
         return http.build();
     }
 
