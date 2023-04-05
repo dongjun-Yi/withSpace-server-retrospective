@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class MemberJoinRequestDto {
 
     @NotEmpty(message = "이메일을 입력해주세요.")
-    @Pattern(regexp = "^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\\.[A-Za-z0-9\\-]+$", message = "올바른 이메일 형식을 사용해주세요")
+    @Email(message = "올바른 이메일 형식을 사용해주세요")
     private String email;
 
     @NotEmpty(message = "이름을 입력해주세요.")

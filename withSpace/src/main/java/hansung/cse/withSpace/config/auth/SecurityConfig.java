@@ -24,6 +24,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
@@ -48,13 +52,21 @@ public class SecurityConfig{
     @Autowired
     MyMemberDetailService myMemberDetailService;
 
+    @Autowired
+    private GoogleOauth2UserService googleOauth2UserService;
+
+    @Autowired
+    private OAuth2AuthorizedClientService oath2;
+
+
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
-    private DataSource dataSource;
+//    @Autowired
+//    private DataSource dataSource;
 
 
 
@@ -91,14 +103,14 @@ public class SecurityConfig{
 //                )
 
                 .authorizeHttpRequests(requests -> requests //로그인 전
-                        .requestMatchers("/", "/home", "/signup", "/member", "/login", "/profile").permitAll()
+                        .requestMatchers("/", "/home", "/signup", "/member", "/login","/oauth2/**", "/profile").permitAll()
                         //.requestMatchers("/main").hasRole("USER") //로그인후에는 /main페이지 허용
                         //.anyRequest().permitAll() //임시로 모든 페이지 접근 허용
                         //로그인 안 해도 위 url들은 접근 가능
                         .anyRequest().authenticated() // 어떠한 요청이라도 인증이 필요
                 )
 
-
+                //일반 로그인
                 .formLogin((form) -> form // form 방식 로그인 사용
                         .loginPage("/login")  //로그인 페이지
                         .loginProcessingUrl("/login-process") //submit을 받을 url - 시큐리티가 처리해줌(MyMemberDetailService로 넘겨준것을)
@@ -109,6 +121,18 @@ public class SecurityConfig{
                         .permitAll()  // 로그인 페이지 이동이 막히면 안되므로 관련된애들 모두 허용
 
                 )
+
+
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/oauth2/authorization/google")
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(googleOauth2UserService)
+                        )
+                        .defaultSuccessUrl("/main", true) //성공시
+                        .permitAll()
+                )
+
+
                 .logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
                 //.exceptionHandling(e-> e.accessDeniedPage("/access-denied")) //접근 권한이 없는 페이지에 대한 예외 처리
 
