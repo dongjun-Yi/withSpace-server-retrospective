@@ -29,7 +29,7 @@ public class MemberService {
     private final SpaceRepository spaceRepository;
     private final ScheduleRepository scheduleRepository;
 
-    final private PasswordEncoder passwordEncoder; //비밀번호 암호화
+    //final private PasswordEncoder passwordEncoder; //비밀번호 암호화
 
     public Member findOne(Long memberId) {
         return memberRepository.findById(memberId)
@@ -49,8 +49,8 @@ public class MemberService {
         // 중복 이메일 검사
         existsByEmail(joinRequestDto.getEmail());
 
-        String encodedPassword = passwordEncoder.encode(joinRequestDto.getPassword()); // 비밀번호 암호화
-        Member member = new Member(joinRequestDto.getMemberName(), joinRequestDto.getEmail(), encodedPassword);
+
+        Member member = new Member(joinRequestDto.getMemberName(), joinRequestDto.getEmail(), joinRequestDto.getPassword());
         memberRepository.save(member);
 
         //회원가입시 스페이스 생성 + 부여

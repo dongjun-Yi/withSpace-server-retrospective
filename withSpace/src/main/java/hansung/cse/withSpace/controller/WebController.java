@@ -31,4 +31,6 @@ public class WebController {
     public String mainPage() { //로그인 이후 연결되는 페이지
         return "main";
     }
+
+
 }

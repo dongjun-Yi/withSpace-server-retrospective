@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,10 +34,12 @@ public class MemberController {
     private static final int CREATED = 201;
 
     private final MemberService memberService;
+    private final PasswordEncoder passwordEncoder; //비밀번호 암호화
 
     @PostMapping("/member") //회원가입
     public ResponseEntity<JoinMemberResponse> joinMember(@Validated @RequestBody MemberJoinRequestDto memberJoinRequestDto) {
-
+        String encodedPassword = passwordEncoder.encode(memberJoinRequestDto.getPassword()); // 비밀번호 암호화
+        memberJoinRequestDto.setPassword(encodedPassword);
         Long memberId = memberService.join(memberJoinRequestDto);
         JoinMemberResponse joinMemberResponse = new JoinMemberResponse(memberId, CREATED, "회원가입 완료");
         return new ResponseEntity<>(joinMemberResponse, HttpStatus.CREATED);
