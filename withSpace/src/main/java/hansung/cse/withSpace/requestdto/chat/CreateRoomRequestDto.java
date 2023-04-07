@@ -6,8 +6,8 @@ import java.util.Optional;
 
 @Data
 public class CreateRoomRequestDto {
-    private Optional<Long> memberId;
-    private Optional<Long> friendId;
-    private  Optional<Long> teamId;
+    private Optional<Long> memberId = Optional.empty();
+    private Optional<Long> friendId = Optional.empty();
+    private  Optional<Long> teamId = Optional.empty();
     private String roomName;
 }

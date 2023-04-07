@@ -28,10 +28,10 @@ public class Message {
 
     private LocalDateTime sendTime; //보낸 시간
 
-    public Message(Member member, Room room, String content) {
+    public Message(Member sender, Room room, String content) {
         this.room = room;
-        this.senderId = member.getId();
-        this.senderName = member.getMemberName();
+        this.senderId = sender.getId();
+        this.senderName = sender.getMemberName();
         this.content = content;
         this.sendTime = LocalDateTime.now();
     }

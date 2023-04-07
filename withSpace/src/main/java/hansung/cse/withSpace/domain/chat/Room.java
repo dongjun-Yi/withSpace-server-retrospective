@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -27,9 +28,30 @@ public class Room {   //채팅방
 
     private String roomName; //채팅방 이름
 
-    public Room(String roomName, Space space) {
+    //친구와의 채팅방
+    //private Long friendSpaceId=null;
+    private Long friendRoomId=null;
+    private Long memberId=null;
+    private Long friendId=null;
+
+    public Room(String roomName, Space space) { //팀에서 채팅방 생성시
         this.roomName = roomName;
         this.space = space;
     }
+    public Room(Space space, String roomName, Long memberId, Long friendId) { //개인채팅방 생성시
+        this.roomName = roomName;
+        this.space = space;
+        this.memberId = memberId;
+        this.friendId = friendId;
+    }
+
+    public void setFriendRoomId(Long friendRoomId) {
+        this.friendRoomId=friendRoomId;
+    }
+
+
+//    public void roomSpaceChange(Space space) {
+//
+//    }
 
 }

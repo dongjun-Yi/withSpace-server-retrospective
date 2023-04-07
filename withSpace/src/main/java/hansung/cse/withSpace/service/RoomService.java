@@ -28,9 +28,25 @@ public class RoomService {
     }
 
     @Transactional
-    public Long makeRoom(Space space, String roomName) { //채팅방 생성
+    public Long makePersonalChattingRoom(Space space, String roomName, Long memberId, Long friendId) { // 개인 채팅방 생성
+        Room room = new Room(space, roomName, memberId, friendId);
+        roomRepository.save(room);
+        return room.getId();
+    }
+    @Transactional
+    public Long makeTeamChattingRoom(Space space, String roomName) { // 팀 채팅방 생성
         Room room = new Room(roomName, space);
         roomRepository.save(room);
         return room.getId();
+    }
+
+    @Transactional
+    public void makeRoomFriendRelation(Long myRoomId, Long friendRoomId) { //서로 친구 채팅방 연결
+        Room myRoom = roomRepository.findById(myRoomId)
+                .orElseThrow(() -> new RoomNotFoundException("내 채팅방을 찾을 수 없습니다."));
+        Room friendRoom = roomRepository.findById(friendRoomId)
+                .orElseThrow(() -> new RoomNotFoundException("친구의 채팅방을 찾을 수 없습니다."));
+        myRoom.setFriendRoomId(friendRoomId);
+        friendRoom.setFriendRoomId(myRoomId);
     }
 }
