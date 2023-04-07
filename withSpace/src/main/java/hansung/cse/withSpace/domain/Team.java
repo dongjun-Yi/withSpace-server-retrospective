@@ -45,7 +45,6 @@ public class Team {
         //바로 스페이스 생성+부여
         TeamSpace teamSpace = new TeamSpace(this);
         this.teamSpace = teamSpace;
-
         //spaceRepository.save(teamSpace);
 
     }

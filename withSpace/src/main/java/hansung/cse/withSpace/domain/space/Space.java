@@ -1,5 +1,6 @@
 package hansung.cse.withSpace.domain.space;
 
+import hansung.cse.withSpace.domain.chat.Room;
 import jakarta.persistence.*;
 import lombok.*;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
@@ -23,6 +24,11 @@ public abstract class Space {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "space"
             , cascade = CascadeType.ALL)
     private Schedule schedule;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "space"
+            , cascade = CascadeType.ALL)
+    private List<Room> roomList = new ArrayList<>(); //채팅방들
+
 
     public void makeRelation(Schedule schedule) {
         this.schedule = schedule;
