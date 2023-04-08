@@ -22,6 +22,8 @@ public class QTeam extends EntityPathBase<Team> {
 
     public static final QTeam team = new QTeam("team");
 
+    public final NumberPath<Long> host = createNumber("host", Long.class);
+
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final NumberPath<Integer> memberCount = createNumber("memberCount", Integer.class);

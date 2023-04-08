@@ -1,8 +1,10 @@
 application.yml
 
 HELP.md
-my-application.log/
-my-application.log
+*.gz
+*.log
+*.tmp
+.idea/
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
