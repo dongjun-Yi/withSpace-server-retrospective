@@ -30,6 +30,8 @@ public class QPage extends EntityPathBase<Page> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final NumberPath<Long> parentId = createNumber("parentId", Long.class);
+
     public final QPage parentPage;
 
     public final QSpace space;
