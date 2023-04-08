@@ -2,13 +2,11 @@ package hansung.cse.withSpace.service;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import hansung.cse.withSpace.domain.*;
+import hansung.cse.withSpace.domain.chat.Room;
 import hansung.cse.withSpace.domain.space.TeamSpace;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.exception.team.TeamNotFoundException;
-import hansung.cse.withSpace.repository.MemberTeamRepository;
-import hansung.cse.withSpace.repository.ScheduleRepository;
-import hansung.cse.withSpace.repository.SpaceRepository;
-import hansung.cse.withSpace.repository.TeamRepository;
+import hansung.cse.withSpace.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,10 +20,10 @@ import java.util.Optional;
 public class TeamService {
 
     private final TeamRepository teamRepository;
-
     private final MemberTeamRepository memberTeamRepository;
     private final SpaceRepository spaceRepository;
     private final ScheduleRepository scheduleRepository;
+    private final RoomRepository roomRepository;
 
     public Team findOne(Long teamId) {
         return teamRepository.findById(teamId)
@@ -54,6 +52,10 @@ public class TeamService {
         Schedule schedule = new Schedule(teamSpace);
         scheduleRepository.save(schedule);
 
+        //채팅방도 하나 만들어서 넣어줌
+        Room room = new Room("General", team.getTeamSpace());
+        team.getTeamSpace().getRoomList().add(room);
+        roomRepository.save(room);
 
         return team.getId();
     }

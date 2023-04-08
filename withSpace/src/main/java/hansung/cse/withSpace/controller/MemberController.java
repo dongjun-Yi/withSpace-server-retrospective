@@ -48,7 +48,6 @@ public class MemberController {
     @GetMapping("/member/{memberId}") //회원 단건 조회
     public ResponseEntity<BasicResponse> getMember(@PathVariable("memberId") Long memberId) {
         Member member = memberService.findOne(memberId);
-
         GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(member);
         BasicResponse basicResponse = new BasicResponse<>(1, "회원 조회 성공", getMemberResponseDto);
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
