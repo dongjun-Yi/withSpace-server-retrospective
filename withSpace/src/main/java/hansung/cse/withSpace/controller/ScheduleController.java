@@ -79,9 +79,10 @@ public class ScheduleController {
         return new ResponseEntity<>(categoryBasicResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/todo")
-    public ResponseEntity<ToDoBasicResponse> createToDo(@RequestBody ToDoRequestDto toDoRequestDto) {
-        Category findCategory = categoryService.findCategory(toDoRequestDto.getCategoryId());
+    @PostMapping("/category/{categoryId}/todo")
+    @PreAuthorize("@customSecurityUtil.isToDoOwner(#categoryId)")
+    public ResponseEntity<ToDoBasicResponse> createToDo(@PathVariable("categoryId") Long categoryId, @RequestBody ToDoRequestDto toDoRequestDto) {
+        Category findCategory = categoryService.findCategory(categoryId);
         ToDo todo = new ToDo(findCategory, toDoRequestDto.getDescription(), toDoRequestDto.getCompleted(), LocalDateTime.now());
 
         Long saveToDoId = toDoService.makeTodo(todo);
