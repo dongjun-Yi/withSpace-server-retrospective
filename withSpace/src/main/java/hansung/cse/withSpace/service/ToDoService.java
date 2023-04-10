@@ -30,15 +30,9 @@ public class ToDoService {
     }
 
     @Transactional
-    public Long updateDescription(Long id, String description) {
+    public Long updateToDo(Long id, String description, Boolean completed) {
         ToDo findToDo = findToDo(id);
         findToDo.changeDescription(description);
-        return findToDo.getId();
-    }
-
-    @Transactional
-    public Long updateCompleted(Long id, Boolean completed) {
-        ToDo findToDo = findToDo(id);
         findToDo.updateCompleted(completed);
         return findToDo.getId();
     }

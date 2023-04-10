@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ToDoDescriptionUpdateDto {
     private String description;
+    private Boolean completed;
 }

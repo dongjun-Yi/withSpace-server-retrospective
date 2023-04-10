@@ -142,8 +142,8 @@ public class SecurityConfig{
                 .tokenValiditySeconds(86400*7) //1일 * 7 = 7일동안 로그인 유지
                 .userDetailsService(myMemberDetailService)
 
-//                .and()
-//                .httpBasic()//postman 사용시 필요
+                .and()
+                .httpBasic()//postman 사용시 필요
 
 
 //                .and()

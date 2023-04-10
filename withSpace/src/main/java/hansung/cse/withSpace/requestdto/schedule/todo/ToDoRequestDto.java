@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ToDoRequestDto {
-    private Long categoryId;
     private String description;
     private Boolean completed;
 }
