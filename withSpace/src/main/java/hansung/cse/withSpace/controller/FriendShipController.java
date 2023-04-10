@@ -2,6 +2,8 @@ package hansung.cse.withSpace.controller;
 
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.friend.FriendShip;
+import hansung.cse.withSpace.domain.friend.FriendStatus;
+import hansung.cse.withSpace.exception.friend.FriendAddException;
 import hansung.cse.withSpace.requestdto.friendship.FriendRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
 import hansung.cse.withSpace.responsedto.friend.FriendBasicResponse;
@@ -43,12 +45,16 @@ public class FriendShipController {
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/friend")
-    public ResponseEntity<SendFriendShipResponseDto> sendFriendShip(@RequestBody FriendRequestDto friendRequestDto) {
+    @PostMapping("/{memberId}/friend")
+    @PreAuthorize("@customSecurityUtil.isMemberOwner(#memberId)")
+    public ResponseEntity<SendFriendShipResponseDto> sendFriendShip(@PathVariable("memberId") Long memberId, @RequestBody FriendRequestDto friendRequestDto) {
         //친구 요청 보낸 사람
-        Member friendRequester = memberService.findOne(friendRequestDto.getId());
+        Member friendRequester = memberService.findOne(memberId);
         //친구 요청 받은 사람
         Member friendReceiver = memberService.findOne(friendRequestDto.getFriendId());
+
+        if (friendRequester.getFriendRequester().get(0).getStatus().equals(FriendStatus.ACCEPTED))
+            throw new FriendAddException("이미 친구관계를 맺은 회원입니다.");
 
         FriendShip friendShip = new FriendShip(friendRequester, friendReceiver);
 

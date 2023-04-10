@@ -3,6 +3,7 @@ package hansung.cse.withSpace.service;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.friend.FriendShip;
 import hansung.cse.withSpace.domain.friend.FriendStatus;
+import hansung.cse.withSpace.exception.friend.FriendAddException;
 import hansung.cse.withSpace.repository.FriendShipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
