@@ -4,6 +4,7 @@ import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.chat.Room;
 import hansung.cse.withSpace.domain.space.Space;
+import hansung.cse.withSpace.exception.RequiredValueMissingException;
 import hansung.cse.withSpace.requestdto.chat.CreateMessageRequestDto;
 import hansung.cse.withSpace.requestdto.chat.CreateRoomRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
@@ -14,6 +15,7 @@ import hansung.cse.withSpace.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,7 +30,9 @@ public class RoomController {
     private final SpaceService spaceService;
     private final MessageService messageService;
 
+
     @GetMapping("/room/{roomId}") //채팅방 조회
+    @PreAuthorize("@customSecurityUtil.isRoomOwner(#roomId)")
     public ResponseEntity<BasicResponse> getRoom(@PathVariable("roomId") Long roomId) {
         Room room = roomService.findOne(roomId);
         GetRoomResponseDto roomResponseDto = new GetRoomResponseDto(room);
@@ -36,8 +40,9 @@ public class RoomController {
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/room") //채팅방 생성
-    public ResponseEntity<CreateRoomResponse> createChattingRoom(@RequestBody CreateRoomRequestDto roomRequestDto) {
+    @PostMapping("/space/{spaceId}/room")//채팅방 생성
+    @PreAuthorize("@customSecurityUtil.isSpaceOwner(#spaceId)")
+    public ResponseEntity<CreateRoomResponse> createChattingRoom(@PathVariable("spaceId") Long spaceId, @RequestBody CreateRoomRequestDto roomRequestDto) {
         Space space = null;
         Long roomId = null;
 
@@ -50,6 +55,8 @@ public class RoomController {
             space = member.getMemberSpace();
             Space friendSpace = friend.getMemberSpace();
 
+            //서로 친구인지 확인하고 아니라면 예외가 터짐
+            roomService.isFriend(memberId, friendId);
 
             //본인 채팅방 생성
             roomId = roomService.makePersonalChattingRoom(space, roomRequestDto.getRoomName(),  memberId, friendId);
@@ -66,14 +73,15 @@ public class RoomController {
             roomId = roomService.makeTeamChattingRoom(space, roomRequestDto.getRoomName());
         }
         else {
-            //팀 또는 회원 아이디 정보가 안 실려온 경우 - 오류처리 필요
+            //팀 또는 회원 아이디 정보가 안 실려온 경우
+            throw new RequiredValueMissingException("ID 정보 부족");
         }
-
         CreateRoomResponse createRoomResponse = new CreateRoomResponse(roomId, CREATED, "채팅방 생성 완료");
         return new ResponseEntity<>(createRoomResponse, HttpStatus.CREATED);
     }
 
     @PostMapping("/{roomId}/message") //메세지 보냄
+    @PreAuthorize("@customSecurityUtil.isRoomOwner(#roomId)")
     public ResponseEntity<CreateMessageResponse> createMessage(@PathVariable("roomId") Long roomId, @RequestBody CreateMessageRequestDto messageRequestDto) {
 
         Room room = roomService.findOne(roomId);

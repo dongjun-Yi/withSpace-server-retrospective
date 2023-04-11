@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class AccessExceptionHandler {
+public class AccessExceptionHandler { //접근권한에 관한 예외 핸들러
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<ErrorBasicResponse> handleAccessDeniedException(AccessDeniedException ex) {
         ErrorBasicResponse errorResponse = new ErrorBasicResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());

@@ -3,6 +3,7 @@ package hansung.cse.withSpace.config.auth;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.MemberTeam;
 import hansung.cse.withSpace.domain.Team;
+import hansung.cse.withSpace.domain.chat.Room;
 import hansung.cse.withSpace.domain.space.Page;
 import hansung.cse.withSpace.domain.space.schedule.Category;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
@@ -41,6 +42,7 @@ public class CustomSecurityUtil{
     private final ScheduleService scheduleService;
     private final CategoryService categoryService;
     private final ToDoService toDoService;
+    private final RoomService roomService;
 
     // 현재 인증된 사용자의 정보를 가져오는 메소드
     public Authentication getAuthentication() {
@@ -164,4 +166,8 @@ public class CustomSecurityUtil{
         return isCategoryOwner(toDo.getCategory().getId());
     }
 
+    public boolean isRoomOwner(Long roomId) { //채팅방 접근권 확인
+        Room room = roomService.findOne(roomId);
+        return isSpaceOwner(room.getSpace().getId());
+    }
 }

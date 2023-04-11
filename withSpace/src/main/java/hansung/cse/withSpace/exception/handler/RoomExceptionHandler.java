@@ -1,5 +1,6 @@
 package hansung.cse.withSpace.exception.handler;
 
+import hansung.cse.withSpace.exception.RequiredValueMissingException;
 import hansung.cse.withSpace.exception.chat.RoomNotFoundException;
 import hansung.cse.withSpace.exception.todo.ToDoNotFoundException;
 import hansung.cse.withSpace.responsedto.ErrorBasicResponse;
@@ -15,4 +16,10 @@ public class RoomExceptionHandler {
         ErrorBasicResponse errorResponse = new ErrorBasicResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(RequiredValueMissingException.class)
+    public ResponseEntity<ErrorBasicResponse> handleRequiredValueMissingException(RequiredValueMissingException ex) {
+        ErrorBasicResponse errorResponse = new ErrorBasicResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
 }

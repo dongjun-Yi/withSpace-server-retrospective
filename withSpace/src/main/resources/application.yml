@@ -39,8 +39,8 @@ spring:
 logging:
   level:
     org.springframework.security: DEBUG
-  file:
-    name: my-application.log
-    path: /path/to/log/file
+#  file:
+#    name: my-application.log
+#    path: /path/to/log/file
 #  level:
 #    org.hibernate.SQL: debug

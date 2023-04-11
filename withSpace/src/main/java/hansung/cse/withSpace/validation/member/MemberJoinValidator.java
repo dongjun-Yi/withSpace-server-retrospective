@@ -2,7 +2,7 @@
 //
 //import hansung.cse.withSpace.exception.member.join.DuplicateEmailException;
 //import hansung.cse.withSpace.exception.member.join.InvalidPasswordException;
-//import hansung.cse.withSpace.exception.member.join.RequiredValueMissingException;
+//import hansung.cse.withSpace.exception.RequiredValueMissingException;
 //import hansung.cse.withSpace.requestdto.member.MemberJoinRequestDto;
 //import hansung.cse.withSpace.service.MemberService;
 //import lombok.RequiredArgsConstructor;

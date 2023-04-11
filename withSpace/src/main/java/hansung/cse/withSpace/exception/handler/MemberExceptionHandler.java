@@ -3,8 +3,6 @@ package hansung.cse.withSpace.exception.handler;
 import hansung.cse.withSpace.exception.member.MemberNotFoundException;
 import hansung.cse.withSpace.exception.member.MemberUpdateException;
 import hansung.cse.withSpace.exception.member.join.DuplicateEmailException;
-import hansung.cse.withSpace.exception.member.join.InvalidPasswordException;
-import hansung.cse.withSpace.exception.member.join.RequiredValueMissingException;
 import hansung.cse.withSpace.responsedto.ErrorBasicResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

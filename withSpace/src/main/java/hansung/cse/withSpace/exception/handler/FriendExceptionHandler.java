@@ -1,6 +1,7 @@
 package hansung.cse.withSpace.exception.handler;
 
 import hansung.cse.withSpace.exception.friend.FriendAddException;
+import hansung.cse.withSpace.exception.friend.NotFriendException;
 import hansung.cse.withSpace.exception.member.join.DuplicateEmailException;
 import hansung.cse.withSpace.responsedto.ErrorBasicResponse;
 import org.springframework.http.HttpStatus;
@@ -15,5 +16,10 @@ public class FriendExceptionHandler {
     public ResponseEntity<ErrorBasicResponse> handleFriendAddException(FriendAddException ex) {
         ErrorBasicResponse errorResponse = new ErrorBasicResponse(HttpStatus.CONFLICT.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NotFriendException.class)
+    public ResponseEntity<String> handleNotFriendException(NotFriendException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
