@@ -36,6 +36,12 @@ public class RoomService {
         return roomRepository.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("채팅방을 찾을 수 없습니다."));
     }
+    @Transactional
+    public void removeRoom(Long roomId) {
+        Room room = findOne(roomId);
+        roomRepository.delete(room);
+    }
+
 
     public void isFriend(Long memberId, Long friendId) {
         //서로 친구관계인지 확인
@@ -82,4 +88,6 @@ public class RoomService {
         myRoom.setFriendRoomId(friendRoomId);
         friendRoom.setFriendRoomId(myRoomId);
     }
+
+
 }

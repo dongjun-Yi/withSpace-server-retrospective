@@ -23,7 +23,7 @@ public class Room {   //채팅방
     @JoinColumn(name = "space_id")
     private Space space;
 
-    @OneToMany(mappedBy = "room") //채팅내역
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE) //채팅내역
     private List<Message> messageList = new ArrayList<>();
 
     private String roomName; //채팅방 이름
