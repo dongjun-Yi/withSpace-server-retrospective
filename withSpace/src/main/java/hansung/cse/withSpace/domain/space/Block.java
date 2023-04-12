@@ -19,9 +19,9 @@ public class Block {
     @Column(name = "block_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "page_id")
-    private Page page;
+//    @ManyToOne
+//    @JoinColumn(name = "page_id")
+//    private Page page;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -37,8 +37,8 @@ public class Block {
     private LocalDateTime updatedAt;
 
     public Block(Page page, Member member) { //블럭생성
-        this.page = page;
-        page.getBlockList().add(this);
+        //this.page = page;
+        //page.getBlockList().add(this); 블럭기능 없애면서 에러나서 일단 주석
 
         LocalDateTime now = LocalDateTime.now();
 

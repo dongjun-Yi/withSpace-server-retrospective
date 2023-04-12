@@ -146,8 +146,9 @@ public class CustomSecurityUtil{
     }
 
     public boolean isBlockOwner(Long blockId) {
-        Long spaceId = blockService.findOne(blockId).getPage().getSpace().getId();
-        return isSpaceOwner(spaceId);
+        //Long spaceId = blockService.findOne(blockId).getPage().getSpace().getId();
+        //return isSpaceOwner(spaceId);
+        return false;
     }
 
     public boolean isScheduleOwner(Long scheduleId) {

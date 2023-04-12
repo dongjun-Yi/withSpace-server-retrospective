@@ -80,9 +80,19 @@ public class RoomController {
         return new ResponseEntity<>(createRoomResponse, HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/room/{roomId}") //채팅방 제거
+    @PreAuthorize("@customSecurityUtil.isRoomOwner(#roomId)")
+    public ResponseEntity<BasicResponse> removeRoom(@PathVariable("roomId") Long roomId) {
+        roomService.removeRoom(roomId);
+        BasicResponse basicResponse = new BasicResponse<>(1, "채팅방 제거 성공", null);
+        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+    }
+
+
     @PostMapping("/{roomId}/message") //메세지 보냄
     @PreAuthorize("@customSecurityUtil.isRoomOwner(#roomId)")
-    public ResponseEntity<CreateMessageResponse> createMessage(@PathVariable("roomId") Long roomId, @RequestBody CreateMessageRequestDto messageRequestDto) {
+    public ResponseEntity<CreateMessageResponse> createMessage(@PathVariable("roomId") Long roomId,
+                                                               @RequestBody CreateMessageRequestDto messageRequestDto) {
 
         Room room = roomService.findOne(roomId);
         Member member = memberService.findOne(messageRequestDto.getSenderId());

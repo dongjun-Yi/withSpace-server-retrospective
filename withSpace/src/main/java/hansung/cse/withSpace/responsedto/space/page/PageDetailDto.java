@@ -20,8 +20,9 @@ public class PageDetailDto {
     private Long spaceId;
     private LocalDateTime createdTime;
     private LocalDateTime lastEditedTime;
+    private String content;
     private Optional<Long> parentPageId;
-    private List<BlockDto> blockList;
+    //private List<BlockDto> blockList;
 
     public PageDetailDto(Page page) {
         this.pageId = page.getId();
@@ -29,10 +30,11 @@ public class PageDetailDto {
         this.spaceId = page.getSpace().getId();
         this.createdTime = page.getCreatedAt();
         this.lastEditedTime = page.getUpdatedAt();
+        this.content = page.getContent();
         if (page.getParentPage() != null) {
             this.parentPageId = page.getParentPage().getId().describeConstable();
         }
-        this.blockList = page.getBlockList().stream().map(BlockDto::new).collect(Collectors.toList());
+        //this.blockList = page.getBlockList().stream().map(BlockDto::new).collect(Collectors.toList());
 
     }
 
