@@ -38,7 +38,7 @@ public class Block {
 
     public Block(Page page, Member member) { //블럭생성
         this.page = page;
-        page.getBlockList().add(this);
+        //page.getBlockList().add(this); 블럭기능 없애면서 에러나서 일단 주석
 
         LocalDateTime now = LocalDateTime.now();
 

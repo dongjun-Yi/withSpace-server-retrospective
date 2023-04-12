@@ -3,7 +3,8 @@ package hansung.cse.withSpace.controller;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.space.Block;
 import hansung.cse.withSpace.domain.space.Page;
-import hansung.cse.withSpace.requestdto.space.page.PageUpdateRequestDto;
+import hansung.cse.withSpace.requestdto.space.page.PageUpdateContentRequestDto;
+import hansung.cse.withSpace.requestdto.space.page.PageUpdateTitleRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.block.BlockCreateRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.block.BlockUpdateRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
@@ -13,7 +14,6 @@ import hansung.cse.withSpace.responsedto.space.page.block.BlockDto;
 import hansung.cse.withSpace.service.BlockService;
 import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.PageService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +33,36 @@ public class PageController {
 
     //페이지 생성은 SpaceController에서
 
+    @GetMapping("/page/{pageId}") //페이지 조회
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    public ResponseEntity<PageDetailDto> getPage(@PathVariable Long pageId) {
+        Page page = pageService.findOne(pageId);
+        PageDetailDto pageDetailDto = new PageDetailDto(page);
+
+        return ResponseEntity.ok(pageDetailDto);
+    }
+
+    @PatchMapping("/page/{pageId}/title")  //페이지 제목 업데이트
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    public ResponseEntity<PageBaseResponse> updatePageTitle(@PathVariable Long pageId, @RequestBody PageUpdateTitleRequestDto requestDto){
+
+        pageService.updatePageTitle(pageId, requestDto);
+
+        PageBaseResponse pageBaseResponse = new PageBaseResponse(pageId, SUCCESS, "페이지 제목 변경 완료");
+
+        return new ResponseEntity<>(pageBaseResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping("/page/{pageId}/content")  //페이지 내용 업데이트
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    public ResponseEntity<PageBaseResponse> updatePageContent(@PathVariable Long pageId, @RequestBody PageUpdateContentRequestDto requestDto){
+
+        pageService.updatePageContent(pageId, requestDto);
+
+        PageBaseResponse pageBaseResponse = new PageBaseResponse(pageId, SUCCESS, "페이지 내용 변경 완료");
+
+        return new ResponseEntity<>(pageBaseResponse, HttpStatus.OK);
+    }
 
     @PostMapping("/page/{pageId}/block") //블록 생성
     @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
@@ -44,26 +74,6 @@ public class PageController {
         BasicResponse basicResponse = new BasicResponse(1, "블럭 생성 성공", new BlockDto(block));
 
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
-    }
-
-    @GetMapping("/page/{pageId}") //페이지 조회
-    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
-    public ResponseEntity<PageDetailDto> getPage(@PathVariable Long pageId) {
-        Page page = pageService.findOne(pageId);
-        PageDetailDto pageDetailDto = new PageDetailDto(page);
-
-        return ResponseEntity.ok(pageDetailDto);
-    }
-
-    @PatchMapping("/page/{pageId}")  //페이지 제목 변경
-    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
-    public ResponseEntity<PageBaseResponse> updatePage(@PathVariable Long pageId, @RequestBody PageUpdateRequestDto requestDto){
-
-        pageService.updatePage(pageId, requestDto);
-
-        PageBaseResponse pageBaseResponse = new PageBaseResponse(pageId, SUCCESS, "페이지 제목 변경 완료");
-
-        return new ResponseEntity<>(pageBaseResponse, HttpStatus.OK);
     }
 
     @PatchMapping("/block/{blockId}") //블럭 업데이트

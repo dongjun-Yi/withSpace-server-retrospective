@@ -29,12 +29,10 @@ public class Page {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_id")
     private Space space;
-
-
-    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Block> blockList = new ArrayList<>();
-
+//    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Block> blockList = new ArrayList<>();
     private String title;
+    private String content;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -58,8 +56,13 @@ public class Page {
         space.getPageList().add(page);
     }
 
-    public void updatePage(String title) {
+    public void updatePageTitle(String title) {
         this.title = title;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updatePageContent(String content) {
+        this.content = content;
         this.updatedAt = LocalDateTime.now();
     }
 

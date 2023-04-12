@@ -4,19 +4,13 @@ package hansung.cse.withSpace.service;
 import hansung.cse.withSpace.domain.space.Page;
 import hansung.cse.withSpace.domain.space.Space;
 import hansung.cse.withSpace.exception.page.PageNotFoundException;
-import hansung.cse.withSpace.repository.BlockRepository;
-import hansung.cse.withSpace.repository.MemberRepository;
 import hansung.cse.withSpace.repository.PageRepository;
-import hansung.cse.withSpace.repository.SpaceRepository;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
-import hansung.cse.withSpace.requestdto.space.page.PageUpdateRequestDto;
-import jakarta.persistence.EntityNotFoundException;
+import hansung.cse.withSpace.requestdto.space.page.PageUpdateContentRequestDto;
+import hansung.cse.withSpace.requestdto.space.page.PageUpdateTitleRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -67,15 +61,20 @@ public class PageService {
 
 
     @Transactional
-    public void updatePage(Long pageId, PageUpdateRequestDto requestDto) {
+    public void updatePageTitle(Long pageId, PageUpdateTitleRequestDto requestDto) {
         Page page = findOne(pageId);
-        page.updatePage(requestDto.getTitle());
+        page.updatePageTitle(requestDto.getTitle());
 
 //        if (requestDto.getTitle() != null) {
 //            page.setTitle(requestDto.getTitle());
 //        }
 //
 //        page.setUpdatedAt(LocalDateTime.now());
+    }
+    @Transactional
+    public void updatePageContent(Long pageId, PageUpdateContentRequestDto requestDto) {
+        Page page = findOne(pageId);
+        page.updatePageContent(requestDto.getContent());
     }
 
     @Transactional

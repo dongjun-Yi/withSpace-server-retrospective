@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageUpdateRequestDto {
-    private String title;
+public class PageUpdateContentRequestDto {
+    private String content;
 }
