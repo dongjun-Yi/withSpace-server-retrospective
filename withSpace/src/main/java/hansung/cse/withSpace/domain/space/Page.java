@@ -29,6 +29,7 @@ public class Page {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_id")
     private Space space;
+
 //    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Block> blockList = new ArrayList<>();
     private String title;

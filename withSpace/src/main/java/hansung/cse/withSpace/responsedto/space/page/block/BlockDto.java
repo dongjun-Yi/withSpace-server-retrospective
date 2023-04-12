@@ -24,7 +24,7 @@ public class BlockDto {
 
     public BlockDto(Block block) {
         this.blockId = block.getId();
-        this.pageId = block.getPage().getId();
+        //this.pageId = block.getPage().getId();
         this.createdTime = block.getCreatedAt();
         this.lastEditedTime = block.getUpdatedAt();
         this.createdBy = block.getCreatedBy().getMemberName();
