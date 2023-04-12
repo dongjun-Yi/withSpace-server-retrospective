@@ -79,7 +79,7 @@ public class MemberController {
         return new ResponseEntity<>(updateMemberResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/api/member") //로그인한 회원 조회 api
+    @GetMapping("/member") //로그인한 회원 조회 api
     public ResponseEntity<BasicResponse> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -90,15 +90,15 @@ public class MemberController {
         BasicResponse basicResponse = new BasicResponse<>(1, "회원 조회 성공",  getMemberResponseDto);
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
-    @PostMapping("/api/logout") //로그아웃
-    public ResponseEntity<BasicResponse> logout(HttpServletRequest request, HttpServletResponse response) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            new SecurityContextLogoutHandler().logout(request, response, authentication);
-        }
-
-        BasicResponse basicResponse = new BasicResponse<>(1, "로그아웃 성공", null);
-        return ResponseEntity.ok(basicResponse);
-    }
+//    @PostMapping("/api/logout") //로그아웃
+//    public ResponseEntity<BasicResponse> logout(HttpServletRequest request, HttpServletResponse response) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication != null) {
+//            new SecurityContextLogoutHandler().logout(request, response, authentication);
+//        }
+//
+//        BasicResponse basicResponse = new BasicResponse<>(1, "로그아웃 성공", null);
+//        return ResponseEntity.ok(basicResponse);
+//    }
 
 }
