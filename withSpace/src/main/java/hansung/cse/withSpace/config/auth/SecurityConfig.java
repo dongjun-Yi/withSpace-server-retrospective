@@ -1,46 +1,17 @@
 package hansung.cse.withSpace.config.auth;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import hansung.cse.withSpace.config.jwt.JwtAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.security.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.session.ConcurrentSessionFilter;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-
-import javax.sql.DataSource;
-import java.io.IOException;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity // Spring Security 설정 활성화
@@ -57,13 +28,24 @@ public class SecurityConfig{
 
     @Autowired
     private OAuth2AuthorizedClientService oath2;
-
-
-
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Autowired
+    private JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
+
+
+//    @Autowired
+//    private JwtTokenProvider jwtTokenProvider;
+
+
+
+//    @Bean
+//    public JwtTokenProvider jwtTokenProvider() {
+//        return new JwtTokenProvider();
+//    }
 
 //    @Autowired
 //    private DataSource dataSource;
@@ -116,9 +98,10 @@ public class SecurityConfig{
                         .loginProcessingUrl("/login-process") //submit을 받을 url - 시큐리티가 처리해줌(MyMemberDetailService로 넘겨준것을)
                         .usernameParameter("email") //submit할 아이디(이메일)
                         .passwordParameter("password") //submit할 비밀번호
-                        .defaultSuccessUrl("/login", true) //성공시
+                        //.defaultSuccessUrl("/login", true) //성공시
                         .failureUrl("/login") //로그인 실패시 다시 로그인화면
                         .permitAll()  // 로그인 페이지 이동이 막히면 안되므로 관련된애들 모두 허용
+                        .successHandler(jwtAuthenticationSuccessHandler)
 
                 )
 
