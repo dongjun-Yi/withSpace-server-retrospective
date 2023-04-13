@@ -116,7 +116,7 @@ public class SecurityConfig{
                         .loginProcessingUrl("/login-process") //submit을 받을 url - 시큐리티가 처리해줌(MyMemberDetailService로 넘겨준것을)
                         .usernameParameter("email") //submit할 아이디(이메일)
                         .passwordParameter("password") //submit할 비밀번호
-                        .defaultSuccessUrl("/main", true) //성공시
+                        .defaultSuccessUrl("/login", true) //성공시
                         .failureUrl("/login") //로그인 실패시 다시 로그인화면
                         .permitAll()  // 로그인 페이지 이동이 막히면 안되므로 관련된애들 모두 허용
 
