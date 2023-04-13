@@ -29,17 +29,31 @@ public class JwtTokenUtil {
     }
 
 
-    public String generateToken(Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
+    public String generateToken(Authentication authentication, boolean rememberMe) {
 
+        // 토큰 만료 시간 계산
+        long expireTime = rememberMe ? expiration * 6 * 24 * 7 : expiration;
+
+        System.out.println("expireTime = " + expireTime);
+
+        // 토큰 생성
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
+                .setSubject(authentication.getName())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
+
+//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+//        Date now = new Date();
+//        Date expiryDate = new Date(now.getTime() + expiration);
+//
+//        return Jwts.builder()
+//                .setSubject(userDetails.getUsername())
+//                .setIssuedAt(now)
+//                .setExpiration(expiryDate)
+//                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+//                .compact();
     }
 
     public String getUsernameFromToken(String token) {

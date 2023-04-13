@@ -47,6 +47,6 @@ logging:
 
 #jwt 관련
 jwt:
-  expiration: 86400000   #토큰 유지기간 24시간
+  expiration: 600000   #토큰 기준 유지시간 10분
   secret: Qh1bmn/fh/xvrpUVzelQbNeb2J70AqezkyB3+A21aQBXyCAvBQaI9nc+FHRc7dewtfS8szD2tb6ieY41abFifQ==
 

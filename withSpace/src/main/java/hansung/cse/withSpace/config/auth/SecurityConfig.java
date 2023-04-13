@@ -119,13 +119,16 @@ public class SecurityConfig{
                 .logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
                 //.exceptionHandling(e-> e.accessDeniedPage("/access-denied")) //접근 권한이 없는 페이지에 대한 예외 처리
 
-                .rememberMe() // Remember-Me 기능 활성화
-                .key("mySecretKey")
-                .rememberMeCookieName("my-remember-me-cookie")
-                .tokenValiditySeconds(86400*7) //1일 * 7 = 7일동안 로그인 유지
-                .userDetailsService(myMemberDetailService)
+                //jwt방식으로 대체
+//                .rememberMe() // Remember-Me 기능 활성화
+//                .key("mySecretKey")
+//                .rememberMeCookieName("my-remember-me-cookie")
+//                .tokenValiditySeconds(86400*7) //1일 * 7 = 7일동안 로그인 유지
+//                .userDetailsService(myMemberDetailService)
+                //.and()
 
-                .and()
+
+
                 .httpBasic()//postman 사용시 필요
 
 

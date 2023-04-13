@@ -22,8 +22,12 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
+
+        boolean rememberMe = "true".equals(request.getParameter("remember-me"));
+
+
         // 토큰 생성
-        String token = jwtTokenUtil.generateToken(authentication);
+        String token = jwtTokenUtil.generateToken(authentication, rememberMe);
 
         // JSON 형식으로 응답 바디에 토큰 추가
         response.setContentType("application/json");
