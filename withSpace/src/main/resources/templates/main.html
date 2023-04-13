@@ -6,7 +6,7 @@
     <script>
 
         window.onload = () => {
-            fetch('/api/member')
+            fetch('/member')
                 .then(response => response.json())
                 .then(data => {
                     let currentUser = document.getElementById('current-user');
