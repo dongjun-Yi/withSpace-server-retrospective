@@ -1,9 +1,12 @@
 package hansung.cse.withSpace.config.jwt;
 
+import hansung.cse.withSpace.domain.Member;
+import hansung.cse.withSpace.service.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,17 +31,23 @@ public class JwtTokenUtil {
         return Keys.hmacShaKeyFor(decodedSecret);
     }
 
+    @Autowired
+    MemberService memberService;
 
     public String generateToken(Authentication authentication, boolean rememberMe) {
 
         // 토큰 만료 시간 계산
         long expireTime = rememberMe ? expiration * 6 * 24 * 7 : expiration;
 
-        System.out.println("expireTime = " + expireTime);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Member member = memberService.findByEmail(userDetails.getUsername()); // 로그인한 유저의 회원 정보를 가져옴
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expiration);
 
         // 토큰 생성
         return Jwts.builder()
                 .setSubject(authentication.getName())
+                .claim("id", member.getId()) // 회원 id를 토큰에 추가
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
