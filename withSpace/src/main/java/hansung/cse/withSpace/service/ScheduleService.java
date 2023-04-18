@@ -1,5 +1,6 @@
 package hansung.cse.withSpace.service;
 
+import hansung.cse.withSpace.domain.space.Space;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.exception.block.BlockNotFoundException;
 import hansung.cse.withSpace.exception.schedule.ScheduleNotFoundException;
@@ -18,7 +19,8 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
     @Transactional
-    public Long makeSchedule(Schedule schedule) {
+    public Long makeSchedule(Space space) {
+        Schedule schedule = new Schedule(space);
         Schedule saveSchedule = scheduleRepository.save(schedule);
         return saveSchedule.getId();
     }

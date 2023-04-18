@@ -3,11 +3,13 @@ package hansung.cse.withSpace.service;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import hansung.cse.withSpace.domain.*;
 import hansung.cse.withSpace.domain.chat.Room;
+import hansung.cse.withSpace.domain.space.Page;
+import hansung.cse.withSpace.domain.space.Space;
 import hansung.cse.withSpace.domain.space.TeamSpace;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.exception.team.TeamNotFoundException;
 import hansung.cse.withSpace.repository.*;
-import jakarta.persistence.EntityNotFoundException;
+import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,15 @@ import java.util.Optional;
 public class TeamService {
 
     private final TeamRepository teamRepository;
+
+    private final SpaceService spaceService;
+    private final ScheduleService scheduleService;
+    private final PageService pageService;
+    private final RoomService roomService;
     private final MemberTeamRepository memberTeamRepository;
-    private final SpaceRepository spaceRepository;
-    private final ScheduleRepository scheduleRepository;
-    private final RoomRepository roomRepository;
+//    private final SpaceRepository spaceRepository;
+//    private final ScheduleRepository scheduleRepository;
+//    private final RoomRepository roomRepository;
 
     public Team findOne(Long teamId) {
         return teamRepository.findById(teamId)
@@ -41,21 +48,22 @@ public class TeamService {
         makeMemberTeamRelation(member, team); //멤버팀 연관관계 생성
 
         //팀 생성시 스페이스 생성 + 부여
-        TeamSpace teamSpace = team.getTeamSpace();
-        spaceRepository.save(teamSpace);
-
-//        TeamSpace teamSpace = new TeamSpace(team);
-//        team.setTeamSpace(teamSpace);
+        Space teamSpace = spaceService.makeTeamSpace(team);
+//        TeamSpace teamSpace = team.getTeamSpace();
 //        spaceRepository.save(teamSpace);
 
+        //페이지도 만들어서 하나 넣어줌
+        PageCreateRequestDto pageCreateRequestDto = new PageCreateRequestDto("새로운 페이지", null);
+        pageService.makePage(teamSpace.getId(), pageCreateRequestDto);
+//        Page page = new Page("새로운 페이지");
+//        page.makeRelationPageSpace(page, teamSpace);
+//        teamSpace.getPageList().add(page);
+
         //스페이스 생성했으니 바로 스케줄도 만들어서 줌..
-        Schedule schedule = new Schedule(teamSpace);
-        scheduleRepository.save(schedule);
+        scheduleService.makeSchedule(teamSpace);
 
         //채팅방도 하나 만들어서 넣어줌
-        Room room = new Room("General", team.getTeamSpace());
-        team.getTeamSpace().getRoomList().add(room);
-        roomRepository.save(room);
+        roomService.makeTeamChattingRoom(teamSpace, "General");
 
         return team.getId();
     }

@@ -25,7 +25,17 @@ public class SpaceService {
                 -> new SpaceNotFoundException("해당하는 스페이스가 존재하지 않습니다."));
     }
 
+    public Space makeMemberSpace(Member member) { //Member생성자의 스페이스를 저장, 연결
+        MemberSpace memberSpace = member.getMemberSpace();
+        spaceRepository.save(memberSpace);
+        return findOne(memberSpace.getId());
+    }
 
+    public Space makeTeamSpace(Team team) { //Member생성자의 스페이스를 저장, 연결
+        TeamSpace teamSpace = team.getTeamSpace();
+        spaceRepository.save(teamSpace);
+        return findOne(teamSpace.getId());
+    }
 
 //    public Space assignSpace(Object obj) { //스페이스 할당
 //        if (obj instanceof Member) {

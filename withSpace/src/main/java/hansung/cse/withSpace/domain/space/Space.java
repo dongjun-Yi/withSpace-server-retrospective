@@ -30,19 +30,15 @@ public abstract class Space {
     private List<Room> roomList = new ArrayList<>(); //채팅방들
 
 
+    private int topLevelPageCount = 0;
+
+
+    public void setTopLevelPageCount(int count) {
+        this.topLevelPageCount = count;
+    }
+
     public void makeRelation(Schedule schedule) {
         this.schedule = schedule;
     }
-
-
-    //양방향 연관관계..
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "team_id")
-//    private Team team;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "member_id")
-//    private Member member;
-
 
 }

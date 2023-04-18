@@ -2,14 +2,10 @@ package hansung.cse.withSpace.domain.space;
 
 
 import hansung.cse.withSpace.domain.Team;
-import hansung.cse.withSpace.domain.chat.Room;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter

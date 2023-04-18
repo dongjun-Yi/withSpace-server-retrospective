@@ -23,9 +23,7 @@ import java.util.Optional;
 public class RoomService {
 
     private final RoomRepository roomRepository;
-    private final MemberRepository memberRepository;
     private final FriendShipRepository friendShipRepository;
-    private final FriendShipService friendShipService;
 
 //    @Transactional
 //    public Long makeRoom() {

@@ -3,6 +3,7 @@ package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.domain.space.Page;
 import hansung.cse.withSpace.domain.space.Space;
+import hansung.cse.withSpace.exception.page.PageDeletionNotAllowedException;
 import hansung.cse.withSpace.exception.page.PageNotFoundException;
 import hansung.cse.withSpace.repository.PageRepository;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
@@ -43,7 +44,9 @@ public class PageService {
 
 
             //pageRepository.save(parentPage);
-
+        }
+        else{ //최상위 페이지인 경우
+            space.setTopLevelPageCount(space.getTopLevelPageCount()+1);
         }
 
         pageRepository.save(page);
@@ -80,6 +83,25 @@ public class PageService {
     @Transactional
     public void deletePage(Long pageId) {
         Page page = findOne(pageId);
+
+        Space space = page.getSpace();
+
+        System.out.println("space.getTopLevelPageCount() = " + space.getTopLevelPageCount());
+        System.out.println("page.getParentPage() = " + page.getParentPage());
+        System.out.println(space.getTopLevelPageCount() == 1 && page.getParentPage() == null);
+        
+        if (space.getTopLevelPageCount() == 1 && page.getParentPage() == null ) {
+            //스페이스에 최상위 페이지가 하나 + 삭제하려는 페이지가 또 제일 최상단 부모페이지면 삭제 불가
+
+            throw new PageDeletionNotAllowedException("최상위 페이지가 하나밖에 없는 경우에는 삭제가 불가능합니다.");
+
+        }
+
+        if (page.getParentPage() == null) { //최상위 페이지인경우
+            space.setTopLevelPageCount(space.getTopLevelPageCount() - 1);
+        }
+
+
         pageRepository.delete(page);
     }
 

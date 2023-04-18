@@ -3,6 +3,7 @@ package hansung.cse.withSpace.domain;
 
 import hansung.cse.withSpace.domain.friend.FriendShip;
 import hansung.cse.withSpace.domain.space.MemberSpace;
+import hansung.cse.withSpace.domain.space.Page;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -61,6 +62,14 @@ public class Member {   //회원
         //스페이스
         MemberSpace memberSpace = new MemberSpace(this);
         this.memberSpace = memberSpace;
+
+//        //페이지도 만들어서 하나 넣어줌
+//        Page page = new Page("새로운 페이지");
+//        memberSpace.getPageList().add(page);
+    }
+
+    public void setMemberSpace() {
+
     }
 
     public void update(String email, String password, String memberName) {

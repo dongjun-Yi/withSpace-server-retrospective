@@ -43,8 +43,10 @@ public class Page {
 
     public Page(String title) {
         this.title = title;
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
     }
-
     public void addchildPage(Page childPage) {
         childPage.parentPage = this;
         //childPage.setParentPage(this);
