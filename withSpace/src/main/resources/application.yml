@@ -50,15 +50,3 @@ jwt:
   expiration: 600000   #토큰 기준 유지시간 10분
   secret: Qh1bmn/fh/xvrpUVzelQbNeb2J70AqezkyB3+A21aQBXyCAvBQaI9nc+FHRc7dewtfS8szD2tb6ieY41abFifQ==
 
-cloud:
-  aws:
-    credentials:
-      access-key: AKIA5PML6A2EBIWIR63X
-      secret-key: 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
-    s3:
-      bucket: withspaceimage
-    region:
-      static: ap-northeast-2 # 리전 정보
-    stack:
-      auto: false
-
