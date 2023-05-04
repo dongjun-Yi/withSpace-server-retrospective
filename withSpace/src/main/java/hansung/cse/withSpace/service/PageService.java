@@ -9,9 +9,14 @@ import hansung.cse.withSpace.repository.PageRepository;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.PageUpdateContentRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.PageUpdateTitleRequestDto;
+import hansung.cse.withSpace.responsedto.space.page.PageHierarchyDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,6 +30,19 @@ public class PageService {
         return pageRepository.findById(pageId).orElseThrow(()
                 -> new PageNotFoundException("페이지를 찾을 수 없습니다."));
 
+    }
+
+    public List<PageHierarchyDto> getPageHierarchy(Long pageId) { //계층 조회
+        Page page = findOne(pageId);
+
+        List<PageHierarchyDto> pageHierarchy = new ArrayList<>();
+        while (page != null) {
+            PageHierarchyDto pageDto = new PageHierarchyDto(page.getId(), page.getTitle());
+            pageHierarchy.add(pageDto);
+            page = page.getParentPage();
+        }
+        Collections.reverse(pageHierarchy);
+        return pageHierarchy;
     }
 
     @Transactional

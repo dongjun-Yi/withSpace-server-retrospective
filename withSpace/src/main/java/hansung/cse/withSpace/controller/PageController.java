@@ -10,6 +10,7 @@ import hansung.cse.withSpace.requestdto.space.page.block.BlockUpdateRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
 import hansung.cse.withSpace.responsedto.space.page.PageBaseResponse;
 import hansung.cse.withSpace.responsedto.space.page.PageDetailDto;
+import hansung.cse.withSpace.responsedto.space.page.PageHierarchyDto;
 import hansung.cse.withSpace.responsedto.space.page.block.BlockDto;
 import hansung.cse.withSpace.service.BlockService;
 import hansung.cse.withSpace.service.MemberService;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -40,6 +42,15 @@ public class PageController {
         PageDetailDto pageDetailDto = new PageDetailDto(page);
 
         return ResponseEntity.ok(pageDetailDto);
+    }
+
+    @GetMapping("/page/{pageId}/hierarchy") //페이지 계층 조회
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    public ResponseEntity<List<PageHierarchyDto>> getPageHierarchy(@PathVariable Long pageId) {
+
+        List<PageHierarchyDto> pageHierarchy = pageService.getPageHierarchy(pageId);
+
+        return new ResponseEntity<>(pageHierarchy, HttpStatus.OK);
     }
 
     @PatchMapping("/page/{pageId}/title")  //페이지 제목 업데이트
