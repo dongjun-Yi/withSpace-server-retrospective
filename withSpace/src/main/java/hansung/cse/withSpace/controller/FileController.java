@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/image")
@@ -24,13 +25,13 @@ public class FileController {
     @PostMapping
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            String fileName = file.getOriginalFilename();
-            String fileUrl = "https://" + bucket + fileName;
+            UUID uuid = UUID.randomUUID();
+            String fileName = file.getOriginalFilename() + uuid;
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
             amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
-            return ResponseEntity.ok(fileUrl);
+            return ResponseEntity.ok(fileName);
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -38,8 +39,7 @@ public class FileController {
     }
 
     @GetMapping
-    public ResponseEntity<String> getFile(@RequestParam("file") MultipartFile file) {
-        String fileName = file.getOriginalFilename();
+    public ResponseEntity<String> getFile(@RequestParam("file") String fileName) {
         return ResponseEntity.ok(amazonS3Client.getUrl(bucket, fileName).toString());
     }
 }
