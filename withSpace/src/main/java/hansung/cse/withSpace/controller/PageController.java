@@ -8,9 +8,7 @@ import hansung.cse.withSpace.requestdto.space.page.PageUpdateTitleRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.block.BlockCreateRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.block.BlockUpdateRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
-import hansung.cse.withSpace.responsedto.space.page.PageBaseResponse;
-import hansung.cse.withSpace.responsedto.space.page.PageDetailDto;
-import hansung.cse.withSpace.responsedto.space.page.PageHierarchyDto;
+import hansung.cse.withSpace.responsedto.space.page.*;
 import hansung.cse.withSpace.responsedto.space.page.block.BlockDto;
 import hansung.cse.withSpace.service.BlockService;
 import hansung.cse.withSpace.service.MemberService;
@@ -75,6 +73,30 @@ public class PageController {
         return new ResponseEntity<>(pageBaseResponse, HttpStatus.OK);
     }
 
+    @PatchMapping("/page/{pageId}/trashcan") //페이지 휴지통 이동
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    public ResponseEntity<BasicResponse> throwPage(@PathVariable Long pageId) {
+        //List<PageTrashCanDto> pageTrashCanDtoList = pageService.throwPage(pageId);
+        PageTrashCanDto pageTrashCanDto = pageService.throwPage(pageId);
+        Page page = pageService.findOne(pageId);
+        BasicResponse basicResponse = new BasicResponse<>(1, "페이지 휴지통 이동 성공",pageTrashCanDto);
+        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+    }
+
+
+    @DeleteMapping("/page/{pageId}") // (쓰레기통에 있는) 페이지 삭제
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    public ResponseEntity<BasicResponse> deletePage(@PathVariable Long pageId) {
+        pageService.deletePage(pageId);
+
+        BasicResponse basicResponse
+                = new BasicResponse(1, "페이지 삭제 완료", null);
+
+        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+    }
+
+
+
     @PostMapping("/page/{pageId}/block") //블록 생성
     @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
     public ResponseEntity<BasicResponse> createBlock(@PathVariable Long pageId, @RequestBody BlockCreateRequestDto blockCreateRequestDto) {
@@ -106,16 +128,7 @@ public class PageController {
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
-    @DeleteMapping("/page/{pageId}") // 페이지 삭제
-    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
-    public ResponseEntity<BasicResponse> deletePage(@PathVariable Long pageId) {
-        pageService.deletePage(pageId);
 
-        BasicResponse basicResponse
-                = new BasicResponse(1, "페이지 삭제 완료", null);
-
-        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
-    }
 
     @DeleteMapping("/block/{blockId}") //블록 삭제
     @PreAuthorize("@customSecurityUtil.isBlockOwner(#blockId)")

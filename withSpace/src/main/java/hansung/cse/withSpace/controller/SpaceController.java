@@ -3,14 +3,13 @@ package hansung.cse.withSpace.controller;
 
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.Team;
-import hansung.cse.withSpace.domain.space.MemberSpace;
-import hansung.cse.withSpace.domain.space.Page;
-import hansung.cse.withSpace.domain.space.Space;
-import hansung.cse.withSpace.domain.space.TeamSpace;
+import hansung.cse.withSpace.domain.space.*;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
 import hansung.cse.withSpace.responsedto.space.SpaceDto;
+import hansung.cse.withSpace.responsedto.space.page.PageDetailDto;
 import hansung.cse.withSpace.responsedto.space.page.PageDto;
+import hansung.cse.withSpace.responsedto.space.page.PageTrashCanDto;
 import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.PageService;
 import hansung.cse.withSpace.service.SpaceService;
@@ -23,7 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,6 +54,30 @@ public class SpaceController {
     public ResponseEntity<SpaceDto> getSpace(@PathVariable Long spaceId) {
         Space space = spaceService.findOne(spaceId);
         return ResponseEntity.ok(new SpaceDto(space));
+    }
+
+    @GetMapping("/space/{spaceId}/trashcan") // 휴지통 조회
+    @PreAuthorize("@customSecurityUtil.isSpaceOwner(#spaceId)")
+    public ResponseEntity<List<PageTrashCanDto>> getTrashCanPage(@PathVariable Long spaceId) {
+        TrashCan trashCan = spaceService.findOne(spaceId).getTrashCan();
+        List <PageTrashCanDto> pageTrashCanDtoList = new ArrayList<>();
+
+        for (Page page : trashCan.getPageList()) {
+            if (page.getParentPage() == null) {
+                pageTrashCanDtoList.add(new PageTrashCanDto(page));
+            }
+        }
+        return new ResponseEntity<>(pageTrashCanDtoList, HttpStatus.OK);
+    }
+
+    @PatchMapping("/space/{spaceId}/trashcan/{pageId}/restore") // 휴지통의 특정 페이지 복구
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    public ResponseEntity<BasicResponse> restorePage (@PathVariable Long spaceId, @PathVariable Long pageId) {
+        pageService.restorePageAndChildren(pageId, spaceId);
+        BasicResponse basicResponse = new BasicResponse<>(1, "페이지 복구 성공",null);
+
+
+        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
 

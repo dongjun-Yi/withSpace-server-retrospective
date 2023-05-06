@@ -65,6 +65,8 @@ public class MemberService {
         //회원가입시 스페이스 생성(Member생성자에서 이루어짐) + 저장은 SpaceService에서
         Space memberSpace = spaceService.makeMemberSpace(member);
 
+
+
         //스페이스 생성했으니 바로 스케줄도 만들어서 줌..
         scheduleService.makeSchedule(memberSpace);
 

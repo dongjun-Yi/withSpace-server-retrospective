@@ -5,6 +5,7 @@ import hansung.cse.withSpace.domain.MemberTeam;
 import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.chat.Room;
 import hansung.cse.withSpace.domain.space.Page;
+import hansung.cse.withSpace.domain.space.Space;
 import hansung.cse.withSpace.domain.space.schedule.Category;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
@@ -139,10 +140,18 @@ public class CustomSecurityUtil{
     }
 
     public boolean isPageOwner(Long pageId) {
-        Long spaceId = pageService.findOne(pageId).getSpace().getId();
+        //페이지의 스페이스가 null일수도 있음
+        Page page = pageService.findOne(pageId);
+        Optional<Space> optionalSpace = Optional.ofNullable(page.getSpace());
+        Long spaceId = null;
+        if (optionalSpace.isPresent()) {
+            spaceId = pageService.findOne(pageId).getSpace().getId();
+        }
+        else{ //페이지를 쓰레기통에 넣은경우
+            spaceId = page.getTrashCan().getSpace().getId();
+        }
 
         return isSpaceOwner(spaceId);
-
     }
 
     public boolean isBlockOwner(Long blockId) {

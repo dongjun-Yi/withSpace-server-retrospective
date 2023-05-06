@@ -2,6 +2,7 @@ package hansung.cse.withSpace.exception.handler;
 
 import hansung.cse.withSpace.exception.page.PageDeletionNotAllowedException;
 import hansung.cse.withSpace.exception.page.PageNotFoundException;
+import hansung.cse.withSpace.exception.page.PageNotInSpaceException;
 import hansung.cse.withSpace.responsedto.ErrorBasicResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,5 +20,11 @@ public class PageExceptionHandler {
     public ResponseEntity<ErrorBasicResponse> handlePageDeletionNotAllowedException(PageDeletionNotAllowedException ex) {
         ErrorBasicResponse errorResponse = new ErrorBasicResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler({PageNotInSpaceException.class})
+    public ResponseEntity<ErrorBasicResponse> handlePageNotInSpaceException(PageNotInSpaceException ex) {
+        ErrorBasicResponse errorResponse = new ErrorBasicResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 }

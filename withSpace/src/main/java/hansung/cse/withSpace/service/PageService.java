@@ -3,13 +3,16 @@ package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.domain.space.Page;
 import hansung.cse.withSpace.domain.space.Space;
+import hansung.cse.withSpace.domain.space.TrashCan;
 import hansung.cse.withSpace.exception.page.PageDeletionNotAllowedException;
 import hansung.cse.withSpace.exception.page.PageNotFoundException;
+import hansung.cse.withSpace.exception.page.PageNotInSpaceException;
 import hansung.cse.withSpace.repository.PageRepository;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.PageUpdateContentRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.PageUpdateTitleRequestDto;
 import hansung.cse.withSpace.responsedto.space.page.PageHierarchyDto;
+import hansung.cse.withSpace.responsedto.space.page.PageTrashCanDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -44,6 +48,8 @@ public class PageService {
         Collections.reverse(pageHierarchy);
         return pageHierarchy;
     }
+
+
 
     @Transactional
     public Long makePage(Long spaceId, PageCreateRequestDto pageCreateRequestDto) {
@@ -99,29 +105,84 @@ public class PageService {
     }
 
     @Transactional
+    public PageTrashCanDto moveToTrashCan(Page page, Space space) {
+
+        List<PageTrashCanDto> pageTrashCanDtoList = new ArrayList<>();
+
+        //쓰레기통으로 옮기는 작업
+        TrashCan trashCan = space.getTrashCan();
+        List<Page> pageTrashCanList = trashCan.getPageList();
+
+        PageTrashCanDto pageTrashCanDto = new PageTrashCanDto(page);
+        System.out.println(pageTrashCanDto+"------------------------------------------");
+        page.putTrashCan(trashCan);//본인 쓰레기통에 넣고
+
+        for (Page chlidPage : page.getChildPages()) {
+            chlidPage.putTrashCan(trashCan); //자식페이지들도 쓰레기통에
+        }
+        return pageTrashCanDto;
+
+    }
+
+    @Transactional
+    public PageTrashCanDto throwPage(Long pageId) { //페이지 쓰레기통에 버리기
+
+        Page page = findOne(pageId);
+        Optional<Space> optionalSpace = Optional.ofNullable(page.getSpace());
+        Space space = optionalSpace.orElseThrow(() -> new PageNotInSpaceException("페이지가 스페이스 내에 없습니다."));
+
+        if (space.getTopLevelPageCount() == 1 && page.getParentPage() == null ) {
+            //스페이스에 최상위 페이지가 하나 && 삭제하려는 페이지가 또 제일 최상단 부모페이지면 삭제 불가
+            throw new PageDeletionNotAllowedException("최상위 페이지가 하나밖에 없는 경우에는 삭제가 불가능합니다.");
+        }
+
+        if (page.getParentPage() == null) { //버리려는 페이지가 최상위 페이지인경우
+            space.setTopLevelPageCount(space.getTopLevelPageCount() - 1);
+        }
+
+        return moveToTrashCan(page,space);
+
+    }
+
+    @Transactional
+    public void restorePageAndChildren(Long pageId, Long spaceId) { //페이지 복구
+        Page page = findOne(pageId);
+        Space space = spaceService.findOne(spaceId);
+        TrashCan trashCan = page.getTrashCan();
+
+        page.outTrashCan(trashCan); // 쓰레기통에서 페이지 제거
+        //page.makeRelationPageSpace(page, space); //스페이스와의 연관관계 다시 연결
+
+        //자식 페이지들도 마찬가지
+        List<Page> childPages = page.getChildPages();
+        for (Page childPage : childPages) {
+            childPage.outTrashCan(trashCan); // 쓰레기통에서 페이지 제거
+        }
+    }
+
+
+
+    @Transactional
     public void deletePage(Long pageId) {
         Page page = findOne(pageId);
 
-        Space space = page.getSpace();
-
-        System.out.println("space.getTopLevelPageCount() = " + space.getTopLevelPageCount());
-        System.out.println("page.getParentPage() = " + page.getParentPage());
-        System.out.println(space.getTopLevelPageCount() == 1 && page.getParentPage() == null);
-        
-        if (space.getTopLevelPageCount() == 1 && page.getParentPage() == null ) {
-            //스페이스에 최상위 페이지가 하나 + 삭제하려는 페이지가 또 제일 최상단 부모페이지면 삭제 불가
-
-            throw new PageDeletionNotAllowedException("최상위 페이지가 하나밖에 없는 경우에는 삭제가 불가능합니다.");
-
-        }
-
-        if (page.getParentPage() == null) { //최상위 페이지인경우
-            space.setTopLevelPageCount(space.getTopLevelPageCount() - 1);
-        }
+//        Space space = page.getSpace();
+//
+//        if (space.getTopLevelPageCount() == 1 && page.getParentPage() == null ) {
+//            //스페이스에 최상위 페이지가 하나 + 삭제하려는 페이지가 또 제일 최상단 부모페이지면 삭제 불가
+//
+//            throw new PageDeletionNotAllowedException("최상위 페이지가 하나밖에 없는 경우에는 삭제가 불가능합니다.");
+//
+//        }
+//
+//        if (page.getParentPage() == null) { //최상위 페이지인경우
+//            space.setTopLevelPageCount(space.getTopLevelPageCount() - 1);
+//        }
 
 
         pageRepository.delete(page);
     }
+
 
 
 }
