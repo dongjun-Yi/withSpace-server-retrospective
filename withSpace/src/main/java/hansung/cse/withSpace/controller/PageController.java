@@ -84,7 +84,7 @@ public class PageController {
     }
 
 
-    @DeleteMapping("/page/{pageId}") // (쓰레기통에 있는) 페이지 삭제
+    @DeleteMapping("/page/{pageId}/trashcan") // (쓰레기통에 있는) 페이지 삭제
     @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
     public ResponseEntity<BasicResponse> deletePage(@PathVariable Long pageId) {
         pageService.deletePage(pageId);

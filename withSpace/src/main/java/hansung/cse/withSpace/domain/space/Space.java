@@ -45,10 +45,8 @@ public abstract class Space {
         this.trashCan = trashCan;
     }
 
-//    public void removePage(Page page) {
-//        this.pageList.remove(page);
-//        page.removeRelationPageSpace();
-//    }
-
+    public void removePage(Page page) {
+        pageList.remove(page);
+    }
 
 }

@@ -25,7 +25,7 @@ public class PageTrashCanDto {
         this.pageTitle = page.getTitle();
         this.parentId = page.getParentPage() != null ? page.getParentPage().getId() : null;
         this.childPageList = page.getChildPages().stream()
-                .filter(childPage -> !childPage.equals(page.getParentPage())) // Filter out parent page
+                .filter(childPage -> !childPage.equals(page.getParentPage()))
                 .map(PageDto::new)
                 .collect(Collectors.toList());
     }

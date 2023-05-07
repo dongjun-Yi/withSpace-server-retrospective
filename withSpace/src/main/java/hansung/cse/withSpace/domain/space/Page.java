@@ -45,8 +45,23 @@ public class Page {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Long parentId;
+    private Long beforeParentId = null; //쓰레기통에 넣기 전의 부모 페이지 아이디
 
+    public void removeParentPageRelationWhenThrow() { // 쓰레기통에 넣으면서 부모페이지와의 연결 끊어줌
+        this.beforeParentId = this.getParentPage().getId();
+        //parentPage.getChildPages().remove(this);
+        this.parentPage = null;
+    }
+
+    public void removeParentPageRelationWhenRestore(Page page) { // 부모페이지와의 연결 끊어줌
+        this.beforeParentId = null;
+        this.parentPage = page;
+    }
+
+    public void restoreParentPageRelation(Page page) {
+        this.parentPage = page;
+        //outTrashCan(trashCan);
+    }
 
     public Page(String title) {
         this.title = title;
@@ -58,7 +73,7 @@ public class Page {
         childPage.parentPage = this;
         //childPage.setParentPage(this);
         this.childPages.add(childPage);
-        childPage.parentId = this.getId();
+        //childPage.parentPage.getId() = this.getId();
     }
 
     public void makeRelationPageSpace(Page page, Space space) {
@@ -71,22 +86,30 @@ public class Page {
 
     @Transactional
     public void removeRelationPageSpace(){  // 페이지와 스페이스의 연결고리를 끊어줌(엔티티 삭제 X)
-        space.getPageList().remove(this);
+        space.removePage(this);
         this.space = null;
     }
 
     public void putTrashCan(TrashCan trashCan) {
-        trashCan.getPageList().add(this);
         this.trashCan = trashCan;
+        this.trashCan.getPageList().add(this);
         removeRelationPageSpace(); //스페이스와 페이지 연관관계 제거
         //space.removePage(this);
     }
 
-    public void outTrashCan(TrashCan trashCan) {
+    public void outTrashCan(TrashCan trashCan) { //기본 쓰레기통에서 빼기
+        //기본적으로 쓰레기통에서 제거하고 스페이스 연결해줌
         trashCan.getPageList().remove(this);
         Space space = trashCan.getSpace();
         this.trashCan = null;
         makeRelationPageSpace(this, space); //스페이스와 페이지 연관관계 연결
+    }
+
+    public void outTrashCan(TrashCan trashCan, Page parentPage) {
+        //쓰레기통에 넣기 전 부모페이지가 있던경우 - 기존 부모페이지와 다시 연결
+        outTrashCan(trashCan);
+        this.parentPage = parentPage;
+        this.beforeParentId = null;
     }
 
     public void updatePageTitle(String title) {

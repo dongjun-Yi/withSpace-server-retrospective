@@ -5,6 +5,7 @@ import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.space.*;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
+import hansung.cse.withSpace.requestdto.space.page.PageRestoreRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
 import hansung.cse.withSpace.responsedto.space.SpaceDto;
 import hansung.cse.withSpace.responsedto.space.page.PageDetailDto;
@@ -72,16 +73,25 @@ public class SpaceController {
 
     @PatchMapping("/space/{spaceId}/trashcan/{pageId}/restore") // 휴지통의 특정 페이지 복구
     @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
-    public ResponseEntity<BasicResponse> restorePage (@PathVariable Long spaceId, @PathVariable Long pageId) {
-        pageService.restorePageAndChildren(pageId, spaceId);
+    public ResponseEntity<BasicResponse> restorePage (@PathVariable Long spaceId, @PathVariable Long pageId,@RequestBody PageRestoreRequestDto pageRestoreRequestDto) {
+
+        pageService.restorePageAndChildren(pageId, spaceId, pageRestoreRequestDto.getCurrentPageId());
         BasicResponse basicResponse = new BasicResponse<>(1, "페이지 복구 성공",null);
 
 
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
+    @DeleteMapping("/space/{spaceId}/trashcan/{pageId}") // 휴지통의 페이지 삭제
+    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    public ResponseEntity<BasicResponse> deleteTrashCanPage (@PathVariable Long spaceId, @PathVariable Long pageId) {
+        pageService.deletePage(pageId);
+        BasicResponse basicResponse = new BasicResponse<>(1, "페이지 삭제 성공",null);
 
-    //제거는 어차피 멤버나 팀 사라지면 스페이스 싹 날아가니깐 생략
+        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+    }
+
+
 
 
 
