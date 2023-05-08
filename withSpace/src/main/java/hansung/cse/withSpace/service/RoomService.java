@@ -9,7 +9,7 @@ import hansung.cse.withSpace.exception.chat.RoomNotFoundException;
 import hansung.cse.withSpace.exception.friend.NotFriendException;
 import hansung.cse.withSpace.exception.member.MemberNotFoundException;
 import hansung.cse.withSpace.repository.FriendShipRepository;
-import hansung.cse.withSpace.repository.MemberRepository;
+import hansung.cse.withSpace.repository.member.MemberRepository;
 import hansung.cse.withSpace.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

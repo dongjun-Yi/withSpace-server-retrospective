@@ -13,6 +13,7 @@ import hansung.cse.withSpace.responsedto.space.MemberSpaceDto;
 import hansung.cse.withSpace.responsedto.space.TeamSpaceDto;
 import hansung.cse.withSpace.responsedto.team.CreateTeamResponse;
 import hansung.cse.withSpace.responsedto.team.TeamListDto;
+import hansung.cse.withSpace.responsedto.team.TeamSearchByNameDto;
 import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.TeamService;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -66,6 +68,26 @@ public class TeamController {
         return new ResponseEntity<>(basicResponse, HttpStatus.CREATED);
 
     }
+
+    @GetMapping("/team/name")
+    public ResponseEntity<BasicResponse> getTeamByName(@RequestParam String teamName,
+                                             @RequestParam(defaultValue = "10") int limit) {
+        List<TeamSearchByNameDto> teamListDto= teamService.searchTeamsByName(teamName, limit);
+        BasicResponse basicResponse = new BasicResponse(1, "팀 조회 성공", teamListDto);
+        return new ResponseEntity<>(basicResponse, HttpStatus.CREATED);
+    }
+
+//    @GetMapping("/team/name/{teamName}") //팀 이름으로 조회
+//    public ResponseEntity<BasicResponse> getTeamByName(@PathVariable String teamName) {
+//        Team team = teamService.searchTeamByName(teamName);
+//
+//        TeamListDto teamListDto = new TeamListDto(team);
+//
+//        BasicResponse basicResponse = new BasicResponse(1, "팀 조회 성공", teamListDto);
+//
+//        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+//
+//    }
 
     @GetMapping("/team/{teamId}/space") //팀 스페이스 조회
     @PreAuthorize("@customSecurityUtil.isMemberInTeam(#teamId)") // 현재 로그인한 사용자가 team에 가입되어있는 경우에만 접근 허용

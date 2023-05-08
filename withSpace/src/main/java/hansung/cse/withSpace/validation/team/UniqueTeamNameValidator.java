@@ -1,8 +1,7 @@
 package hansung.cse.withSpace.validation.team;
 
 import hansung.cse.withSpace.domain.Team;
-import hansung.cse.withSpace.repository.TeamRepository;
-import hansung.cse.withSpace.validation.member.UniqueMemberName;
+import hansung.cse.withSpace.repository.team.TeamRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;

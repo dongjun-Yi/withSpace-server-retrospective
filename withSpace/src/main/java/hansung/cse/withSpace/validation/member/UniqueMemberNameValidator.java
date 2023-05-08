@@ -1,7 +1,7 @@
 package hansung.cse.withSpace.validation.member;
 
 import hansung.cse.withSpace.domain.Member;
-import hansung.cse.withSpace.repository.MemberRepository;
+import hansung.cse.withSpace.repository.member.MemberRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
