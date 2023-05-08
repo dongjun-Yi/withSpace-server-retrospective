@@ -5,6 +5,7 @@ import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.space.MemberSpace;
 import hansung.cse.withSpace.domain.space.Space;
 import hansung.cse.withSpace.domain.space.TeamSpace;
+import hansung.cse.withSpace.domain.space.TrashCan;
 import hansung.cse.withSpace.repository.SpaceRepository;
 import hansung.cse.withSpace.exception.space.SpaceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class SpaceService {
 
     private final SpaceRepository spaceRepository;
+    private final TrashCanService trashCanService;
 
     public Space findOne(Long spaceId) {
         return spaceRepository.findById(spaceId).orElseThrow(()
@@ -27,32 +29,25 @@ public class SpaceService {
 
     public Space makeMemberSpace(Member member) { //Member생성자의 스페이스를 저장, 연결
         MemberSpace memberSpace = member.getMemberSpace();
+
+        //휴지통 생성, 연결
+        TrashCan trashCan = trashCanService.makeTrashCan(memberSpace);
+        memberSpace.makeTrashCanRelation(trashCan);
         spaceRepository.save(memberSpace);
+
         return findOne(memberSpace.getId());
     }
 
-    public Space makeTeamSpace(Team team) { //Member생성자의 스페이스를 저장, 연결
+    public Space makeTeamSpace(Team team) { //Team생성자의 스페이스를 저장, 연결
         TeamSpace teamSpace = team.getTeamSpace();
+
+        //휴지통 생성, 연결
+        TrashCan trashCan = trashCanService.makeTrashCan(teamSpace);
+        teamSpace.makeTrashCanRelation(trashCan);
+
         spaceRepository.save(teamSpace);
         return findOne(teamSpace.getId());
     }
-
-//    public Space assignSpace(Object obj) { //스페이스 할당
-//        if (obj instanceof Member) {
-//            MemberSpace memberSpace = new MemberSpace((Member) obj);
-//            memberSpace = spaceRepository.save(memberSpace);
-//            ((Member) obj).setMemberSpace(memberSpace);
-//            return memberSpace;
-//        } else if (obj instanceof Team) {
-//            TeamSpace teamSpace = new TeamSpace((Team) obj);
-//            teamSpace = spaceRepository.save(teamSpace);
-//            ((Team) obj).setTeamSpace(teamSpace);
-//            return teamSpace;
-//        } else {
-//            // 여기오면 안됨
-//            return null;
-//        }
-//    }
 
 
 }

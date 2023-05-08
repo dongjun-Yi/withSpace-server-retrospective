@@ -3,20 +3,31 @@ package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.domain.space.Page;
 import hansung.cse.withSpace.domain.space.Space;
+import hansung.cse.withSpace.domain.space.TrashCan;
 import hansung.cse.withSpace.exception.page.PageDeletionNotAllowedException;
 import hansung.cse.withSpace.exception.page.PageNotFoundException;
+import hansung.cse.withSpace.exception.page.PageNotInSpaceException;
+import hansung.cse.withSpace.exception.page.PageRestoreNotCurrentPageIdException;
 import hansung.cse.withSpace.repository.PageRepository;
+import hansung.cse.withSpace.repository.SpaceRepository;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.PageUpdateContentRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.PageUpdateTitleRequestDto;
 import hansung.cse.withSpace.responsedto.space.page.PageHierarchyDto;
+import hansung.cse.withSpace.responsedto.space.page.PageTrashCanDto;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -24,6 +35,7 @@ import java.util.List;
 public class PageService {
 
     private final PageRepository pageRepository;
+    private final SpaceRepository spaceRepository;
     private final SpaceService spaceService;
 
     public Page findOne(Long pageId) {
@@ -44,6 +56,8 @@ public class PageService {
         Collections.reverse(pageHierarchy);
         return pageHierarchy;
     }
+
+
 
     @Transactional
     public Long makePage(Long spaceId, PageCreateRequestDto pageCreateRequestDto) {
@@ -99,29 +113,110 @@ public class PageService {
     }
 
     @Transactional
-    public void deletePage(Long pageId) {
-        Page page = findOne(pageId);
+    public PageTrashCanDto moveToTrashCan(Page page, Space space) {
 
-        Space space = page.getSpace();
+        List<PageTrashCanDto> pageTrashCanDtoList = new ArrayList<>();
 
-        System.out.println("space.getTopLevelPageCount() = " + space.getTopLevelPageCount());
-        System.out.println("page.getParentPage() = " + page.getParentPage());
-        System.out.println(space.getTopLevelPageCount() == 1 && page.getParentPage() == null);
-        
-        if (space.getTopLevelPageCount() == 1 && page.getParentPage() == null ) {
-            //스페이스에 최상위 페이지가 하나 + 삭제하려는 페이지가 또 제일 최상단 부모페이지면 삭제 불가
+        //쓰레기통으로 옮기는 작업
+        TrashCan trashCan = space.getTrashCan();
+        List<Page> pageTrashCanList = trashCan.getPageList();
 
-            throw new PageDeletionNotAllowedException("최상위 페이지가 하나밖에 없는 경우에는 삭제가 불가능합니다.");
 
+
+        if (page.getParentPage() != null) { //부모 페이지가 있다면 연결을 끊어줘야함
+            page.removeParentPageRelationWhenThrow();
         }
 
-        if (page.getParentPage() == null) { //최상위 페이지인경우
+        PageTrashCanDto pageTrashCanDto = new PageTrashCanDto(page);
+
+        page.putTrashCan(trashCan);//본인 쓰레기통에 넣고
+
+
+        for (Page chlidPage : page.getChildPages()) {
+            chlidPage.putTrashCan(trashCan); //자식페이지들도 쓰레기통에
+        }
+
+        return pageTrashCanDto;
+
+    }
+
+    @Transactional
+    public PageTrashCanDto throwPage(Long pageId) { //페이지 쓰레기통에 버리기
+
+        Page page = findOne(pageId);
+        Optional<Space> optionalSpace = Optional.ofNullable(page.getSpace());
+        Space space = optionalSpace.orElseThrow(() -> new PageNotInSpaceException("페이지가 스페이스 내에 없습니다."));
+
+        if (space.getTopLevelPageCount() == 1 && page.getParentPage() == null ) {
+            //스페이스에 최상위 페이지가 하나 && 삭제하려는 페이지가 또 제일 최상단 부모페이지면 삭제 불가
+            throw new PageDeletionNotAllowedException("최상위 페이지가 하나밖에 없는 경우에는 삭제가 불가능합니다.");
+        }
+
+        if (page.getParentPage() == null) { //버리려는 페이지가 최상위 페이지인경우
             space.setTopLevelPageCount(space.getTopLevelPageCount() - 1);
         }
 
+        PageTrashCanDto pageTrashCanDto = moveToTrashCan(page, space);
 
+        System.out.println();
+
+
+        return pageTrashCanDto;
+
+    }
+
+    @Transactional
+    public void restorePageAndChildren(Long pageId, Long spaceId, Long currentPageId) { //페이지 복구
+        Page page = findOne(pageId);
+        Space space = spaceService.findOne(spaceId);
+        TrashCan trashCan = page.getTrashCan();
+
+        if (page.getParentPage() != null) {
+            //부모가 있는 페이지인데 특정 자식페이지만 살릴라면 기존 부모페이지와의 연결 끊어주고
+            //그리고 현재 보고있는 페이지를 부모 페이지로 해줌
+            //이 경우 currentPageId가 반드시 넘어와야함
+            if (currentPageId == null) {
+                throw new PageRestoreNotCurrentPageIdException("현재 보고 있는 페이지의 Id 정보 - currentPageId 누락");
+            }
+
+            Page currentPage = findOne(currentPageId);
+            page.removeParentPageRelationWhenRestore(currentPage);
+
+            //page.restoreParentPageRelation(currentPage);
+
+        }
+
+        if (page.getBeforeParentId() != null) { //끊어진 부모페이지와의 관계 이어줌
+            Page beforeParent = findOne(page.getBeforeParentId());
+            page.outTrashCan(trashCan, beforeParent); // 쓰레기통에서 페이지 제거
+        }else{
+            page.outTrashCan(trashCan); // 쓰레기통에서 페이지 제거
+        }
+
+        //자식 페이지들도 마찬가지
+        List<Page> childPages = page.getChildPages();
+        for (Page childPage : childPages) {
+            childPage.outTrashCan(trashCan); // 쓰레기통에서 페이지 제거
+        }
+
+        System.out.println(page.getSpace().getId()+"-----------------");
+    }
+
+
+
+    @Transactional
+    public void deletePage(Long pageId) {
+        Page page = findOne(pageId);
+
+        if (page.getTrashCan() == null) { //페이지가 쓰레기통에 있는지 검사
+            throw new PageDeletionNotAllowedException("페이지가 쓰레기통에 없습니다.");
+        }
+
+        List<Page> childPages = page.getChildPages();
+        pageRepository.deleteAll(childPages);
         pageRepository.delete(page);
     }
+
 
 
 }
