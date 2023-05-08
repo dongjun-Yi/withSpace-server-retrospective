@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -33,7 +34,7 @@ public class TeamController {
     private final MemberService memberService;
 
     @PostMapping("/team") //팀생성
-    public ResponseEntity<CreateTeamResponse> createTeam(@RequestBody CreateTeamRequestDto teamRequest) {
+    public ResponseEntity<CreateTeamResponse> createTeam(@Validated @RequestBody CreateTeamRequestDto teamRequest) {
         Member member = memberService.findOne(teamRequest.getMemberId());
         Long teamId = teamService.makeTeam(member, teamRequest.getTeamName());
         CreateTeamResponse createTeamResponse = new CreateTeamResponse(teamId, CREATED, "팀 생성 완료");
