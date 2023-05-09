@@ -19,9 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@Component
-@RequiredArgsConstructor
-public class TestDB {
+//@Component
+//@RequiredArgsConstructor
+//public class TestDB {
 
 //    //scheduleInit()에 사용
 //    private final CategoryService categoryService;
@@ -241,9 +241,9 @@ public class TestDB {
 //
 //        PageCreateRequestDto teamPageDto3 = new PageCreateRequestDto("팀에게 줄 페이지3", Optional.ofNullable(teamPageId1));
 //        pageService.makePage(teamSpaceId, teamPageDto3);
-
-
-    }
-
-
-}
+//
+//
+//    }
+//
+//
+//}
