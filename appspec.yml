@@ -3,7 +3,7 @@ os: linux
 files:
   - source: /
     destination: /home/ec2-user/app/deploy/zip/
-file_exists_behavior: OVERWRITE
+    overwrite: yes
 
 permissions:
   - object: /
