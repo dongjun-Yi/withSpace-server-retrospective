@@ -2,7 +2,7 @@
 //
 //import hansung.cse.withSpace.domain.Member;
 //import hansung.cse.withSpace.exception.member.MemberNotFoundException;
-//import hansung.cse.withSpace.repository.MemberRepository;
+//import hansung.cse.withSpace.repository.member.MemberRepository;
 //import hansung.cse.withSpace.service.MemberService;
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.beans.factory.annotation.Autowired;

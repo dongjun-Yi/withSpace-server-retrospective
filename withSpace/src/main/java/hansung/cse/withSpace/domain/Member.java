@@ -40,6 +40,8 @@ public class Member {   //회원
     @Column(unique = true)
     private String email;
     private String password;
+
+    @Column(unique = true)
     private String memberName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

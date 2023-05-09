@@ -4,11 +4,9 @@ import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.requestdto.member.MemberJoinRequestDto;
 import hansung.cse.withSpace.requestdto.member.MemberUpdateRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
-import hansung.cse.withSpace.responsedto.member.GetMemberResponseDto;
-import hansung.cse.withSpace.responsedto.member.JoinMemberResponse;
-import hansung.cse.withSpace.responsedto.member.MemberBasicResponse;
-import hansung.cse.withSpace.responsedto.member.UpdateMemberResponse;
+import hansung.cse.withSpace.responsedto.member.*;
 import hansung.cse.withSpace.responsedto.space.MemberSpaceDto;
+import hansung.cse.withSpace.responsedto.team.TeamSearchByNameDto;
 import hansung.cse.withSpace.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +23,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -50,6 +49,17 @@ public class MemberController {
         Member member = memberService.findOne(memberId);
         GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(member);
         BasicResponse basicResponse = new BasicResponse<>(1, "회원 조회 성공", getMemberResponseDto);
+        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/member/name") //이름으로 회원 조회
+    public ResponseEntity<BasicResponse> getMembersByName(@RequestParam String memberName,
+                                                          @RequestParam(defaultValue = "10") int limit) {
+        //Member member = memberService.searchMemberByName(memberName);
+        List<MemberSearchByNameDto> getMemberResponseDto = memberService.searchMembersByName(memberName, limit);
+
+        BasicResponse basicResponse = new BasicResponse<>(1, "회원 조회 성공", getMemberResponseDto);
+        //BasicResponse basicResponse = new BasicResponse<>(1, "회원 조회 성공", null);
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 

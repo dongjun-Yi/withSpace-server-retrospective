@@ -2,19 +2,23 @@ package hansung.cse.withSpace.service;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import hansung.cse.withSpace.domain.*;
-import hansung.cse.withSpace.domain.chat.Room;
-import hansung.cse.withSpace.domain.space.Page;
 import hansung.cse.withSpace.domain.space.Space;
-import hansung.cse.withSpace.domain.space.TeamSpace;
-import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.exception.team.TeamNotFoundException;
 import hansung.cse.withSpace.repository.*;
+import hansung.cse.withSpace.repository.team.TeamRepository;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
+import hansung.cse.withSpace.responsedto.team.TeamSearchByNameDto;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -34,7 +38,7 @@ public class TeamService {
 
     public Team findOne(Long teamId) {
         return teamRepository.findById(teamId)
-                .orElseThrow(() -> new TeamNotFoundException("팀 조회 실패"));
+                .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
     }
 
 
@@ -111,5 +115,78 @@ public class TeamService {
 
         teamRepository.delete(team);
     }
+
+    public Team searchTeamByName(String teamName) {
+
+        return teamRepository.findByTeamName(teamName)
+                .orElseThrow(() -> new TeamNotFoundException("팀을 찾을 수 없습니다."));
+    }
+
+    public synchronized List<TeamSearchByNameDto> searchTeamsByName(String query, int limit) {
+        List<Team> teams = teamRepository.searchTeamsByName(query, limit);
+
+        JaroWinklerDistance jaroWinkler = new JaroWinklerDistance();
+
+        List<TeamSearchByNameDto> teamDTOs = teams.stream()
+                .map(team -> new TeamSearchByNameDto(team.getId(), team.getTeamName()))
+                .sorted((team1, team2) -> {
+                    // 정확한 일치를 최우선 순위로 정렬
+                    boolean exactMatch1 = team1.getTeamName().equalsIgnoreCase(query);
+                    boolean exactMatch2 = team2.getTeamName().equalsIgnoreCase(query);
+
+                    if (exactMatch1 != exactMatch2) {
+                        return exactMatch1 ? -1 : 1;
+                    }
+
+                    // 검색어에 포함된 단어의 빈도를 기준으로 정렬
+                    String[] queryWords = query.toLowerCase().split(" ");
+                    long count1 = Arrays.stream(queryWords).filter(word -> team1.getTeamName().toLowerCase().contains(word)).count();
+                    long count2 = Arrays.stream(queryWords).filter(word -> team2.getTeamName().toLowerCase().contains(word)).count();
+
+                    if (count1 != count2) {
+                        return Long.compare(count2, count1);
+                    }
+
+                    // 검색어에 포함된 문자와 숫자를 개별적으로 확인하여 일치하는 경우 가중치 부여
+                    int weight1 = 0;
+                    int weight2 = 0;
+
+                    for (char c : query.toCharArray()) {
+                        if (team1.getTeamName().toLowerCase().contains(String.valueOf(c))) {
+                            weight1++;
+                        }
+                        if (team2.getTeamName().toLowerCase().contains(String.valueOf(c))) {
+                            weight2++;
+                        }
+                    }
+
+                    if (weight1 != weight2) {
+                        return Integer.compare(weight2, weight1);
+                    }
+
+                    // Jaro-Winkler 유사도를 기준으로 정렬
+                    double similarity1 = jaroWinkler.apply(query, team1.getTeamName());
+                    double similarity2 = jaroWinkler.apply(query, team2.getTeamName());
+
+                    return Double.compare(similarity2, similarity1);
+                })
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        return teamDTOs;
+    }
+
+
+//    private int commonStringLength(String query, String teamName) {
+//        int count = 0;
+//        for (int i = 0; i < query.length() && i < teamName.length(); i++) {
+//            if (query.charAt(i) == teamName.charAt(i)) {
+//                count++;
+//            } else {
+//                break;
+//            }
+//        }
+//        return count;
+//    }
 
 }

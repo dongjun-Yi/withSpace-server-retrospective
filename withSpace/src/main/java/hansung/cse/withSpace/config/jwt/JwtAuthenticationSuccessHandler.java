@@ -2,7 +2,7 @@ package hansung.cse.withSpace.config.jwt;
 
 import hansung.cse.withSpace.config.jwt.JwtTokenUtil;
 import hansung.cse.withSpace.domain.Member;
-import hansung.cse.withSpace.repository.MemberRepository;
+import hansung.cse.withSpace.repository.member.MemberRepository;
 import hansung.cse.withSpace.service.MemberService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
