@@ -4,6 +4,7 @@ package hansung.cse.withSpace.domain;
 import hansung.cse.withSpace.domain.friend.FriendShip;
 import hansung.cse.withSpace.domain.space.MemberSpace;
 import hansung.cse.withSpace.domain.space.Page;
+import hansung.cse.withSpace.domain.space.TrashCan;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,6 +40,8 @@ public class Member {   //회원
     @Column(unique = true)
     private String email;
     private String password;
+
+    @Column(unique = true)
     private String memberName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -59,13 +62,11 @@ public class Member {   //회원
         this.createdAt = now;
         this.updatedAt = now;
 
-        //스페이스
+        //스페이스 생성
         MemberSpace memberSpace = new MemberSpace(this);
         this.memberSpace = memberSpace;
 
-//        //페이지도 만들어서 하나 넣어줌
-//        Page page = new Page("새로운 페이지");
-//        memberSpace.getPageList().add(page);
+
     }
 
     public void setMemberSpace() {

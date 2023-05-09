@@ -1,7 +1,7 @@
 package hansung.cse.withSpace.config.auth;
 
 import hansung.cse.withSpace.domain.Member;
-import hansung.cse.withSpace.repository.MemberRepository;
+import hansung.cse.withSpace.repository.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

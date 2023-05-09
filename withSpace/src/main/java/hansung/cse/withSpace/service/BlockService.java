@@ -1,23 +1,16 @@
 package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.exception.block.BlockNotFoundException;
-import hansung.cse.withSpace.exception.member.MemberNotFoundException;
-import hansung.cse.withSpace.exception.page.PageNotFoundException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.space.Page;
 import hansung.cse.withSpace.domain.space.Block;
 import hansung.cse.withSpace.repository.BlockRepository;
-import hansung.cse.withSpace.repository.MemberRepository;
-import hansung.cse.withSpace.repository.PageRepository;
 import hansung.cse.withSpace.requestdto.space.page.block.BlockUpdateRequestDto;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)

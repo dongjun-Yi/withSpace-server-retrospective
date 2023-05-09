@@ -28,6 +28,7 @@ public class Team {
 
     private int memberCount;
 
+    @Column(unique = true)
     private String teamName;
 
     private Long host;

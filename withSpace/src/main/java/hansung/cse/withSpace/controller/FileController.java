@@ -31,7 +31,7 @@ public class FileController {
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
             amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
-            return ResponseEntity.ok(fileName);
+            return ResponseEntity.ok(amazonS3Client.getUrl(bucket, fileName).toString());
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

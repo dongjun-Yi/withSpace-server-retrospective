@@ -1,28 +1,25 @@
 package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.domain.Member;
-import hansung.cse.withSpace.domain.space.MemberSpace;
-import hansung.cse.withSpace.domain.space.Page;
+import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.space.Space;
-import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.exception.member.MemberNotFoundException;
-import hansung.cse.withSpace.exception.member.MemberUpdateException;
 import hansung.cse.withSpace.exception.member.join.DuplicateEmailException;
-import hansung.cse.withSpace.repository.MemberRepository;
-import hansung.cse.withSpace.repository.PageRepository;
-import hansung.cse.withSpace.repository.ScheduleRepository;
-import hansung.cse.withSpace.repository.SpaceRepository;
+
+import hansung.cse.withSpace.repository.member.MemberRepository;
 import hansung.cse.withSpace.requestdto.member.MemberJoinRequestDto;
 import hansung.cse.withSpace.requestdto.member.MemberUpdateRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
-import jakarta.persistence.EntityNotFoundException;
+import hansung.cse.withSpace.responsedto.member.MemberSearchByNameDto;
+import hansung.cse.withSpace.responsedto.team.TeamSearchByNameDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -64,6 +61,8 @@ public class MemberService {
 
         //회원가입시 스페이스 생성(Member생성자에서 이루어짐) + 저장은 SpaceService에서
         Space memberSpace = spaceService.makeMemberSpace(member);
+
+
 
         //스페이스 생성했으니 바로 스케줄도 만들어서 줌..
         scheduleService.makeSchedule(memberSpace);
@@ -114,4 +113,57 @@ public class MemberService {
     }
 
 
+    public synchronized List<MemberSearchByNameDto> searchMembersByName(String query, int limit) {
+        List<Member> members = memberRepository.searchMembersByName(query, limit);
+
+        JaroWinklerDistance jaroWinkler = new JaroWinklerDistance();
+
+        List<MemberSearchByNameDto> memberDTOs = members.stream()
+                .map(member -> new MemberSearchByNameDto(member.getId(), member.getMemberName()))
+                .sorted((member1, member2) -> {
+                    // 정확한 일치를 최우선 순위로 정렬
+                    boolean exactMatch1 = member1.getMemberName().equalsIgnoreCase(query);
+                    boolean exactMatch2 = member2.getMemberName().equalsIgnoreCase(query);
+
+                    if (exactMatch1 != exactMatch2) {
+                        return exactMatch1 ? -1 : 1;
+                    }
+
+                    // 검색어에 포함된 단어의 빈도를 기준으로 정렬
+                    String[] queryWords = query.toLowerCase().split(" ");
+                    long count1 = Arrays.stream(queryWords).filter(word -> member1.getMemberName().toLowerCase().contains(word)).count();
+                    long count2 = Arrays.stream(queryWords).filter(word -> member2.getMemberName().toLowerCase().contains(word)).count();
+
+                    if (count1 != count2) {
+                        return Long.compare(count2, count1);
+                    }
+
+                    // 검색어에 포함된 문자와 숫자를 개별적으로 확인하여 일치하는 경우 가중치 부여
+                    int weight1 = 0;
+                    int weight2 = 0;
+
+                    for (char c : query.toCharArray()) {
+                        if (member1.getMemberName().toLowerCase().contains(String.valueOf(c))) {
+                            weight1++;
+                        }
+                        if (member2.getMemberName().toLowerCase().contains(String.valueOf(c))) {
+                            weight2++;
+                        }
+                    }
+
+                    if (weight1 != weight2) {
+                        return Integer.compare(weight2, weight1);
+                    }
+
+                    // Jaro-Winkler 유사도를 기준으로 정렬
+                    double similarity1 = jaroWinkler.apply(query, member1.getMemberName());
+                    double similarity2 = jaroWinkler.apply(query, member2.getMemberName());
+
+                    return Double.compare(similarity2, similarity1);
+                })
+                .limit(limit)
+                .collect(Collectors.toList());
+
+        return memberDTOs;
+    }
 }

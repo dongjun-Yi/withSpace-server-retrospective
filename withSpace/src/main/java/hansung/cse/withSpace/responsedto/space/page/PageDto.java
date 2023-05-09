@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 public class PageDto { //얘는 좀 스페이스 이런데서 쓰이는 대략적인 구조만 보여주는 DTO-> BLOCK이 없음
     private Long pageId;
     private String title;
-
     private Long parentId;
     private List<PageDto> childPageList = new ArrayList<>();
 
