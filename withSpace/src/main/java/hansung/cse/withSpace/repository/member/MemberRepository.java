@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
@@ -17,6 +18,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByEmail(String email);
 
     Optional<Member> findByMemberName(String memberName);
+    Optional<Member> findByUuid(UUID uuid);
 
     boolean existsByEmail(String email); //이메일 중복검사시 사용
 

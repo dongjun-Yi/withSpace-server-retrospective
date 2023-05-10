@@ -1,16 +1,23 @@
-package hansung.cse.withSpace.config.jwt;
-
-import java.security.SecureRandom;
-import java.util.Base64;
-
-public class SecretKeyGenerator { //설정 등록시 한번만 쓰입니다
-    public static void main(String[] args) {
-        SecureRandom random = new SecureRandom();
-        byte[] secretKey = new byte[64]; // 64 바이트 (512비트) 길이의 시크릿 키를 생성
-        random.nextBytes(secretKey);
-
-        String encodedKey = Base64.getEncoder().encodeToString(secretKey);
-        System.out.println("Secret key: " + encodedKey);
-    }
-}
-
+//package hansung.cse.withSpace.config.jwt;
+//
+//import javax.crypto.SecretKey;
+//import javax.crypto.spec.SecretKeySpec;
+//import java.security.NoSuchAlgorithmException;
+//import java.security.SecureRandom;
+//import java.util.Base64;
+//
+//public class SecretKeyGenerator { // 키생성 - 스프링 시큐리티  SecretKeySpec 클래스 사용
+//
+//    public static SecretKey createSecretKey(String secret, String algorithm) {
+//        byte[] decodedKey = Base64.getDecoder().decode(secret);
+//        return new SecretKeySpec(decodedKey, algorithm);
+//    }
+//
+//    public static void main(String[] args) {
+//        String secret = "Qh1bmn/fh/xvrpUVzelQbNeb2J70AqezkyB3+A21aQBXyCAvBQaI9nc+FHRc7dewtfS8szD2tb6ieY41abFifQ==";
+//        String algorithm = "HmacSHA256";
+//        SecretKey secretKey = createSecretKey(secret, algorithm);
+//        System.out.println(secretKey.getEncoded());
+//    }
+//}
+//

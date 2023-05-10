@@ -1,5 +1,7 @@
 package hansung.cse.withSpace.config.auth;
 
+import hansung.cse.withSpace.config.jwt.JwtTokenExtractor;
+import hansung.cse.withSpace.config.jwt.JwtTokenUtil;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.MemberTeam;
 import hansung.cse.withSpace.domain.Team;
@@ -10,7 +12,13 @@ import hansung.cse.withSpace.domain.space.schedule.Category;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
 import hansung.cse.withSpace.service.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,18 +47,47 @@ public class CustomSecurityUtil{
     private final MemberService memberService;
     private final SpaceService spaceService;
     private final PageService pageService;
-    private final BlockService blockService;
+    //private final BlockService blockService;
     private final ScheduleService scheduleService;
     private final CategoryService categoryService;
     private final ToDoService toDoService;
     private final RoomService roomService;
 
-    // 현재 인증된 사용자의 정보를 가져오는 메소드
+//    private final JwtTokenUtil tokenUtil;
+//
+//    @Value("${jwt.secret}")
+//    private String secret;
+//
+//    public String handleRequest(HttpServletRequest request, HttpServletResponse response) {
+//        String token = JwtTokenExtractor.extract(request);
+//        if (token != null && tokenUtil.validateToken(token)) {
+//            Claims claims = Jwts.parserBuilder()
+//                    .setSigningKey(tokenUtil.getSigningKey())
+//                    .build()
+//                    .parseClaimsJws(token)
+//                    .getBody();
+//
+//            String uuid = claims.get("UUID", String.class);
+//            return uuid;
+//        }
+//        return null;
+//    }
+//
+
+
+    /**
+     * 현재 인증된 사용자의 정보를 가져오는 메소드
+     * 스프링 시큐리티 기반인데 JWT를 통해 인증하는 쪽으로 바꿔서 사용 안 할 듯
+     */
     public Authentication getAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
+
+
     public boolean isMemberOwner(Long memberId) { //memberId를 가지고 본인소유인지 파악
+
+
 
         memberService.findOne(memberId); //회원 먼저 확인
 
@@ -60,13 +97,6 @@ public class CustomSecurityUtil{
             
             
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-//            System.out.println("userDetails.getUsername() = " + userDetails.getUsername());
-//            System.out.println("userDetails.getPassword() = " + userDetails.getPassword());
-//            System.out.println("userDetails.getAuthorities() = " + userDetails.getAuthorities());
-//            System.out.println("userDetails.getId() = " + userDetails.getId());
-            
-            
             Long currentUserId = Long.valueOf(userDetails.getId());
             return currentUserId.equals(memberId); // 현재 사용자의 ID와 요청한 ID가 일치하는지 확인
         }

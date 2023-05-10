@@ -1,6 +1,7 @@
 package hansung.cse.withSpace.controller;
 
 
+import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.space.*;
@@ -16,6 +17,7 @@ import hansung.cse.withSpace.service.PageService;
 import hansung.cse.withSpace.service.SpaceService;
 import hansung.cse.withSpace.service.TeamService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +38,15 @@ public class SpaceController {
 
     private final MemberService memberService;
     private final TeamService teamService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @PostMapping("/space/{spaceId}/page") //페이지 생성
     @PreAuthorize("@customSecurityUtil.isSpaceOwner(#spaceId)")
-    public ResponseEntity<BasicResponse> createPage(@PathVariable Long spaceId, @RequestBody PageCreateRequestDto pageCreateRequestDto) {
+    public ResponseEntity<BasicResponse> createPage(@PathVariable Long spaceId,
+                                                    @RequestBody PageCreateRequestDto pageCreateRequestDto,
+                                                    HttpServletRequest request) {
+        jwtAuthenticationFilter.isSpaceOwner( request, spaceId); //접근권한 확인
         Space space = spaceService.findOne(spaceId);
-
         Long pageId = pageService.makePage(spaceId, pageCreateRequestDto);
         Page page = pageService.findOne(pageId);
 
@@ -58,8 +63,10 @@ public class SpaceController {
     }
 
     @GetMapping("/space/{spaceId}/trashcan") // 휴지통 조회
-    @PreAuthorize("@customSecurityUtil.isSpaceOwner(#spaceId)")
-    public ResponseEntity<List<PageTrashCanDto>> getTrashCanPage(@PathVariable Long spaceId) {
+    //@PreAuthorize("@customSecurityUtil.isSpaceOwner(#spaceId)")
+    public ResponseEntity<List<PageTrashCanDto>> getTrashCanPage(@PathVariable Long spaceId,
+                                                                 HttpServletRequest request) {
+        jwtAuthenticationFilter.isSpaceOwner(request, spaceId); //접근권한 확인
         TrashCan trashCan = spaceService.findOne(spaceId).getTrashCan();
         List <PageTrashCanDto> pageTrashCanDtoList = new ArrayList<>();
 
@@ -72,8 +79,12 @@ public class SpaceController {
     }
 
     @PatchMapping("/space/{spaceId}/trashcan/{pageId}/restore") // 휴지통의 특정 페이지 복구
-    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
-    public ResponseEntity<BasicResponse> restorePage (@PathVariable Long spaceId, @PathVariable Long pageId,@RequestBody PageRestoreRequestDto pageRestoreRequestDto) {
+    //@PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    public ResponseEntity<BasicResponse> restorePage (@PathVariable Long spaceId,
+                                                      @PathVariable Long pageId,
+                                                      @RequestBody PageRestoreRequestDto pageRestoreRequestDto,
+                                                      HttpServletRequest request) {
+        jwtAuthenticationFilter.isPageOwner(request, spaceId); //접근권한 확인
 
         pageService.restorePageAndChildren(pageId, spaceId, pageRestoreRequestDto.getCurrentPageId());
         BasicResponse basicResponse = new BasicResponse<>(1, "페이지 복구 성공",null);
@@ -83,8 +94,11 @@ public class SpaceController {
     }
 
     @DeleteMapping("/space/{spaceId}/trashcan/{pageId}") // 휴지통의 페이지 삭제
-    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
-    public ResponseEntity<BasicResponse> deleteTrashCanPage (@PathVariable Long spaceId, @PathVariable Long pageId) {
+    //@PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    public ResponseEntity<BasicResponse> deleteTrashCanPage (@PathVariable Long spaceId,
+                                                             @PathVariable Long pageId,
+                                                             HttpServletRequest request) {
+        jwtAuthenticationFilter.isPageOwner(request, pageId); //접근권한 확인
         pageService.deletePage(pageId);
         BasicResponse basicResponse = new BasicResponse<>(1, "페이지 삭제 성공",null);
 

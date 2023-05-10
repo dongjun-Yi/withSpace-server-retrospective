@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component //Google OAuth2 API를 사용하여 사용자 정보를 가져옴
 public class GoogleOauth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User>{
@@ -41,7 +42,7 @@ public class GoogleOauth2UserService implements OAuth2UserService<OAuth2UserRequ
         if (findUser.isEmpty()) {
             // email을 바탕으로 회원 엔티티 생성
             String name =oauth2User.getAttribute("name");
-            Member member = new Member(name, email, null);
+            Member member = new Member(UUID.randomUUID(), name, email, null);
             memberRepository.save(member);
         }
         return new DefaultOAuth2User(new ArrayList<>(oauth2User.getAuthorities()),
