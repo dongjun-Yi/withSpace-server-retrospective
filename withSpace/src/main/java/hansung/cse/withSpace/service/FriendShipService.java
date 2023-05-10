@@ -28,7 +28,7 @@ public class FriendShipService {
 
     //친구관계를 맺었는지 확인하는 함수
     public void ValidateFriendShip(FriendShip friendShip) {
-        Optional<FriendShip> findFriendShip = friendShipRepository.findFriendByMemberId(friendShip.getMember().getId());
+        Optional<FriendShip> findFriendShip = friendShipRepository.findFriendShip(friendShip.getMember().getId(), friendShip.getFriend().getId());
         if (!findFriendShip.isEmpty()) {
             findFriendShip.get().setStatus(FriendStatus.ACCEPTED);
             friendShip.setStatus(FriendStatus.ACCEPTED);
