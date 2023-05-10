@@ -1,6 +1,5 @@
 package hansung.cse.withSpace.config.jwt;
 
-import com.nimbusds.jwt.JWT;
 import hansung.cse.withSpace.config.auth.CustomUserDetails;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.MemberTeam;
@@ -12,7 +11,6 @@ import hansung.cse.withSpace.domain.space.schedule.Category;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
 import hansung.cse.withSpace.exception.jwt.TokenNotFoundException;
-import hansung.cse.withSpace.exception.member.MemberNotFoundException;
 import hansung.cse.withSpace.service.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,19 +18,14 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -150,8 +143,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return memberService.findByUuid(uuid);
     }
 
-    public Authentication getAuthentication() { //현재 로그인된 사용자의 인증정보를 가져옴
-        return SecurityContextHolder.getContext().getAuthentication();
+//    public Authentication getAuthentication() { //현재 로그인된 사용자의 인증정보를 가져옴
+//        return SecurityContextHolder.getContext().getAuthentication();
+//    }
+
+    public boolean checkSpaceOwner(HttpServletRequest request, Long spaceId) {
+        Space space = spaceService.findOne(spaceId); //먼저 스페이스가 있는지 확인해줌
+        Member member = findMemberByUUID(request);
+
+        boolean memberSpaceOwner = member.getMemberSpace().getId().equals(spaceId); //본인의 스페이스인지 확인
+        boolean teamSpaceOwner = member.getMemberTeams().stream()// 가입된 팀의 스페이스인지 확인
+                .map(MemberTeam::getTeam)
+                .filter(Objects::nonNull)
+                .map(Team::getTeamSpace)
+                .filter(Objects::nonNull)
+                .anyMatch(teamSpace -> teamSpace.getId().equals(spaceId));
+
+        return memberSpaceOwner || teamSpaceOwner;
     }
 
 
@@ -159,6 +167,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         boolean check = checkUUID(request, memberId);
         if (!check) {
             throw new AccessDeniedException("회원 id: " + memberId + " 에 대한 접근 권한이 없습니다.");
+        }
+        return true;
+    }
+
+    public boolean isSpaceOwner(HttpServletRequest request, Long spaceId) {
+        boolean check = checkSpaceOwner(request, spaceId);
+        if (!check) {
+            throw new AccessDeniedException("스페이스 id: " + spaceId + " 에 대한 접근 권한이 없습니다.");
         }
         return true;
     }
@@ -175,26 +191,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
 
-    public boolean isSpaceOwner(HttpServletRequest request, Long spaceId) {
-        Space space = spaceService.findOne(spaceId); //먼저 스페이스가 있는지 확인해줌
-        Member member = findMemberByUUID(request);
+//    public boolean isSpaceOwner(HttpServletRequest request, Long spaceId) {
+//        Space space = spaceService.findOne(spaceId); //먼저 스페이스가 있는지 확인해줌
+//        Member member = findMemberByUUID(request);
+//
+//        boolean memberSpaceOwner = member.getMemberSpace().getId().equals(spaceId); //본인의 스페이스인지 확인
+//        boolean teamSpaceOwner = member.getMemberTeams().stream()// 가입된 팀의 스페이스인지 확인
+//                .map(MemberTeam::getTeam)
+//                .filter(Objects::nonNull)
+//                .map(Team::getTeamSpace)
+//                .filter(Objects::nonNull)
+//                .anyMatch(teamSpace -> teamSpace.getId().equals(spaceId));
+//
+//        if (!memberSpaceOwner &&  !teamSpaceOwner) {
+//            throw new AccessDeniedException("space id: "+ spaceId+" 에 대한 접근 권한이 없습니다.");
+//        }
+//
+//        return true;
+//    }
 
-        boolean memberSpaceOwner = member.getMemberSpace().getId().equals(spaceId); //본인의 스페이스인지 확인
-        boolean teamSpaceOwner = member.getMemberTeams().stream()// 가입된 팀의 스페이스인지 확인
-                .map(MemberTeam::getTeam)
-                .filter(Objects::nonNull)
-                .map(Team::getTeamSpace)
-                .filter(Objects::nonNull)
-                .anyMatch(teamSpace -> teamSpace.getId().equals(spaceId));
-
-        if (!memberSpaceOwner &&  !teamSpaceOwner) {
-            throw new AccessDeniedException("space id: "+ spaceId+" 에 대한 접근 권한이 없습니다.");
-        }
-
-        return true;
-    }
-
-    public void isPageOwner(HttpServletRequest request, Long pageId) {
+    public boolean isPageOwner(HttpServletRequest request, Long pageId) {
 
         //페이지의 스페이스가 null일수도 있음
         Page page = pageService.findOne(pageId);
@@ -206,13 +222,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         else{ //페이지를 쓰레기통에 넣은경우
             spaceId = page.getTrashCan().getSpace().getId();
         }
-        isSpaceOwner(request, spaceId);
+        boolean check = checkSpaceOwner(request, spaceId);
+        if (!check) {
+            throw new AccessDeniedException("페이지 id: " + pageId + " 에 대한 접근 권한이 없습니다.");
+        }
+        return true;
     }
 
     public boolean isScheduleOwner(HttpServletRequest request, Long scheduleId) {
         Schedule schedule = scheduleService.findSchedule(scheduleId);
         Long spaceId = schedule.getSpace().getId();
-        return isSpaceOwner(request, spaceId);
+        boolean check = checkSpaceOwner(request, spaceId);
+        if (!check) {
+            throw new AccessDeniedException("스케줄 id: " + scheduleId + " 에 대한 접근 권한이 없습니다.");
+        }
+        return true;
     }
     public boolean isCategoryOwner(HttpServletRequest request, Long categoryId) {
         Category category = categoryService.findCategory(categoryId);
@@ -225,14 +249,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public boolean isRoomOwner(HttpServletRequest request,Long roomId) { //채팅방 접근권 확인
         Room room = roomService.findOne(roomId);
-        return isSpaceOwner(request, room.getSpace().getId());
+        Long spaceId = room.getSpace().getId();
+        boolean check = checkSpaceOwner(request, spaceId);
+        if (!check) {
+            throw new AccessDeniedException("방 id: " + roomId + " 에 대한 접근 권한이 없습니다.");
+        }
+        return true;
     }
 
         public boolean isTeamHost(HttpServletRequest request, Long teamId) { //팀장인지 확인
 
             Team team = teamService.findOne(teamId);
             Long memberId = findMemberByUUID(request).getId();
-            return memberId.equals(team.getHost());
+            boolean check = memberId.equals(team.getHost());
+            if (!check) {
+                throw new AccessDeniedException("팀 id: " + teamId + " 의 팀장만이 접근 가능합니다.");
+            }
+            return true;
 
     }
 }
