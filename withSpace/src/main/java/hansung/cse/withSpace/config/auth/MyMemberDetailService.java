@@ -29,6 +29,7 @@ public class MyMemberDetailService implements UserDetailsService {
 
         return new CustomUserDetails(
                 member.getId(),
+                member.getUuid(),
                 member.getEmail(),
                 member.getPassword(),
                 member.getMemberName()

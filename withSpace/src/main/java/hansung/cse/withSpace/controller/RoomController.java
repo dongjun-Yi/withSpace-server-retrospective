@@ -12,6 +12,7 @@ import hansung.cse.withSpace.responsedto.chat.CreateMessageResponse;
 import hansung.cse.withSpace.responsedto.chat.CreateRoomResponse;
 import hansung.cse.withSpace.responsedto.chat.GetRoomResponseDto;
 import hansung.cse.withSpace.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +33,8 @@ public class RoomController {
 
 
     @GetMapping("/room/{roomId}") //채팅방 조회
-    @PreAuthorize("@customSecurityUtil.isRoomOwner(#roomId)")
-    public ResponseEntity<BasicResponse> getRoom(@PathVariable("roomId") Long roomId) {
+    @PreAuthorize("@jwtAuthenticationFilter.isRoomOwner(#request, #roomId)")
+    public ResponseEntity<BasicResponse> getRoom(@PathVariable("roomId") Long roomId, HttpServletRequest request) {
         Room room = roomService.findOne(roomId);
         GetRoomResponseDto roomResponseDto = new GetRoomResponseDto(room);
         BasicResponse basicResponse = new BasicResponse<>(1, "채팅방 조회 성공", roomResponseDto);
@@ -41,8 +42,10 @@ public class RoomController {
     }
 
     @PostMapping("/space/{spaceId}/room")//채팅방 생성
-    @PreAuthorize("@customSecurityUtil.isSpaceOwner(#spaceId)")
-    public ResponseEntity<CreateRoomResponse> createChattingRoom(@PathVariable("spaceId") Long spaceId, @RequestBody CreateRoomRequestDto roomRequestDto) {
+    @PreAuthorize("@jwtAuthenticationFilter.isSpaceOwner(#request, #spaceId)")
+    public ResponseEntity<CreateRoomResponse> createChattingRoom(@PathVariable("spaceId") Long spaceId,
+                                                                 @RequestBody CreateRoomRequestDto roomRequestDto,
+                                                                 HttpServletRequest request) {
         Space space = null;
         Long roomId = null;
 
@@ -81,8 +84,9 @@ public class RoomController {
     }
 
     @DeleteMapping("/room/{roomId}") //채팅방 제거
-    @PreAuthorize("@customSecurityUtil.isRoomOwner(#roomId)")
-    public ResponseEntity<BasicResponse> removeRoom(@PathVariable("roomId") Long roomId) {
+    @PreAuthorize("@jwtAuthenticationFilter.isRoomOwner(#request, #roomId)")
+    public ResponseEntity<BasicResponse> removeRoom(@PathVariable("roomId") Long roomId,
+                                                    HttpServletRequest request) {
         roomService.removeRoom(roomId);
         BasicResponse basicResponse = new BasicResponse<>(1, "채팅방 제거 성공", null);
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
@@ -90,9 +94,10 @@ public class RoomController {
 
 
     @PostMapping("/{roomId}/message") //메세지 보냄
-    @PreAuthorize("@customSecurityUtil.isRoomOwner(#roomId)")
+    @PreAuthorize("@jwtAuthenticationFilter.isRoomOwner(#request, #roomId)")
     public ResponseEntity<CreateMessageResponse> createMessage(@PathVariable("roomId") Long roomId,
-                                                               @RequestBody CreateMessageRequestDto messageRequestDto) {
+                                                               @RequestBody CreateMessageRequestDto messageRequestDto,
+                                                               HttpServletRequest request) {
 
         Room room = roomService.findOne(roomId);
         Member member = memberService.findOne(messageRequestDto.getSenderId());

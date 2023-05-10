@@ -15,6 +15,7 @@ import hansung.cse.withSpace.responsedto.schedule.todo.ToDoBasicResponse;
 import hansung.cse.withSpace.service.CategoryService;
 import hansung.cse.withSpace.service.ScheduleService;
 import hansung.cse.withSpace.service.ToDoService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +41,9 @@ public class ScheduleController {
     private final ToDoService toDoService;
 
     @GetMapping("/schedule/{scheduleId}")
-    @PreAuthorize("@customSecurityUtil.isScheduleOwner(#scheduleId)")
-    public ResponseEntity<BasicResponse> schedule(@PathVariable("scheduleId") Long scheduleId) {
+    @PreAuthorize("@jwtAuthenticationFilter.isScheduleOwner(#request, #scheduleId)")
+    public ResponseEntity<BasicResponse> schedule(@PathVariable("scheduleId") Long scheduleId,
+                                                  HttpServletRequest request) {
         Schedule schedule = scheduleService.findSchedule(scheduleId);
         List<ScheduleDto> collect = Collections.singletonList(new ScheduleDto(schedule));
         BasicResponse basicResponse = new BasicResponse<>(collect.size(), "스케줄 요청 성공", collect.get(0));
@@ -52,8 +54,10 @@ public class ScheduleController {
      * 카테고리 생성
      */
     @PostMapping("/schedule/{scheduleId}/category")
-    @PreAuthorize("@customSecurityUtil.isScheduleOwner(#scheduleId)")
-    public ResponseEntity<CategoryBasicResponse> createCategory(@PathVariable("scheduleId") Long scheduleId, @RequestBody CategoryRequestDto categoryRequestDto) {
+    @PreAuthorize("@jwtAuthenticationFilter.isScheduleOwner(#request, #scheduleId)")
+    public ResponseEntity<CategoryBasicResponse> createCategory(@PathVariable("scheduleId") Long scheduleId,
+                                                                @RequestBody CategoryRequestDto categoryRequestDto,
+                                                                HttpServletRequest request) {
         Schedule schedule = scheduleService.findSchedule(scheduleId);
 
         Category category = new Category(schedule, categoryRequestDto.getTitle());
@@ -64,24 +68,29 @@ public class ScheduleController {
     }
 
     @PatchMapping("/category/{categoryId}")
-    @PreAuthorize("@customSecurityUtil.isCategoryOwner(#categoryId)")
-    public ResponseEntity<CategoryBasicResponse> changeCategoryTitle(@PathVariable("categoryId") Long categoryId, @RequestBody CategoryUpdateDto categoryUpdateDto) {
+    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
+    public ResponseEntity<CategoryBasicResponse> changeCategoryTitle(@PathVariable("categoryId") Long categoryId,
+                                                                     @RequestBody CategoryUpdateDto categoryUpdateDto,
+                                                                     HttpServletRequest request) {
         Long updateCategoryId = categoryService.update(categoryId, categoryUpdateDto.getTitle());
         CategoryBasicResponse categoryBasicResponse = new CategoryBasicResponse(updateCategoryId, SUCCESS, "카테고리 제목이 수정되었습니다.");
         return new ResponseEntity<>(categoryBasicResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/category/{categoryId}")
-    @PreAuthorize("@customSecurityUtil.isCategoryOwner(#categoryId)")
-    public ResponseEntity<CategoryBasicResponse> deleteCategory(@PathVariable("categoryId") Long categoryId) {
+    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
+    public ResponseEntity<CategoryBasicResponse> deleteCategory(@PathVariable("categoryId") Long categoryId,
+                                                                HttpServletRequest request) {
         categoryService.delete(categoryId);
         CategoryBasicResponse categoryBasicResponse = new CategoryBasicResponse(SUCCESS, "카테고리가 삭제되었습니다.");
         return new ResponseEntity<>(categoryBasicResponse, HttpStatus.OK);
     }
 
     @PostMapping("/category/{categoryId}/todo")
-    @PreAuthorize("@customSecurityUtil.isCategoryOwner(#categoryId)")
-    public ResponseEntity<ToDoBasicResponse> createToDo(@PathVariable("categoryId") Long categoryId, @RequestBody ToDoRequestDto toDoRequestDto) {
+    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
+    public ResponseEntity<ToDoBasicResponse> createToDo(@PathVariable("categoryId") Long categoryId,
+                                                        @RequestBody ToDoRequestDto toDoRequestDto,
+                                                        HttpServletRequest request) {
         Category findCategory = categoryService.findCategory(categoryId);
         ToDo todo = new ToDo(findCategory, toDoRequestDto.getDescription(), toDoRequestDto.getCompleted(), LocalDateTime.now());
 
@@ -91,16 +100,19 @@ public class ScheduleController {
     }
 
     @PatchMapping("/todo/{todoId}")
-    @PreAuthorize("@customSecurityUtil.isToDoOwner(#todoId)")
-    public ResponseEntity<ToDoBasicResponse> updateToDoDescription(@PathVariable("todoId") Long todoId, @RequestBody ToDoDescriptionUpdateDto toDoDescriptionUpdateDto) {
+    @PreAuthorize("@jwtAuthenticationFilter.isToDoOwner(#request,#todoId)")
+    public ResponseEntity<ToDoBasicResponse> updateToDoDescription(@PathVariable("todoId") Long todoId,
+                                                                   @RequestBody ToDoDescriptionUpdateDto toDoDescriptionUpdateDto,
+                                                                   HttpServletRequest request) {
         Long updateToDoId = toDoService.updateToDo(todoId, toDoDescriptionUpdateDto.getDescription(), toDoDescriptionUpdateDto.getCompleted());
         ToDoBasicResponse toDoBasicResponse = new ToDoBasicResponse(updateToDoId, SUCCESS, "할일이 수정되었습니다.");
         return new ResponseEntity<>(toDoBasicResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("/todo/{todoId}")
-    @PreAuthorize("@customSecurityUtil.isToDoOwner(#todoId)")
-    public ResponseEntity<ToDoBasicResponse> deleteToDo(@PathVariable("todoId") Long todoId) {
+    @PreAuthorize("@jwtAuthenticationFilter.isToDoOwner(#request,#todoId)")
+    public ResponseEntity<ToDoBasicResponse> deleteToDo(@PathVariable("todoId") Long todoId,
+                                                        HttpServletRequest request) {
         toDoService.deleteToDo(todoId);
         ToDoBasicResponse toDoBasicResponse = new ToDoBasicResponse(SUCCESS, "할일이 삭제되었습니다.");
         return new ResponseEntity<>(toDoBasicResponse, HttpStatus.OK);

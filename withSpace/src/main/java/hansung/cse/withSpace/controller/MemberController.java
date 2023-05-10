@@ -57,18 +57,15 @@ public class MemberController {
     @GetMapping("/member/name") //이름으로 회원 조회
     public ResponseEntity<BasicResponse> getMembersByName(@RequestParam String memberName,
                                                           @RequestParam(defaultValue = "10") int limit) {
-        //Member member = memberService.searchMemberByName(memberName);
         List<MemberSearchByNameDto> getMemberResponseDto = memberService.searchMembersByName(memberName, limit);
 
         BasicResponse basicResponse = new BasicResponse<>(1, "회원 조회 성공", getMemberResponseDto);
-        //BasicResponse basicResponse = new BasicResponse<>(1, "회원 조회 성공", null);
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
     @GetMapping("/member/{memberId}/space") //회원 스페이스 조회
-    //@PreAuthorize("@customSecurityUtil.isMemberOwner(#memberId)") // 현재 로그인한 사용자와 요청한 회원 ID가 일치하는 경우에만 접근 허용
+    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<BasicResponse> getMemberSpace(@PathVariable("memberId") Long memberId, HttpServletRequest request) {
-        jwtAuthenticationFilter.isMemberOwner( request, memberId); //접근권한 확인
         Member member = memberService.findOne(memberId);
         MemberSpaceDto memberSpaceDto = new MemberSpaceDto(member);
         BasicResponse basicResponse = new BasicResponse<>(1, "스페이스 조회 성공", memberSpaceDto);
@@ -76,9 +73,8 @@ public class MemberController {
     }
 
     @DeleteMapping("/member/{memberId}") // 회원 삭제
-    //@PreAuthorize("@customSecurityUtil.isMemberOwner(#memberId)")
+    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<MemberBasicResponse> deleteMember(@PathVariable Long memberId, HttpServletRequest request) {
-        jwtAuthenticationFilter.isMemberOwner(request, memberId); //접근권한 확인
         memberService.delete(memberId);
         MemberBasicResponse memberBasicResponse = new MemberBasicResponse(SUCCESS, "회원 삭제가 정상적으로 되었습니다.");
         return new ResponseEntity<>(memberBasicResponse, HttpStatus.OK);
@@ -86,10 +82,10 @@ public class MemberController {
     }
 
     @PatchMapping("/member/{memberId}") // 회원 업데이트
-    //@PreAuthorize("@customSecurityUtil.isMemberOwner(#memberId)")
+    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<UpdateMemberResponse> updateMember(@PathVariable Long memberId,
-                                                             @RequestBody MemberUpdateRequestDto memberUpdateRequestDto, HttpServletRequest request) {
-        jwtAuthenticationFilter.isMemberOwner(request, memberId); //접근권한 확인
+                                                             @RequestBody MemberUpdateRequestDto memberUpdateRequestDto,
+                                                             HttpServletRequest request) {
         Long updatedMemberId = memberService.update(memberId, memberUpdateRequestDto);
         UpdateMemberResponse updateMemberResponse = new UpdateMemberResponse(updatedMemberId, SUCCESS, "멤버 업데이트 완료");
         return new ResponseEntity<>(updateMemberResponse, HttpStatus.OK);
@@ -106,15 +102,5 @@ public class MemberController {
         BasicResponse basicResponse = new BasicResponse<>(1, "회원 조회 성공",  getMemberResponseDto);
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
-//    @PostMapping("/api/logout") //로그아웃
-//    public ResponseEntity<BasicResponse> logout(HttpServletRequest request, HttpServletResponse response) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication != null) {
-//            new SecurityContextLogoutHandler().logout(request, response, authentication);
-//        }
-//
-//        BasicResponse basicResponse = new BasicResponse<>(1, "로그아웃 성공", null);
-//        return ResponseEntity.ok(basicResponse);
-//    }
 
 }

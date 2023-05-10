@@ -37,7 +37,7 @@ public class JwtTokenUtil {
         return new SecretKeySpec(decodedKey, algorithm);
     }
 
-    public Key getSigningKey() {
+    public Key getSigningKey() { //대칭키 암호화
         SecretKeySpec secretKeySpec = createSecretKey(secret, "HmacSHA256");
         return Keys.hmacShaKeyFor(secretKeySpec.getEncoded());
     }

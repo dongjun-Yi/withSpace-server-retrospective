@@ -86,7 +86,7 @@ public class PageController {
     }
 
     @PatchMapping("/page/{pageId}/trashcan") //페이지 휴지통 이동
-    //@PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    @PreAuthorize("@jwtAuthenticationFilter.isPageOwner(#request, #pageId)")
     public ResponseEntity<BasicResponse> throwPage(@PathVariable Long pageId, HttpServletRequest request) {
         jwtAuthenticationFilter.isPageOwner(request, pageId); //접근권한 확인
         //List<PageTrashCanDto> pageTrashCanDtoList = pageService.throwPage(pageId);
@@ -98,7 +98,7 @@ public class PageController {
 
 
     @DeleteMapping("/page/{pageId}/trashcan") // (쓰레기통에 있는) 페이지 삭제
-    //@PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
+    @PreAuthorize("@jwtAuthenticationFilter.isPageOwner(#request, #pageId)")
     public ResponseEntity<BasicResponse> deletePage(@PathVariable Long pageId, HttpServletRequest request) {
         jwtAuthenticationFilter.isPageOwner(request, pageId); //접근권한 확인
         pageService.deletePage(pageId);
@@ -109,47 +109,49 @@ public class PageController {
 
 
 
-    @PostMapping("/page/{pageId}/block") //블록 생성
-    @PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
-    public ResponseEntity<BasicResponse> createBlock(@PathVariable Long pageId, @RequestBody BlockCreateRequestDto blockCreateRequestDto) {
-        Long memberId = blockCreateRequestDto.getMemberId();
-        Long blockId = blockService.makeBlock(pageId, memberId);
-        Block block = blockService.findOne(blockId);
+//    @PostMapping("/page/{pageId}/block") //블록 생성
+//    @PreAuthorize("@jwtAuthenticationFilter.isPageOwner(#request, #pageId)")
+//    public ResponseEntity<BasicResponse> createBlock(@PathVariable Long pageId,
+//                                                     @RequestBody BlockCreateRequestDto blockCreateRequestDto,
+//                                                     HttpServletRequest request) {
+//        Long memberId = blockCreateRequestDto.getMemberId();
+//        Long blockId = blockService.makeBlock(pageId, memberId);
+//        Block block = blockService.findOne(blockId);
+//
+//        BasicResponse basicResponse = new BasicResponse(1, "블럭 생성 성공", new BlockDto(block));
+//
+//        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+//    }
 
-        BasicResponse basicResponse = new BasicResponse(1, "블럭 생성 성공", new BlockDto(block));
-
-        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
-    }
-
-    @PatchMapping("/block/{blockId}") //블럭 업데이트
-    @PreAuthorize("@customSecurityUtil.isBlockOwner(#blockId)")
-    public ResponseEntity<BasicResponse> updateBlock(@PathVariable Long blockId, @RequestBody BlockUpdateRequestDto requestDto) {
-//        Optional<Block> optionalBeforeBlock = blockService.findOne(blockId);
-//        Block beforUpdateBlock = optionalBeforeBlock.orElseThrow(() -> new EntityNotFoundException("블럭을 찾을 수 없습니다. blockId: " + blockId));
-
-        Member member = memberService.findOne(requestDto.getMemberId());
-
-        // 업데이트
-        Long updateBlockId = blockService.updateBlock(blockId, requestDto);
-        Block block = blockService.findOne(updateBlockId);
-//        Optional<Block> optionalBlock = blockService.findOne(blockId);
-//        Block block = optionalBlock.orElseThrow(() -> new EntityNotFoundException("블럭을 찾을 수 없습니다. blockId: " + blockId));
-
-        BasicResponse basicResponse = new BasicResponse(1, "블럭 업데이트 성공", new BlockDto(block));
-
-        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
-    }
-
-
-
-    @DeleteMapping("/block/{blockId}") //블록 삭제
-    @PreAuthorize("@customSecurityUtil.isBlockOwner(#blockId)")
-    public ResponseEntity<BasicResponse> deleteBlock(@PathVariable Long blockId) {
-        blockService.deleteBlock(blockId);
-
-        BasicResponse basicResponse = new BasicResponse(1, "블럭 삭제 성공", null);
-        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
-    }
+//    @PatchMapping("/block/{blockId}") //블럭 업데이트
+//    @PreAuthorize("@customSecurityUtil.isBlockOwner(#blockId)")
+//    public ResponseEntity<BasicResponse> updateBlock(@PathVariable Long blockId, @RequestBody BlockUpdateRequestDto requestDto) {
+////        Optional<Block> optionalBeforeBlock = blockService.findOne(blockId);
+////        Block beforUpdateBlock = optionalBeforeBlock.orElseThrow(() -> new EntityNotFoundException("블럭을 찾을 수 없습니다. blockId: " + blockId));
+//
+//        Member member = memberService.findOne(requestDto.getMemberId());
+//
+//        // 업데이트
+//        Long updateBlockId = blockService.updateBlock(blockId, requestDto);
+//        Block block = blockService.findOne(updateBlockId);
+////        Optional<Block> optionalBlock = blockService.findOne(blockId);
+////        Block block = optionalBlock.orElseThrow(() -> new EntityNotFoundException("블럭을 찾을 수 없습니다. blockId: " + blockId));
+//
+//        BasicResponse basicResponse = new BasicResponse(1, "블럭 업데이트 성공", new BlockDto(block));
+//
+//        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+//    }
+//
+//
+//
+//    @DeleteMapping("/block/{blockId}") //블록 삭제
+//    @PreAuthorize("@customSecurityUtil.isBlockOwner(#blockId)")
+//    public ResponseEntity<BasicResponse> deleteBlock(@PathVariable Long blockId) {
+//        blockService.deleteBlock(blockId);
+//
+//        BasicResponse basicResponse = new BasicResponse(1, "블럭 삭제 성공", null);
+//        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+//    }
 
 
 }
