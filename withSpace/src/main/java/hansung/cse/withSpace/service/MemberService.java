@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,12 +42,15 @@ public class MemberService {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
     }
+    public Member findByUuid(UUID uuid) {
+        return memberRepository.findByUuid(uuid)
+                .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
+    }
 
-    public boolean existsByEmail(String email) {
+    public void existsByEmail(String email) {
         if (memberRepository.existsByEmail(email)) {
             throw new DuplicateEmailException("이미 존재하는 email 입니다.");
         }
-        return false;
     }
 
     @Transactional
@@ -56,13 +60,11 @@ public class MemberService {
         existsByEmail(joinRequestDto.getEmail());
 
 
-        Member member = new Member(joinRequestDto.getMemberName(), joinRequestDto.getEmail(), joinRequestDto.getPassword());
+        Member member = new Member(UUID.randomUUID(), joinRequestDto.getMemberName(), joinRequestDto.getEmail(), joinRequestDto.getPassword());
         memberRepository.save(member);
 
         //회원가입시 스페이스 생성(Member생성자에서 이루어짐) + 저장은 SpaceService에서
         Space memberSpace = spaceService.makeMemberSpace(member);
-
-
 
         //스페이스 생성했으니 바로 스케줄도 만들어서 줌..
         scheduleService.makeSchedule(memberSpace);

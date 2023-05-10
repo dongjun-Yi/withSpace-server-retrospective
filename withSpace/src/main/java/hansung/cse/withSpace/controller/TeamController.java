@@ -17,6 +17,7 @@ import hansung.cse.withSpace.responsedto.team.TeamSearchByNameDto;
 import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.TeamService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,8 +91,9 @@ public class TeamController {
 //    }
 
     @GetMapping("/team/{teamId}/space") //팀 스페이스 조회
-    @PreAuthorize("@customSecurityUtil.isMemberInTeam(#teamId)") // 현재 로그인한 사용자가 team에 가입되어있는 경우에만 접근 허용
-    public ResponseEntity<BasicResponse> getTeamSpace(@PathVariable Long teamId) {
+    @PreAuthorize("@jwtAuthenticationFilter.isMemberInTeam(#request, #teamId)") // 현재 로그인한 사용자가 team에 가입되어있는 경우에만 접근 허용
+    public ResponseEntity<BasicResponse> getTeamSpace(@PathVariable Long teamId,
+                                                      HttpServletRequest request) {
         Team team = teamService.findOne(teamId);
         TeamSpaceDto teamSpaceDto = new TeamSpaceDto(team);
         BasicResponse basicResponse = new BasicResponse<>(1, "스페이스 조회 성공", teamSpaceDto);
@@ -99,8 +101,9 @@ public class TeamController {
     }
 
     @DeleteMapping("/team/{teamId}") //팀 삭제
-    @PreAuthorize("@customSecurityUtil.isTeamHost(#teamId)")
-    public ResponseEntity<BasicResponse> deleteTeam(@PathVariable Long teamId) {
+    @PreAuthorize("@jwtAuthenticationFilter.isTeamHost(#request, #teamId)")
+    public ResponseEntity<BasicResponse> deleteTeam(@PathVariable Long teamId,
+                                                    HttpServletRequest request) {
         Team team = teamService.findOne(teamId);
 
         teamService.deleteTeam(team.getId());

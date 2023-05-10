@@ -1,6 +1,9 @@
 package hansung.cse.withSpace.config.auth;
 
+import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
 import hansung.cse.withSpace.config.jwt.JwtAuthenticationSuccessHandler;
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,13 +15,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity // Spring Security 설정 활성화
 @RequiredArgsConstructor
 //@EnableGlobalAuthentication
 @EnableGlobalMethodSecurity(prePostEnabled = true) //@PreAuthorize @PostAuthorize 활성화
-public class SecurityConfig{
+public class SecurityConfig {
 
     @Autowired
     MyMemberDetailService myMemberDetailService;
@@ -36,54 +43,17 @@ public class SecurityConfig{
     @Autowired
     private JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
 
-
-//    @Autowired
-//    private JwtTokenProvider jwtTokenProvider;
-
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
 
-//    @Bean
-//    public JwtTokenProvider jwtTokenProvider() {
-//        return new JwtTokenProvider();
-//    }
-
-//    @Autowired
-//    private DataSource dataSource;
-
-
-
-//    @Bean
-//    public SessionAuthenticationStrategy sessionAuthenticationStrategy() {
-//        return new SessionFixationProtectionStrategy();
-//    }
-//
-//    private class SessionIdFilter extends OncePerRequestFilter {
-//        @Override
-//        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-//                throws ServletException, IOException {
-//            HttpSession session = request.getSession();
-//            if (session != null) {
-//                String sessionId = session.getId();
-//                Cookie cookie = new Cookie("JSESSIONID", sessionId);
-//                cookie.setPath(request.getContextPath());
-//                response.addCookie(cookie);
-//            }
-//            filterChain.doFilter(request, response);
-//        }
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable().cors().disable()  //csrf와 cors disable
 
-//                .authorizeHttpRequests((requests) -> requests
-//                                //.requestMatchers("/status", "/", "/home", "/signup", "/member").permitAll()
-//                                .anyRequest().permitAll() //임시로 모든 페이지 접근 허용
-//                        //로그인 안 해도 위 url들은 접근 가능
-//                                //.anyRequest().authenticated() // 어떠한 요청이라도 인증이 필요
-//                )
-
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> requests //로그인 전
                         .requestMatchers("/", "/home", "/signup", "/member", "/login","/oauth2/**", "/profile").permitAll()
                         //.requestMatchers("/main").hasRole("USER") //로그인후에는 /main페이지 허용
@@ -102,7 +72,6 @@ public class SecurityConfig{
                         .failureUrl("/login") //로그인 실패시 다시 로그인화면
                         .permitAll()  // 로그인 페이지 이동이 막히면 안되므로 관련된애들 모두 허용
                         .successHandler(jwtAuthenticationSuccessHandler)
-
                 )
 
 
@@ -117,36 +86,10 @@ public class SecurityConfig{
 
 
                 .logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
-                //.exceptionHandling(e-> e.accessDeniedPage("/access-denied")) //접근 권한이 없는 페이지에 대한 예외 처리
-
-                //jwt방식으로 대체
-//                .rememberMe() // Remember-Me 기능 활성화
-//                .key("mySecretKey")
-//                .rememberMeCookieName("my-remember-me-cookie")
-//                .tokenValiditySeconds(86400*7) //1일 * 7 = 7일동안 로그인 유지
-//                .userDetailsService(myMemberDetailService)
-                //.and()
 
 
-
-                .httpBasic()//postman 사용시 필요
-
-
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-//                .sessionFixation().migrateSession()
-//                .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
-//                .maximumSessions(1)
-//                .maxSessionsPreventsLogin(false)
-//                .expiredUrl("/login?expired")
-
+                //.httpBasic()//postman 사용시 필요
         ;
-
-
-
-        //.logout((logout) -> logout.permitAll());
-        //http.addFilterBefore(new SessionIdFilter(), BasicAuthenticationFilter.class); // SessionIdFilter 등록
 
         return http.build();
     }

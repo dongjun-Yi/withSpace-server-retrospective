@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -23,6 +24,9 @@ public class Member {   //회원
     @GeneratedValue
     @Column(name = "member_id")
     private Long id;
+
+    @Column(name = "UUID")
+    private UUID uuid;
 
     @OneToMany(mappedBy = "member")
     private List<MemberTeam> memberTeams = new ArrayList<>();
@@ -53,10 +57,11 @@ public class Member {   //회원
 //        memberSpace.setMember(this);
 //    }
 
-    public Member( String memberName, String email, String password) {
+    public Member(UUID uuid, String memberName, String email, String password) {
         this.memberName = memberName;
         this.email = email;
         this.password = password;
+        this.uuid = uuid;
 
         LocalDateTime now = LocalDateTime.now();
         this.createdAt = now;

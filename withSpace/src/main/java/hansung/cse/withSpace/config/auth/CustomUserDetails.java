@@ -3,18 +3,18 @@ package hansung.cse.withSpace.config.auth;
 import hansung.cse.withSpace.domain.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 @Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
     private Long id; // 사용자의 Primary Key 값
+    private UUID uuid;
     private String email;
 
     private String password;
@@ -23,20 +23,18 @@ public class CustomUserDetails implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-//    public CustomUserDetails(Long id, String email, String password, String memberName, boolean enabled,
-//                             Collection<? extends GrantedAuthority> authorities) {
-//
-//        this.enabled = enabled;
-//        this.authorities = authorities;
-//    }
 
-    public CustomUserDetails(Long id, String email, String password, String memberName) {
+    public CustomUserDetails(Long id, UUID uuid, String email, String password, String memberName) {
         this.id = id;
+        this.uuid = uuid;
         this.email = email;
         this.password = password;
         this.memberName = memberName;
         this.enabled = true;
-        this.authorities = Collections.singletonList(new SimpleGrantedAuthority("USER"));
+
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        this.authorities = authorities;
     }
 
     @Override

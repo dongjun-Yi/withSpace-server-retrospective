@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class AccessExceptionHandler { //접근권한에 관한 예외 핸들러
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<ErrorBasicResponse> handleAccessDeniedException(AccessDeniedException ex) {
-        ErrorBasicResponse errorResponse = new ErrorBasicResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+        ErrorBasicResponse errorResponse = new ErrorBasicResponse(HttpStatus.FORBIDDEN.value(), ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 }
