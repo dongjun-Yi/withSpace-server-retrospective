@@ -16,4 +16,6 @@ public class CategoryBasicResponse {
         this.status = status;
         this.message = message;
     }
+
+
 }

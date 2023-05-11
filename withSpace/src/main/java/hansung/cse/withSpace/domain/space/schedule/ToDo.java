@@ -1,12 +1,16 @@
 package hansung.cse.withSpace.domain.space.schedule;
 
 
+import hansung.cse.withSpace.exception.category.CategoryActiveException;
+import hansung.cse.withSpace.exception.todo.ToDoActiveException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -23,17 +27,32 @@ public class ToDo {
     private Category category;
 
     private String description;
-
     private Boolean completed;
-
     private LocalDateTime date;
+    private boolean active;
 
-    public ToDo(Category category, String description, Boolean completed, LocalDateTime date) {
+    /**
+     * 간편입력용
+     */
+
+    private UUID easyMake; //간편등록시에만 사용됨
+    @Transient
+    private LocalDateTime start; //간편등록시에만 사용됨
+    @Transient
+    private LocalDateTime end; //간편등록시에만 사용됨
+
+
+
+    public ToDo(Category category, String description, Boolean completed,
+                LocalDateTime date, boolean active, UUID uuid) {
         this.category = category;
         this.description = description;
         this.completed = completed;
         this.date = date;
+        this.active = active;
+        this.easyMake = uuid;
     }
+
 
     public void changeDescription(String description) {
         this.description = description;
@@ -41,5 +60,16 @@ public class ToDo {
 
     public void updateCompleted(Boolean completed) {
         this.completed = completed;
+    }
+
+    public void changeActive() {
+        if (this.active) {
+            throw new ToDoActiveException("이미 활성화중인 투두입니다.");
+        }
+        this.active = true;
+    }
+
+    public void changeDate(LocalDateTime start, LocalDateTime end ) {
+        //
     }
 }

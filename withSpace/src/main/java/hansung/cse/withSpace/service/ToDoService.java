@@ -36,9 +36,16 @@ public class ToDoService {
         findToDo.updateCompleted(completed);
         return findToDo.getId();
     }
-
+    @Transactional
+    public Long activeToDo(Long todoId) {
+        ToDo toDo = findToDo(todoId);
+        toDo.changeActive();
+        return todoId;
+    }
     @Transactional
     public void deleteToDo(Long id) {
         toDoRepository.deleteById(id);
     }
+
+
 }
