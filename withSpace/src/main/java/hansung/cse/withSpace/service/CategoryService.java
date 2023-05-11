@@ -1,10 +1,12 @@
 package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.domain.space.schedule.Category;
+import hansung.cse.withSpace.domain.space.schedule.EasyToDo;
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
 import hansung.cse.withSpace.exception.category.CategoryActiveException;
 import hansung.cse.withSpace.exception.category.CategoryNotFoundException;
 import hansung.cse.withSpace.repository.CategoryRepository;
+import hansung.cse.withSpace.repository.EasyToDoRepository;
 import hansung.cse.withSpace.repository.ToDoRepository;
 import hansung.cse.withSpace.requestdto.schedule.category.CategoryDailyEasyDto;
 import hansung.cse.withSpace.requestdto.schedule.category.CategoryInactiveDto;
@@ -28,6 +30,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final ToDoRepository toDoRepository;
+    private final EasyToDoRepository easyToDoRepository;
 
     @Transactional
     public Long makeCategory(Category category) {
@@ -93,21 +96,25 @@ public class CategoryService {
         UUID uuid = UUID.randomUUID();
 
         // 첫 번째 ToDo 객체 생성
-        ToDo todo = new ToDo(category, dailyDto.getDescription(),
-                false, currentDateTime, false, uuid);
-        todo.changeDate(startDay, endDay);
-        toDoRepository.save(todo);
+//        ToDo todo = new ToDo(category, dailyDto.getDescription(),
+//                false, currentDateTime, false, uuid);
+//        todo.changeDate(startDay, endDay);
 
-        // 첫 번째 날 이후의 ToDo 객체 생성
+        EasyToDo easyToDo = new EasyToDo(category, dailyDto.getDescription(),
+                false, currentDateTime, false, uuid);
+        easyToDo.changeDate(dailyDto.getStartDay(), dailyDto.getEndDay());
+        category.getEasyToDoList().add(easyToDo);
+        easyToDoRepository.save(easyToDo);
+
+
         while (!currentDateTime.isAfter(endDay)) {
-            todo = new ToDo(category, dailyDto.getDescription(),
+            ToDo todo = new ToDo(category, dailyDto.getDescription(),
                     false, currentDateTime, false, uuid);
             toDoRepository.save(todo);
-
             currentDateTime = currentDateTime.plusDays(1); //다음 날로 이동
         }
 
-        category.getEasyToDo().add(uuid); //카테고리에 간편입력 uuid추가
+//        category.getEasyToDo().add(uuid); //카테고리에 간편입력 uuid추가
 
         return uuid.toString();
     }
@@ -123,15 +130,22 @@ public class CategoryService {
         LocalDateTime currentDateTime = startDay;
 
         // 첫 번째 ToDo 객체 생성
-        if (Arrays.asList(weeks).contains(currentDateTime.getDayOfWeek())) {
-            ToDo todo = new ToDo(category, weeklyDto.getDescription(),
-                    false, currentDateTime, false, uuid);
-            todo.changeDate(startDay, endDay);
-            toDoRepository.save(todo);
-        }
+//        if (Arrays.asList(weeks).contains(currentDateTime.getDayOfWeek())) {
+//            ToDo todo = new ToDo(category, weeklyDto.getDescription(),
+//                    false, currentDateTime, false, uuid);
+//            todo.changeDate(startDay, endDay);
+//            category.getEasyToDoList().add(todo);
+//            toDoRepository.save(todo);
+//        }
+//
+//        // 현재 시간을 다음 날로 이동
+//        currentDateTime = currentDateTime.plusDays(1);
 
-        // 현재 시간을 다음 날로 이동
-        currentDateTime = currentDateTime.plusDays(1);
+        EasyToDo easyToDo = new EasyToDo(category, weeklyDto.getDescription(),
+                false, currentDateTime, false, uuid);
+        easyToDo.changeDate(weeklyDto.getStartDay(), weeklyDto.getEndDay());
+        category.getEasyToDoList().add(easyToDo);
+        easyToDoRepository.save(easyToDo);
 
         while (!currentDateTime.isAfter(endDay)) {
             if (Arrays.asList(weeks).contains(currentDateTime.getDayOfWeek())) {
@@ -142,7 +156,7 @@ public class CategoryService {
             currentDateTime = currentDateTime.plusDays(1); //다음 날로 이동
         }
 
-        category.getEasyToDo().add(uuid); //카테고리에 간편입력 uuid추가
+//        category.getEasyToDo().add(uuid); //카테고리에 간편입력 uuid추가
 
         return uuid.toString();
     }
@@ -163,21 +177,30 @@ public class CategoryService {
         UUID uuid = UUID.randomUUID();
 
         // 첫 번째 ToDo 객체 생성
-        if (daysList.contains(currentDateTime.getDayOfMonth())) {
-            ToDo todo = new ToDo(category, monthlyDto.getDescription(),
-                    false, currentDateTime, false, uuid);
-            todo.changeDate(startDay, endDay);
-            toDoRepository.save(todo);
-        }
-        if (isLastDay && currentDateTime.getDayOfMonth() == currentDateTime.toLocalDate().lengthOfMonth()) {
-            ToDo todo = new ToDo(category, monthlyDto.getDescription(),
-                    false, currentDateTime, false, uuid);
-            todo.changeDate(startDay, endDay);
-            toDoRepository.save(todo);
-        }
+//        if (daysList.contains(currentDateTime.getDayOfMonth())) {
+//            ToDo todo = new ToDo(category, monthlyDto.getDescription(),
+//                    false, currentDateTime, false, uuid);
+//            todo.changeDate(startDay, endDay);
+//            category.getEasyToDoList().add(todo);
+//            toDoRepository.save(todo);
+//        }
+//        if (isLastDay && currentDateTime.getDayOfMonth() == currentDateTime.toLocalDate().lengthOfMonth()) {
+//            ToDo todo = new ToDo(category, monthlyDto.getDescription(),
+//                    false, currentDateTime, false, uuid);
+//            todo.changeDate(startDay, endDay);
+//            category.getEasyToDoList().add(todo);
+//            toDoRepository.save(todo);
+//        }
+
+
+        EasyToDo easyToDo = new EasyToDo(category, monthlyDto.getDescription(),
+                false, currentDateTime, false, uuid);
+        easyToDo.changeDate(monthlyDto.getStartDay(), monthlyDto.getEndDay());
+        category.getEasyToDoList().add(easyToDo);
+        easyToDoRepository.save(easyToDo);
 
         // 현재 시간을 다음 날로 이동
-        currentDateTime = currentDateTime.plusDays(1);
+        //currentDateTime = currentDateTime.plusDays(1);
 
         while (!currentDateTime.isAfter(endDay)) {
             if (daysList.contains(currentDateTime.getDayOfMonth())) {
@@ -193,7 +216,7 @@ public class CategoryService {
             currentDateTime = currentDateTime.plusDays(1); //다음 날로 이동
         }
 
-        category.getEasyToDo().add(uuid); //카테고리에 간편입력 uuid추가
+//        category.getEasyToDo().add(uuid); //카테고리에 간편입력 uuid추가
 
         return uuid.toString();
     }

@@ -1,6 +1,7 @@
 package hansung.cse.withSpace.responsedto.schedule.easy;
 
 import hansung.cse.withSpace.domain.space.schedule.Category;
+import hansung.cse.withSpace.domain.space.schedule.EasyToDo;
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
 import hansung.cse.withSpace.repository.ToDoRepository;
 import hansung.cse.withSpace.responsedto.schedule.todo.ToDoDto;
@@ -17,15 +18,15 @@ import java.util.stream.Collectors;
 public class EasyCategory {
     private Long id;
     private String title;
-    private EasyToDo todo;
+    private EasyToDoDto todo;
     private int color;
 
-    public EasyCategory(Category category, ToDo todo) {
+    public EasyCategory(Category category, EasyToDo todo) {
         this.id = category.getId();
         this.title = category.getTitle();
         this.color = category.getColor();
         if(todo != null){
-            this.todo = new EasyToDo(todo);
+            this.todo = new EasyToDoDto(todo);
         }
     }
 }

@@ -1,13 +1,10 @@
 package hansung.cse.withSpace.domain.space.schedule;
 
-
-import hansung.cse.withSpace.exception.category.CategoryActiveException;
 import hansung.cse.withSpace.exception.todo.ToDoActiveException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,8 +12,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ToDo {
-
+public class EasyToDo {
     @Id
     @GeneratedValue
     @Column(name = "todo_id")
@@ -26,28 +22,19 @@ public class ToDo {
     @JoinColumn(name = "category_id")
     private Category category;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "easy_category_id")
-//    private Category easyCategory;
-
     private String description;
     private Boolean completed;
     private LocalDateTime date;
     private boolean active;
-
-    /**
-     * 간편입력용
-     */
-
     private UUID easyMake; //간편등록시에만 사용됨
-    @Transient
+
     private LocalDateTime start; //간편등록시에만 사용됨
-    @Transient
+
     private LocalDateTime end; //간편등록시에만 사용됨
 
 
 
-    public ToDo(Category category, String description, Boolean completed,
+    public EasyToDo(Category category, String description, Boolean completed,
                 LocalDateTime date, boolean active, UUID uuid) {
         this.category = category;
         this.description = description;
@@ -74,8 +61,8 @@ public class ToDo {
     }
 
     public void changeDate(LocalDateTime start, LocalDateTime end ) {
-        System.out.println("start = " + start);
         this.start = start;
         this.end = end;
     }
+
 }

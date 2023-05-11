@@ -2,9 +2,7 @@ package hansung.cse.withSpace.service;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import hansung.cse.withSpace.domain.space.Space;
-import hansung.cse.withSpace.domain.space.schedule.QToDo;
-import hansung.cse.withSpace.domain.space.schedule.Schedule;
-import hansung.cse.withSpace.domain.space.schedule.ToDo;
+import hansung.cse.withSpace.domain.space.schedule.*;
 import hansung.cse.withSpace.exception.block.BlockNotFoundException;
 import hansung.cse.withSpace.exception.schedule.ScheduleNotFoundException;
 import hansung.cse.withSpace.repository.ScheduleRepository;
@@ -15,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
@@ -45,26 +41,26 @@ public class ScheduleService {
 
     public List<EasyCategory> findEasyToDo(Long scheduleId) {
         Schedule schedule = findSchedule(scheduleId);
+        List<EasyCategory> easyCategories = new ArrayList<>();
+        for (Category category : schedule.getCategories()) {
+            List<EasyToDo> todos = category.getEasyToDoList();
+            EasyCategory easyCategory
+                    = new EasyCategory(category, todos != null && !todos.isEmpty() ? todos.get(0) : null);
+            easyCategories.add(easyCategory);
+        }
+        return easyCategories;
+    }
 
-        return schedule.getCategories().stream()
-                .map(category -> {
-                    ToDo todo = null;
-                    if(!category.getEasyToDo().isEmpty()){
-                        UUID firstToDoUuid = category.getEasyToDo().get(0);
-                        todo = findFirstByEasyMake(firstToDoUuid);
-                        // 해당 uuid를 가지고 있는 첫번째! 투두를 가져옴
-                    }
-                    return new EasyCategory(category, todo);
-                })
-                .collect(Collectors.toList());
-    }
-    private ToDo findFirstByEasyMake(UUID uuid) {
-        QToDo toDo = QToDo.toDo;
-        return jpaQueryFactory
-                .selectFrom(toDo)
-                .where(toDo.easyMake.eq(uuid))
-                .limit(1)
-                .fetchOne();
-    }
+//    private ToDo findFirstByEasyMake(UUID uuid) {
+//        QToDo toDo = QToDo.toDo;
+//        ToDo findToDo = jpaQueryFactory
+//                .selectFrom(toDo)
+//                .where(toDo.easyMake.eq(uuid))
+//                .limit(1)
+//                .fetchOne();
+//        assert findToDo != null;
+//        System.out.println("findToDo.getStart() = " + findToDo.getStart());
+//        return findToDo;
+//    }
 
 }

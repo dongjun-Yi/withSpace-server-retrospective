@@ -28,6 +28,9 @@ public class Category {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<ToDo> todoList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private List<EasyToDo> easyToDoList = new ArrayList<>();
+
     private String title; //카테고리 제목
     @Enumerated(EnumType.STRING)
     private PublicSetting publicSetting;
@@ -35,9 +38,11 @@ public class Category {
     private boolean end;
     private EndStatus endStatus;
 
-    @ElementCollection
-    @Column(name = "easyToDo")
-    private List<UUID> easyToDo;
+
+
+//    @ElementCollection
+//    @Column(name = "easyToDo")
+//    private List<UUID> easyToDo;
 
     public Category(Schedule schedule, CategoryRequestDto categoryRequestDto) {
         this.schedule = schedule;
