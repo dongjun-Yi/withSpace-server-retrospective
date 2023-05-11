@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class GetMemberResponseDto {
 
     private Long id;
+    private Long spaceId;
     private String email;
     private String memberName;
     private LocalDateTime createdAt;
@@ -35,6 +36,7 @@ public class GetMemberResponseDto {
 
     public GetMemberResponseDto(Member member) {
         this.id = member.getId();
+        this.spaceId = member.getMemberSpace().getId();
         this.email = member.getEmail();
         this.memberName = member.getMemberName();
         this.createdAt = member.getCreatedAt();
