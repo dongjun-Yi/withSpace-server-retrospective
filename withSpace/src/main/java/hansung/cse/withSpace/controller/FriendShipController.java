@@ -37,9 +37,8 @@ public class FriendShipController {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @GetMapping("/{memberId}/friend")
-    //@PreAuthorize("@customSecurityUtil.isMemberOwner(#memberId)")
+    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<BasicResponse> friend(@PathVariable("memberId") Long memberId, HttpServletRequest request) {
-        //jwtAuthenticationFilter.isMemberOwner( request, memberId); //접근권한 확인
         Member member = memberService.findOne(memberId);
         List<Member> friendList = friendShipService.findFriendList(member);
         List<FriendDto> collect = friendList.stream()
@@ -50,11 +49,10 @@ public class FriendShipController {
     }
 
     @PostMapping("/{memberId}/friend")
-   //@PreAuthorize("@customSecurityUtil.isMemberOwner(#memberId)")
+    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<SendFriendShipResponseDto> sendFriendShip(@PathVariable("memberId") Long memberId,
                                                                     @RequestBody FriendRequestDto friendRequestDto,
                                                                     HttpServletRequest request) {
-        //jwtAuthenticationFilter.isMemberOwner( request, memberId); //접근권한 확인
         //친구 요청 보낸 사람
         Member friendRequester = memberService.findOne(memberId);
         //친구 요청 받은 사람
@@ -78,11 +76,10 @@ public class FriendShipController {
     }
 
     @DeleteMapping("/friend/{memberId}/{friendId}")
-    //@PreAuthorize("@customSecurityUtil.isMemberOwner(#memberId)")
+    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<FriendBasicResponse> deleteFriendShip(@PathVariable("memberId") Long memberId,
                                                                 @PathVariable("friendId") Long friendId,
                                                                 HttpServletRequest request) {
-        //jwtAuthenticationFilter.isMemberOwner( request, memberId); //접근권한 확인
         friendShipService.deleteFriendShip(memberId, friendId);
         return new ResponseEntity<>(new FriendBasicResponse(SUCCESS, "친구 삭제가 정상적으로 되었습니다."), HttpStatus.OK);
     }
