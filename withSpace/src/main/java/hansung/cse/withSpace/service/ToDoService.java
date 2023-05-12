@@ -2,12 +2,15 @@ package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
 import hansung.cse.withSpace.exception.schedule.ScheduleNotFoundException;
+import hansung.cse.withSpace.exception.todo.ToDoActiveException;
 import hansung.cse.withSpace.exception.todo.ToDoNotFoundException;
 import hansung.cse.withSpace.repository.ToDoRepository;
+import hansung.cse.withSpace.requestdto.schedule.todo.ChangeToDoRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Transactional(readOnly = true)
@@ -47,5 +50,23 @@ public class ToDoService {
         toDoRepository.deleteById(id);
     }
 
+    @Transactional
+    public Long changeToday(Long todoId) {
+        ToDo toDo = findToDo(todoId);
+        if (!toDo.isActive()) {
+            throw new ToDoActiveException("활성화중인 투두에 한해서 오늘하기가 가능합니다.");
+        }
+        toDo.doToday(LocalDateTime.now());
+        return todoId;
+    }
 
+    @Transactional
+    public Long toDoServicechangeToDoDate(Long todoId, ChangeToDoRequestDto toDoRequestDto) {
+        ToDo toDo = findToDo(todoId);
+        if (!toDo.isActive()) {
+            throw new ToDoActiveException("활성화중인 투두에 한해서 시간 변경이 가능합니다.");
+        }
+        toDo.doToday(toDoRequestDto.getChangeDay());
+        return todoId;
+    }
 }

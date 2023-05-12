@@ -1,5 +1,6 @@
 package hansung.cse.withSpace.controller.scheduler;
 
+import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.space.schedule.Category;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
@@ -10,13 +11,16 @@ import hansung.cse.withSpace.requestdto.schedule.todo.ToDoCompletedUpdateDto;
 import hansung.cse.withSpace.requestdto.schedule.todo.ToDoDescriptionUpdateDto;
 import hansung.cse.withSpace.requestdto.schedule.todo.ToDoRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
+import hansung.cse.withSpace.responsedto.friend.FriendBasicResponse;
 import hansung.cse.withSpace.responsedto.schedule.ScheduleCategoryDto;
 import hansung.cse.withSpace.responsedto.schedule.ScheduleDto;
+import hansung.cse.withSpace.responsedto.schedule.ScheduleFriendDto;
 import hansung.cse.withSpace.responsedto.schedule.category.CategoriesDto;
 import hansung.cse.withSpace.responsedto.schedule.category.CategoryBasicResponse;
 import hansung.cse.withSpace.responsedto.schedule.easy.EasyCategory;
 import hansung.cse.withSpace.responsedto.schedule.todo.ToDoBasicResponse;
 import hansung.cse.withSpace.service.CategoryService;
+import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.ScheduleService;
 import hansung.cse.withSpace.service.ToDoService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +42,7 @@ public class ScheduleController {
     private static final int SUCCESS = 200;
 
     private static final int CREATED = 201;
+    private final MemberService memberService;
 
     private final ScheduleService scheduleService;
 
@@ -51,6 +56,15 @@ public class ScheduleController {
                                                   HttpServletRequest request) {
         Schedule schedule = scheduleService.findSchedule(scheduleId);
         List<ScheduleDto> collect = Collections.singletonList(new ScheduleDto(schedule));
+        BasicResponse basicResponse = new BasicResponse<>(collect.size(), "스케줄 요청 성공", collect.get(0));
+        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+    }
+    @GetMapping("/friend/{friendId}/schedule") //친구 스케줄 조회
+    @PreAuthorize("@jwtAuthenticationFilter.isFriend(#request, #friendId)")  //서로 친구인지 확인
+    public ResponseEntity<BasicResponse> getFriendSchedule(@PathVariable("friendId") Long friendId, HttpServletRequest request) {
+        Member friend = memberService.findOne(friendId);
+        Schedule friendSchedule = friend.getMemberSpace().getSchedule();
+        List<ScheduleFriendDto> collect = Collections.singletonList(new ScheduleFriendDto(friendSchedule ));
         BasicResponse basicResponse = new BasicResponse<>(collect.size(), "스케줄 요청 성공", collect.get(0));
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
@@ -99,7 +113,6 @@ public class ScheduleController {
         ToDoBasicResponse toDoBasicResponse = new ToDoBasicResponse(updateToDoId, SUCCESS, "할일이 수정되었습니다.");
         return new ResponseEntity<>(toDoBasicResponse, HttpStatus.OK);
     }
-
     @DeleteMapping("/todo/{todoId}") //투두 삭제
     @PreAuthorize("@jwtAuthenticationFilter.isToDoOwner(#request,#todoId)")
     public ResponseEntity<ToDoBasicResponse> deleteToDo(@PathVariable("todoId") Long todoId,

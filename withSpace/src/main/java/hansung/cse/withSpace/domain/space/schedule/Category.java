@@ -36,6 +36,7 @@ public class Category {
     private PublicSetting publicSetting;
     private Integer color;
     private boolean end;
+    @Enumerated(EnumType.STRING)
     private EndStatus endStatus;
 
 

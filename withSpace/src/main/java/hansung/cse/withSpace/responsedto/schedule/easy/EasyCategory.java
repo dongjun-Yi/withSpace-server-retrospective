@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,15 +19,17 @@ import java.util.stream.Collectors;
 public class EasyCategory {
     private Long id;
     private String title;
-    private EasyToDoDto todo;
+    private List<EasyToDoDto> todos = new ArrayList<>();
     private int color;
 
-    public EasyCategory(Category category, EasyToDo todo) {
+    public EasyCategory(Category category) {
         this.id = category.getId();
         this.title = category.getTitle();
         this.color = category.getColor();
-        if(todo != null){
-            this.todo = new EasyToDoDto(todo);
+        if (category.getEasyToDoList() != null) {
+            for (EasyToDo todo : category.getEasyToDoList()) {
+                this.todos.add(new EasyToDoDto(todo));
+            }
         }
     }
 }

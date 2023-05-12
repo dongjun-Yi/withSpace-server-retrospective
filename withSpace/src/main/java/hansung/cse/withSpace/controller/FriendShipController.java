@@ -10,8 +10,10 @@ import hansung.cse.withSpace.responsedto.BasicResponse;
 import hansung.cse.withSpace.responsedto.friend.FriendBasicResponse;
 import hansung.cse.withSpace.responsedto.friend.FriendDto;
 import hansung.cse.withSpace.responsedto.friend.SendFriendShipResponseDto;
+import hansung.cse.withSpace.responsedto.schedule.ScheduleDto;
 import hansung.cse.withSpace.service.FriendShipService;
 import hansung.cse.withSpace.service.MemberService;
+import hansung.cse.withSpace.service.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,6 +37,7 @@ public class FriendShipController {
 
     private final FriendShipService friendShipService;
     private final MemberService memberService;
+    private final ScheduleService scheduleService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @GetMapping("/{memberId}/friend")
@@ -83,4 +87,8 @@ public class FriendShipController {
         friendShipService.deleteFriendShip(memberId, friendId);
         return new ResponseEntity<>(new FriendBasicResponse(SUCCESS, "친구 삭제가 정상적으로 되었습니다."), HttpStatus.OK);
     }
+
+    //----------------
+
+
 }
