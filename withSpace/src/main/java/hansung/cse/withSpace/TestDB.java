@@ -1,28 +1,30 @@
-package hansung.cse.withSpace;
-
-import hansung.cse.withSpace.domain.Member;
-import hansung.cse.withSpace.domain.Team;
-import hansung.cse.withSpace.domain.chat.Room;
-import hansung.cse.withSpace.domain.friend.FriendShip;
-import hansung.cse.withSpace.domain.space.schedule.Category;
-import hansung.cse.withSpace.domain.space.schedule.Schedule;
-import hansung.cse.withSpace.domain.space.schedule.ToDo;
-import hansung.cse.withSpace.requestdto.member.MemberJoinRequestDto;
-import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
-import hansung.cse.withSpace.service.*;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
+//package hansung.cse.withSpace;
+//
+//import hansung.cse.withSpace.domain.Member;
+//import hansung.cse.withSpace.domain.Team;
+//import hansung.cse.withSpace.domain.chat.Room;
+//import hansung.cse.withSpace.domain.friend.FriendShip;
+//import hansung.cse.withSpace.domain.space.schedule.Category;
+//import hansung.cse.withSpace.domain.space.schedule.PublicSetting;
+//import hansung.cse.withSpace.domain.space.schedule.Schedule;
+//import hansung.cse.withSpace.domain.space.schedule.ToDo;
+//import hansung.cse.withSpace.requestdto.member.MemberJoinRequestDto;
+//import hansung.cse.withSpace.requestdto.schedule.category.CategoryRequestDto;
+//import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
+//import hansung.cse.withSpace.service.*;
+//import jakarta.annotation.PostConstruct;
+//import lombok.RequiredArgsConstructor;
+//import org.springframework.security.crypto.password.PasswordEncoder;
+//import org.springframework.stereotype.Component;
+//import org.springframework.transaction.annotation.Transactional;
+//
+//import java.time.LocalDateTime;
+//import java.util.Optional;
+//
 //@Component
 //@RequiredArgsConstructor
 //public class TestDB {
-
+//
 //    //scheduleInit()에 사용
 //    private final CategoryService categoryService;
 //
@@ -153,19 +155,19 @@ import java.util.Optional;
 //
 //        Schedule schedule = memberD.getMemberSpace().getSchedule();
 //
-//        Category studyCategory = new Category(schedule, "공부");
-//        Category workOutCategory = new Category(schedule, "운동");
+//        Category studyCategory = new Category(schedule, new CategoryRequestDto("공부", PublicSetting.PUBLIC, 1));
+//        Category workOutCategory = new Category(schedule, new CategoryRequestDto("운동", PublicSetting.PRIVATE, 2));
 //
 //        categoryService.makeCategory(studyCategory);
 //        categoryService.makeCategory(workOutCategory);
 //
-//        ToDo springToDo = new ToDo(studyCategory, "스프링 공부", false, LocalDateTime.now());
-//        ToDo codingToDo = new ToDo(studyCategory, "코딩 공부", false, LocalDateTime.now());
+//        ToDo springToDo = new ToDo(studyCategory, "스프링 공부", false, LocalDateTime.now(), true, null);
+//        ToDo codingToDo = new ToDo(studyCategory, "코딩 공부", false, LocalDateTime.now(), true, null);
 //
 //        toDoService.makeTodo(springToDo);
 //        toDoService.makeTodo(codingToDo);
 //
-//        ToDo healthToDo = new ToDo(workOutCategory, "헬스", false, LocalDateTime.now());
+//        ToDo healthToDo = new ToDo(workOutCategory, "헬스", false, LocalDateTime.now(), true, null);
 //        toDoService.makeTodo(healthToDo);
 //
 //        // 팀+친구 데이터 추가
