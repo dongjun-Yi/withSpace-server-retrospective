@@ -176,6 +176,23 @@ public class TeamService {
         return teamDTOs;
     }
 
+    @Transactional
+    public void getOutTeam(Long teamId, Long memberId) {
+
+        MemberTeam memberTeam =
+                memberTeamRepository.findByMemberIdAndTeamId(memberId, teamId)
+                        .orElseThrow(() -> new TeamNotFoundException("팀Id와 관계된 팀을 찾지 못했습니다."));
+
+        Team team = memberTeam.getTeam();
+        int memberCount = team.decreaseMemberCount();
+        memberTeamRepository.delete(memberTeam);
+
+        if (memberCount == 0) {
+            teamRepository.delete(team);
+        }
+
+    }
+
 
 //    private int commonStringLength(String query, String teamName) {
 //        int count = 0;

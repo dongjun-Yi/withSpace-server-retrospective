@@ -1,5 +1,6 @@
 package hansung.cse.withSpace.controller;
 
+import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.space.Space;
@@ -35,6 +36,7 @@ public class TeamController {
     private static final int CREATED = 201;
     private final TeamService teamService;
     private final MemberService memberService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @PostMapping("/team") //팀생성
     public ResponseEntity<CreateTeamResponse> createTeam(@Validated @RequestBody CreateTeamRequestDto teamRequest) {
@@ -100,15 +102,28 @@ public class TeamController {
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
-    @DeleteMapping("/team/{teamId}") //팀 삭제
-    @PreAuthorize("@jwtAuthenticationFilter.isTeamHost(#request, #teamId)")
-    public ResponseEntity<BasicResponse> deleteTeam(@PathVariable Long teamId,
+//    @DeleteMapping("/team/{teamId}") //팀 삭제
+//    @PreAuthorize("@jwtAuthenticationFilter.isTeamHost(#request, #teamId)")
+//    public ResponseEntity<BasicResponse> deleteTeam(@PathVariable Long teamId,
+//                                                    HttpServletRequest request) {
+//        Team team = teamService.findOne(teamId);
+//
+//        teamService.deleteTeam(team.getId());
+//
+//        BasicResponse basicResponse = new BasicResponse(1, "팀 삭제 성공", null);
+//
+//        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+//    }
+
+    @DeleteMapping("/team/{teamId}") //팀 나가기
+    @PreAuthorize("@jwtAuthenticationFilter.isInTeam(#request, #teamId)")
+    public ResponseEntity<BasicResponse> getOutTeam(@PathVariable Long teamId,
                                                     HttpServletRequest request) {
-        Team team = teamService.findOne(teamId);
+        //Team team = teamService.findOne(teamId);
+        Member member = jwtAuthenticationFilter.findMemberByUUID(request);
+        teamService.getOutTeam(teamId, member.getId());
 
-        teamService.deleteTeam(team.getId());
-
-        BasicResponse basicResponse = new BasicResponse(1, "팀 삭제 성공", null);
+        BasicResponse basicResponse = new BasicResponse(1, "팀 나가기 성공", null);
 
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }

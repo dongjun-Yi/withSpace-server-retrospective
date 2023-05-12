@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MemberTeamRepository extends JpaRepository<MemberTeam, MemberTeamId>, QuerydslPredicateExecutor<MemberTeam> {
@@ -17,4 +18,7 @@ public interface MemberTeamRepository extends JpaRepository<MemberTeam, MemberTe
     List<MemberTeam> findByTeamId(@Param("teamId") Long teamId);
 
     List<MemberTeam> findAll(Predicate predicate);
+
+    Optional<MemberTeam> findByMemberIdAndTeamId(Long memberId, Long  teamId);
+
 }

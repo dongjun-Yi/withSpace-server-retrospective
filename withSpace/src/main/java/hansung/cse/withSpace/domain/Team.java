@@ -52,4 +52,9 @@ public class Team {
     public void joinTeam(Team team) {
         this.memberCount = getMemberCount() +1;
     }
+
+    public int decreaseMemberCount() {
+        this.memberCount--;
+        return this.memberCount;
+    }
 }

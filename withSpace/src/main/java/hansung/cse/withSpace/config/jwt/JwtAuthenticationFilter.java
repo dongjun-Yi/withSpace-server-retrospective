@@ -270,6 +270,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return true;
     }
 
+    public boolean isInTeam(HttpServletRequest request, Long teamId) {
+        Team team = teamService.findOne(teamId);
+        Long memberId = findMemberByUUID(request).getId();
+        boolean check = team.getMemberTeams().stream()
+                .anyMatch(memberTeam -> memberTeam.getMember().getId().equals(memberId));
+        if (!check) {
+            throw new AccessDeniedException("회원이 해당 팀에 속해있지 않습니다.");
+        }
+        return true;
+
+    }
+
     public boolean isFriend(HttpServletRequest request, Long friendId) { //서로 친구인지 확인
         Member me = findMemberByUUID(request);
         Member friend = memberService.findOne(friendId);
