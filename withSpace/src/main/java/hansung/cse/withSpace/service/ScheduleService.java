@@ -9,6 +9,7 @@ import hansung.cse.withSpace.repository.ScheduleRepository;
 import hansung.cse.withSpace.repository.ToDoRepository;
 import hansung.cse.withSpace.responsedto.schedule.category.CategoryDto;
 import hansung.cse.withSpace.responsedto.schedule.easy.EasyCategory;
+import hansung.cse.withSpace.responsedto.schedule.easy.EasyToDoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,9 +44,8 @@ public class ScheduleService {
         Schedule schedule = findSchedule(scheduleId);
         List<EasyCategory> easyCategories = new ArrayList<>();
         for (Category category : schedule.getCategories()) {
-            List<EasyToDo> todos = category.getEasyToDoList();
-            EasyCategory easyCategory
-                    = new EasyCategory(category, todos != null && !todos.isEmpty() ? todos.get(0) : null);
+            //List<EasyToDo> todos = category.getEasyToDoList();
+            EasyCategory easyCategory = new EasyCategory(category);
             easyCategories.add(easyCategory);
         }
         return easyCategories;

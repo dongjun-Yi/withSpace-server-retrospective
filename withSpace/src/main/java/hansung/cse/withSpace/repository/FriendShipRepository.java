@@ -22,4 +22,5 @@ public interface FriendShipRepository extends JpaRepository<FriendShip, Long> {
     public Optional<FriendShip> findFriendShip(@Param("memberId") Long memberId, @Param("friendId") Long friendId);
 
     FriendShip findByMemberIdAndFriendIdAndStatus(Long memberId, Long friendId, FriendStatus status);
+
 }

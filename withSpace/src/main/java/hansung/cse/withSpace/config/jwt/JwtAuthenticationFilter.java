@@ -10,6 +10,7 @@ import hansung.cse.withSpace.domain.space.Space;
 import hansung.cse.withSpace.domain.space.schedule.Category;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
+import hansung.cse.withSpace.exception.friend.NotFriendException;
 import hansung.cse.withSpace.exception.jwt.TokenNotFoundException;
 import hansung.cse.withSpace.service.*;
 import io.jsonwebtoken.Claims;
@@ -47,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CategoryService categoryService;
     private final ToDoService toDoService;
     private final RoomService roomService;
+    private final FriendShipService friendShipService;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -257,15 +259,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return true;
     }
 
-        public boolean isTeamHost(HttpServletRequest request, Long teamId) { //팀장인지 확인
+    public boolean isTeamHost(HttpServletRequest request, Long teamId) { //팀장인지 확인
 
-            Team team = teamService.findOne(teamId);
-            Long memberId = findMemberByUUID(request).getId();
-            boolean check = memberId.equals(team.getHost());
-            if (!check) {
-                throw new AccessDeniedException("팀 id: " + teamId + " 의 팀장만이 접근 가능합니다.");
-            }
-            return true;
-
+        Team team = teamService.findOne(teamId);
+        Long memberId = findMemberByUUID(request).getId();
+        boolean check = memberId.equals(team.getHost());
+        if (!check) {
+            throw new AccessDeniedException("팀 id: " + teamId + " 의 팀장만이 접근 가능합니다.");
+        }
+        return true;
     }
+
+    public boolean isFriend(HttpServletRequest request, Long friendId) { //서로 친구인지 확인
+        Member me = findMemberByUUID(request);
+        Member friend = memberService.findOne(friendId);
+        boolean check = friendShipService.isFriend(me.getId(), friendId);
+        if (!check) {
+            throw new NotFriendException("두 회원이 친구가 아닙니다.");
+        }
+        return true;
+    }
+
 }

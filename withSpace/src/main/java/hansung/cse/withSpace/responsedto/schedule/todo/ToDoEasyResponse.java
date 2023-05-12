@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ToDoEasyResponse {
-    private String uuid;
+    private Long easyToDoId;
     private Integer status;
     private String message;
 }

@@ -26,9 +26,24 @@ public class FriendShipService {
         return saveFriendRequest.getId();
     }
 
+    //id로 두 멤버가 친구인지 확인
+    public boolean isFriend(Long memberId, Long friendId) {
+        FriendShip friendShip1 = friendShipRepository.findByMemberIdAndFriendIdAndStatus(memberId, friendId, FriendStatus.ACCEPTED);
+        FriendShip friendShip2 = friendShipRepository.findByMemberIdAndFriendIdAndStatus(friendId, memberId, FriendStatus.ACCEPTED);
+
+        if (friendShip1 != null && friendShip2 != null &&
+                friendShip1.getStatus() == FriendStatus.ACCEPTED && friendShip2.getStatus() == FriendStatus.ACCEPTED) {
+            return true;
+        }
+        return false;
+
+    }
+
+
     //친구관계를 맺었는지 확인하는 함수
     public void ValidateFriendShip(FriendShip friendShip) {
-        Optional<FriendShip> findFriendShip = friendShipRepository.findFriendShip(friendShip.getMember().getId(), friendShip.getFriend().getId());
+        Optional<FriendShip> findFriendShip = friendShipRepository.findFriendShip(friendShip.getMember().getId(),
+                friendShip.getFriend().getId());
         if (!findFriendShip.isEmpty()) {
             findFriendShip.get().setStatus(FriendStatus.ACCEPTED);
             friendShip.setStatus(FriendStatus.ACCEPTED);

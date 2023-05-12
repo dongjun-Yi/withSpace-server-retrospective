@@ -2,6 +2,7 @@ package hansung.cse.withSpace.controller.scheduler;
 
 import hansung.cse.withSpace.domain.space.schedule.Category;
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
+import hansung.cse.withSpace.requestdto.schedule.todo.ChangeToDoRequestDto;
 import hansung.cse.withSpace.requestdto.schedule.todo.ToDoRequestDto;
 import hansung.cse.withSpace.responsedto.schedule.category.CategoryBasicResponse;
 import hansung.cse.withSpace.responsedto.schedule.todo.ToDoBasicResponse;
@@ -46,8 +47,33 @@ public class ToDoController {
                                                                 HttpServletRequest request) {
         Long activeToDoId = toDoService.activeToDo(todoId);
 
-        ToDoBasicResponse createResponseDto = new ToDoBasicResponse(activeToDoId, CREATED, "투두가 활성화 되었습니다.");
-        return new ResponseEntity<>(createResponseDto, HttpStatus.CREATED);
+        ToDoBasicResponse createResponseDto = new ToDoBasicResponse(activeToDoId, SUCCESS, "투두가 활성화 되었습니다.");
+        return new ResponseEntity<>(createResponseDto, HttpStatus.OK);
 
     }
+    @PatchMapping("/todo/{todoId}/today") // 오늘하기
+    @PreAuthorize("@jwtAuthenticationFilter.isToDoOwner(#request, #todoId)")
+    public ResponseEntity<ToDoBasicResponse> changeToday(@PathVariable("todoId") Long todoId,
+                                                            HttpServletRequest request) {
+        Long activeToDoId = toDoService.changeToday(todoId);
+
+        ToDoBasicResponse createResponseDto =
+                new ToDoBasicResponse(activeToDoId, SUCCESS, "날짜가 오늘로 변경되었습니다.");
+        return new ResponseEntity<>(createResponseDto, HttpStatus.OK);
+
+    }
+    @PatchMapping("/todo/{todoId}/time") // 날짜 바꾸기
+    @PreAuthorize("@jwtAuthenticationFilter.isToDoOwner(#request, #todoId)")
+    public ResponseEntity<ToDoBasicResponse> changeToDoDate(@PathVariable("todoId") Long todoId,
+                                                         @RequestBody ChangeToDoRequestDto toDoRequestDto,
+                                                         HttpServletRequest request) {
+        Long activeToDoId = toDoService.toDoServicechangeToDoDate(todoId, toDoRequestDto);
+
+        ToDoBasicResponse createResponseDto =
+                new ToDoBasicResponse(activeToDoId, SUCCESS, "요청 날짜로 변경되었습니다.");
+        return new ResponseEntity<>(createResponseDto, HttpStatus.OK);
+
+    }
+
+
 }

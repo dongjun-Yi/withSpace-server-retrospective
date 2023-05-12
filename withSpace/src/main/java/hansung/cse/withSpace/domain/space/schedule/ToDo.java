@@ -32,7 +32,7 @@ public class ToDo {
 
     private String description;
     private Boolean completed;
-    private LocalDateTime date;
+    private LocalDateTime date; //수행해야할 날짜
     private boolean active;
 
     /**
@@ -40,9 +40,9 @@ public class ToDo {
      */
 
     private UUID easyMake; //간편등록시에만 사용됨
-    @Transient
+
     private LocalDateTime start; //간편등록시에만 사용됨
-    @Transient
+
     private LocalDateTime end; //간편등록시에만 사용됨
 
 
@@ -70,12 +70,16 @@ public class ToDo {
         if (this.active) {
             throw new ToDoActiveException("이미 활성화중인 투두입니다.");
         }
+        easyMake = null;
         this.active = true;
     }
 
     public void changeDate(LocalDateTime start, LocalDateTime end ) {
-        System.out.println("start = " + start);
         this.start = start;
         this.end = end;
+    }
+
+    public void doToday(LocalDateTime time) {
+        this.date = time;
     }
 }

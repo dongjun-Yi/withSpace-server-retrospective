@@ -19,7 +19,8 @@ public class FriendExceptionHandler {
     }
 
     @ExceptionHandler(NotFriendException.class)
-    public ResponseEntity<String> handleNotFriendException(NotFriendException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorBasicResponse> handleNotFriendException(NotFriendException ex) {
+        ErrorBasicResponse errorResponse = new ErrorBasicResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }
