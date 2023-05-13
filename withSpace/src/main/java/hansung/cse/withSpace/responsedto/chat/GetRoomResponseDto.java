@@ -11,10 +11,16 @@ import java.util.stream.Collectors;
 public class GetRoomResponseDto {
     private String roomName;
     private List<MessageResponseDto> messageList;
+    private String type;
     public GetRoomResponseDto(Room room) {
         roomName = room.getRoomName();
         messageList = room.getMessageList().stream()
                 .map(MessageResponseDto::new)
                 .collect(Collectors.toList());
+        if (room.getSpace() == null) {
+            type = "개인 채팅방";
+        } else {
+            type = "팀 채팅방";
+        }
     }
 }

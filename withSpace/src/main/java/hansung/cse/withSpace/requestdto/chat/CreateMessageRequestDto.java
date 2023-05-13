@@ -4,6 +4,5 @@ import lombok.Data;
 
 @Data
 public class CreateMessageRequestDto {
-    private Long senderId;
     private String content;
 }

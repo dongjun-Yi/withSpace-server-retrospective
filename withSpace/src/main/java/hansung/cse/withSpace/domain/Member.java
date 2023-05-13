@@ -1,10 +1,9 @@
 package hansung.cse.withSpace.domain;
 
 
+import hansung.cse.withSpace.domain.chat.Room;
 import hansung.cse.withSpace.domain.friend.FriendShip;
 import hansung.cse.withSpace.domain.space.MemberSpace;
-import hansung.cse.withSpace.domain.space.Page;
-import hansung.cse.withSpace.domain.space.TrashCan;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -40,6 +39,14 @@ public class Member {   //회원
     @OneToMany(mappedBy = "friend", cascade = CascadeType.REMOVE)
     private List<FriendShip> friendReceiver = new ArrayList<>();//친구 신청 받은 사람
 
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private List<MemberRoom> memberRooms = new ArrayList<>(); // 일대일 개인채팅방
+
+    // 일대일 개인채팅방
+//    @OneToMany(mappedBy = "member1")
+//    private List<Room> roomList1 = new ArrayList<>(); //참여자1
+//    @OneToMany(mappedBy = "member2")
+//    private List<Room> roomList2 = new ArrayList<>(); //참여자2
 
     @Column(unique = true)
     private String email;

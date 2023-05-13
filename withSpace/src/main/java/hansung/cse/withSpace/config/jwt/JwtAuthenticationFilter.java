@@ -251,8 +251,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public boolean isRoomOwner(HttpServletRequest request,Long roomId) { //채팅방 접근권 확인
         Room room = roomService.findOne(roomId);
-        Long spaceId = room.getSpace().getId();
-        boolean check = checkSpaceOwner(request, spaceId);
+        Long spaceId = (room.getSpace() != null) ? room.getSpace().getId() : null;
+        boolean check;
+
+        if (spaceId == null) { //개인 채팅방인 경우
+            Member member = findMemberByUUID(request);
+            check = room.getMember1().getId().equals(member.getId()) || room.getMember2().getId().equals(member.getId());
+        }else{ //팀 채팅방인 경우
+            check = checkSpaceOwner(request, spaceId);
+        }
         if (!check) {
             throw new AccessDeniedException("방 id: " + roomId + " 에 대한 접근 권한이 없습니다.");
         }

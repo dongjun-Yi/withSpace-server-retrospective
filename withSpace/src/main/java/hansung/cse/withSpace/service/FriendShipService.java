@@ -17,12 +17,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FriendShipService {
 
+    private final RoomService roomService;
     private final FriendShipRepository friendShipRepository;
+
 
     @Transactional
     public Long addFriend(FriendShip friendShip) {
         FriendShip saveFriendRequest = friendShipRepository.save(friendShip);
         ValidateFriendShip(friendShip);
+
+
+
         return saveFriendRequest.getId();
     }
 
@@ -41,13 +46,20 @@ public class FriendShipService {
 
 
     //친구관계를 맺었는지 확인하는 함수
+    @Transactional
     public void ValidateFriendShip(FriendShip friendShip) {
         Optional<FriendShip> findFriendShip = friendShipRepository.findFriendShip(friendShip.getMember().getId(),
                 friendShip.getFriend().getId());
-        if (!findFriendShip.isEmpty()) {
+        if (!findFriendShip.isEmpty()) {  //상대쪽에서 보내놓은 친구요청이 있는 경우
             findFriendShip.get().setStatus(FriendStatus.ACCEPTED);
             friendShip.setStatus(FriendStatus.ACCEPTED);
-        } else {
+
+            //두 회원이 팀을 맺게 됐으므로 채팅방을 생성해줌
+            Member member = friendShip.getMember();
+            Member friend = friendShip.getFriend();
+            roomService.makePersonalChattingRoom(member, friend);
+
+        } else { //상대쪽에서 보내놓은 친구요청이 없는 경우
             friendShip.setStatus(FriendStatus.PENDING);
         }
     }

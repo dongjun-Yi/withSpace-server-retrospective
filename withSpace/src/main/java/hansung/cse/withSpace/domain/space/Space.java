@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -48,5 +50,6 @@ public abstract class Space {
     public void removePage(Page page) {
         pageList.remove(page);
     }
+
 
 }

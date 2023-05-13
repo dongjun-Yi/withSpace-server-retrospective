@@ -13,6 +13,7 @@ import hansung.cse.withSpace.responsedto.friend.SendFriendShipResponseDto;
 import hansung.cse.withSpace.responsedto.schedule.ScheduleDto;
 import hansung.cse.withSpace.service.FriendShipService;
 import hansung.cse.withSpace.service.MemberService;
+import hansung.cse.withSpace.service.RoomService;
 import hansung.cse.withSpace.service.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,7 @@ public class FriendShipController {
     private final MemberService memberService;
     private final ScheduleService scheduleService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RoomService roomService;
 
     @GetMapping("/{memberId}/friend")
     @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
@@ -52,7 +55,7 @@ public class FriendShipController {
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/{memberId}/friend")
+    @PostMapping("/{memberId}/friend") //친구신청
     @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<SendFriendShipResponseDto> sendFriendShip(@PathVariable("memberId") Long memberId,
                                                                     @RequestBody FriendRequestDto friendRequestDto,
@@ -63,7 +66,7 @@ public class FriendShipController {
         Member friendReceiver = memberService.findOne(friendRequestDto.getFriendId());
 
         for (FriendShip requester : friendRequester.getFriendRequester()) {
-            if (requester.getFriend().getId() == friendReceiver.getId()) {
+            if (Objects.equals(requester.getFriend().getId(), friendReceiver.getId())) {
                 if (requester.getStatus().equals(FriendStatus.ACCEPTED)) //친구신청 목록중에 이미 친구상태이면
                     throw new FriendAddException("이미 친구관계를 맺은 회원입니다.");
                 else
@@ -75,7 +78,8 @@ public class FriendShipController {
 
         friendShipService.addFriend(friendShip);
 
-        SendFriendShipResponseDto friendResponseDto = new SendFriendShipResponseDto(friendRequester.getId(), CREATED, "친구신청을 보냈습니다.");
+        SendFriendShipResponseDto friendResponseDto
+                = new SendFriendShipResponseDto(friendRequester.getId(), CREATED, "친구신청을 보냈습니다.");
         return new ResponseEntity<>(friendResponseDto, HttpStatus.CREATED);
     }
 
@@ -85,6 +89,9 @@ public class FriendShipController {
                                                                 @PathVariable("friendId") Long friendId,
                                                                 HttpServletRequest request) {
         friendShipService.deleteFriendShip(memberId, friendId);
+
+        roomService.removeFriendRoom(memberId, friendId); //친구 삭제시 채팅방도 삭제
+
         return new ResponseEntity<>(new FriendBasicResponse(SUCCESS, "친구 삭제가 정상적으로 되었습니다."), HttpStatus.OK);
     }
 
