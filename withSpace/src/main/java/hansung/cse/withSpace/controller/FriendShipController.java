@@ -63,7 +63,7 @@ public class FriendShipController {
         Member friendReceiver = memberService.findOne(friendRequestDto.getFriendId());
 
         for (FriendShip requester : friendRequester.getFriendRequester()) {
-            if (requester.getFriend().getId() == friendReceiver.getId()){
+            if (requester.getFriend().getId() == friendReceiver.getId()) {
                 if (requester.getStatus().equals(FriendStatus.ACCEPTED)) //친구신청 목록중에 이미 친구상태이면
                     throw new FriendAddException("이미 친구관계를 맺은 회원입니다.");
                 else
@@ -88,7 +88,15 @@ public class FriendShipController {
         return new ResponseEntity<>(new FriendBasicResponse(SUCCESS, "친구 삭제가 정상적으로 되었습니다."), HttpStatus.OK);
     }
 
-    //----------------
-
-
+    @GetMapping("/{memberId}/friendReceive")
+    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
+    public ResponseEntity<BasicResponse> friendReceiveList(@PathVariable("memberId") Long memberId, HttpServletRequest request) {
+        Member member = memberService.findOne(memberId);
+        List<Member> friendReceiveList = friendShipService.findFriendReceiveList(member.getId());
+        List<FriendDto> collect = friendReceiveList.stream()
+                .map(f -> new FriendDto(f))
+                .collect(Collectors.toList());
+        BasicResponse basicResponse = new BasicResponse<>(collect.size(), "친구요청목록 요청 성공", collect);
+        return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+    }
 }

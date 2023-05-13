@@ -65,4 +65,9 @@ public class FriendShipService {
         friendShipRepository.deleteById(findFriendShip1.get().getId());
         friendShipRepository.deleteById(findFriendShip2.get().getId());
     }
+
+    public List<Member> findFriendReceiveList(Long memberId) {
+        List<Member> friendReceiveList = friendShipRepository.findFriendReceiveList(memberId, FriendStatus.PENDING);
+        return friendReceiveList;
+    }
 }
