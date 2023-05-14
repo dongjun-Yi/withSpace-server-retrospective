@@ -30,7 +30,7 @@ public class WebSocketController {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @MessageMapping("/chat/{roomId}/message")  //메세지 보내기
-    //@PreAuthorize("@jwtAuthenticationFilter.isRoomOwner(#request, #roomId)")
+    @PreAuthorize("@jwtAuthenticationFilter.isRoomOwner(#request, #roomId)")
     public void sendMessage(@DestinationVariable Long roomId,
                             @Payload Message message, HttpServletRequest request) {
         Room room = roomService.findOne(roomId);
