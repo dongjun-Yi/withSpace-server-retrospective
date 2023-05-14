@@ -16,10 +16,10 @@ public class MessageService {
     private final MessageRepository messageRepository;
 
     @Transactional
-    public Long makeMessage(Member sender, Room room, String content) {
-        Message message = new Message(sender, room, content);
+    public Message makeMessage(Member member, Room room, String content) {
+        Message message = new Message(member, room, content);
         messageRepository.save(message);
-        return sender.getId();
+        return message;
     }
 
 

@@ -2,6 +2,7 @@
 //
 //import hansung.cse.withSpace.domain.Member;
 //import hansung.cse.withSpace.domain.Team;
+//import hansung.cse.withSpace.domain.chat.Message;
 //import hansung.cse.withSpace.domain.chat.Room;
 //import hansung.cse.withSpace.domain.friend.FriendShip;
 //import hansung.cse.withSpace.domain.space.schedule.Category;
@@ -196,10 +197,10 @@
 //
 //        //D가 팀을 생성
 //        Long teamId1 = teamService.makeTeam(memberD, "D(member1)가 만든 팀 1");   //팀 pk1
-//            //채팅방 id는 request에 담겨온다고 가정
-//            Long roomId = 1L;
-//            Room room = roomService.findOne(roomId);
-//            Long messageId = messageService.makeMessage(memberD, room, "채팅내용");
+//        //채팅방 id는 request에 담겨온다고 가정
+//        Long roomId = 1L;
+//        Room room = roomService.findOne(roomId);
+//        Message message = messageService.makeMessage(memberD, room, "채팅내용");
 //
 //
 //

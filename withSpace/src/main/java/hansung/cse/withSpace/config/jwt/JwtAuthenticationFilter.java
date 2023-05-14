@@ -299,4 +299,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return true;
     }
 
+    public String getUsernameFromToken(String jwt) { // JWT로 이름찾기
+        Authentication authentication = getAuthentication(jwt);
+        CustomUserDetails member = (CustomUserDetails) authentication.getPrincipal();
+        return member.getUsername();
+    }
 }
