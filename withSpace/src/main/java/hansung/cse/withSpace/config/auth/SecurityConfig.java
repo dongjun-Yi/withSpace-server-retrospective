@@ -110,6 +110,7 @@ public class SecurityConfig {
 
 
                 .logout() // 로그아웃시 /로 이동
+                .logoutSuccessUrl("")
                 //.logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
 
 
