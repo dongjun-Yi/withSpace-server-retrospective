@@ -4,6 +4,7 @@ import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
 import hansung.cse.withSpace.config.jwt.JwtAuthenticationSuccessHandler;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -110,9 +111,12 @@ public class SecurityConfig {
 
 
                 .logout() // 로그아웃시 /로 이동
-                .logoutSuccessUrl("")
-                //.logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
 
+                //.logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.getWriter().write("로그아웃 완료");
+                    response.setStatus(HttpServletResponse.SC_OK);
+                });
 
                 //.httpBasic()//postman 사용시 필요
         ;
