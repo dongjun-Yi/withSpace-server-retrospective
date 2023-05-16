@@ -57,8 +57,8 @@ public class RoomService {
         allChatRooms.addAll(personalChatRooms);
         allChatRooms.addAll(teamChatRooms);
 
-        List<MemberRoomResponseDto> memberRoomDtos = allChatRooms.stream()
-                .map(MemberRoomResponseDto::new)
+        List<MemberRoomResponseDto> memberRoomDtos =  allChatRooms.stream()
+                .map(room -> new MemberRoomResponseDto(room, memberId))
                 .collect(Collectors.toList());
 
         return memberRoomDtos;

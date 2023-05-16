@@ -23,6 +23,9 @@ public class Room {   //채팅방
     @Column(name = "room_id")
     private Long id;
 
+    Long teamId;
+    Long friendId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "space_id")
     private Space space;
@@ -44,6 +47,8 @@ public class Room {   //채팅방
     public Room(String roomName, Space space) { //팀에서 채팅방 생성시
         this.roomName = roomName;
         this.space = space;
+        TeamSpace teamSpace = (TeamSpace) space;
+        this.teamId = teamSpace.getTeam().getId();
         space.getRoomList().add(this);
     }
 //    public Room(Space space, String roomName, Long memberId, Long friendId) { //개인채팅방 생성시
@@ -57,6 +62,7 @@ public class Room {   //채팅방
         this.roomName = roomName;
         this.member1 = member;
         this.member2 = friend;
+        this.friendId = friend.getId();
         //member.getRoomList1().add(this);
         //friend.getRoomList2().add(this);
     }
