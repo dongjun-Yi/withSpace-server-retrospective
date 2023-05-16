@@ -85,7 +85,8 @@ public class SecurityConfig {
                 )
 
 
-                .logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
+                .logout() // 로그아웃시 /로 이동
+                //.logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
 
 
                 //.httpBasic()//postman 사용시 필요
