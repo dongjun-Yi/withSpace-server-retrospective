@@ -2,7 +2,10 @@ package hansung.cse.withSpace.config.websocket;
 
 import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
 import hansung.cse.withSpace.config.jwt.JwtTokenUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -20,22 +23,24 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
     private final JwtTokenUtil jwtTokenUtil;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    final Logger log = LoggerFactory.getLogger(this.getClass());
+
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        if (request instanceof ServletServerHttpRequest) {
-            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-            String authHeader = servletRequest.getHeaders().get("Authorization").get(0);
-            String jwt = authHeader.replace("Bearer ", "");
 
-            if (jwtTokenUtil.validateToken(jwt)) {
-                String username = jwtAuthenticationFilter.getUsernameFromToken(jwt);
-                // username을 attributes에 저장하고 WebSocketSession에서 사용할 수 있음
-                attributes.put("username", username);
-                return true;
-            }
+        HttpServletRequest servletRequest = (HttpServletRequest) request;
+        String token = jwtAuthenticationFilter.extractToken(servletRequest);
+
+        if (jwtTokenUtil.validateToken(token)) {
+            String username = jwtAuthenticationFilter.getUsernameFromToken(token);
+            // username을 attributes에 저장하고 WebSocketSession에서 사용할 수 있음
+            attributes.put("username", username);
+            return true;
         }
+        log.error("검증관련 문제");
         return false;
+
     }
 
     @Override
