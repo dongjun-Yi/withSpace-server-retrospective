@@ -2,6 +2,8 @@ package hansung.cse.withSpace.config.auth;
 
 import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
 import hansung.cse.withSpace.config.jwt.JwtAuthenticationSuccessHandler;
+import hansung.cse.withSpace.domain.Member;
+import hansung.cse.withSpace.service.MemberService;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity // Spring Security 설정 활성화
@@ -34,25 +37,23 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true) //@PreAuthorize @PostAuthorize 활성화
 public class SecurityConfig {
 
-    @Autowired
-    MyMemberDetailService myMemberDetailService;
 
-    @Autowired
-    private GoogleOauth2UserService googleOauth2UserService;
+    private final MyMemberDetailService myMemberDetailService;
 
-    @Autowired
-    private OAuth2AuthorizedClientService oath2;
+    private final GoogleOauth2UserService googleOauth2UserService;
+
+
+    private final OAuth2AuthorizedClientService oath2;
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
-    private JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
+    private final JwtAuthenticationSuccessHandler jwtAuthenticationSuccessHandler;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private final MemberService memberService;
 
 
 
@@ -112,15 +113,34 @@ public class SecurityConfig {
 
                 .logout() // 로그아웃시 /로 이동
 
-                //.logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
                 .logoutSuccessHandler((request, response, authentication) -> {
-                    response.getWriter().write("로그아웃 완료");
-                    response.setStatus(HttpServletResponse.SC_OK);
-                });
+                            if (authentication != null && authentication.getDetails() != null) {
+                                try {
+                                    CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+                                    Member member = memberService.findOne(customUserDetails.getId());
+                                    member.changeUuid(UUID.randomUUID()); // change UUID to invalidate all tokens
+                                    memberService.save(member); // persist the updated user record
+                                    request.getSession().invalidate(); // invalidate session
+                                    response.getWriter().write("로그아웃 완료");
+                                    response.setStatus(HttpServletResponse.SC_OK);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        })
+
+//                    .logoutSuccessHandler((request, response, authentication) -> {
+//                        response.getWriter().write("로그아웃 완료");
+//                        response.setStatus(HttpServletResponse.SC_OK);
+//                    });
+
+
+                //.logout(logout->logout.logoutSuccessUrl("/")) // 로그아웃시 /로 이동
+
 
                 //.httpBasic()//postman 사용시 필요
-        ;
 
+        ;
         return http.build();
     }
 

@@ -168,4 +168,9 @@ public class MemberService {
 
         return memberDTOs;
     }
+
+    @Transactional
+    public void save(Member member) {
+        memberRepository.save(member);
+    }
 }

@@ -11,6 +11,7 @@ import hansung.cse.withSpace.domain.space.schedule.Category;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
 import hansung.cse.withSpace.domain.space.schedule.ToDo;
 import hansung.cse.withSpace.exception.friend.NotFriendException;
+import hansung.cse.withSpace.exception.jwt.TokenInvalidateException;
 import hansung.cse.withSpace.exception.jwt.TokenNotFoundException;
 import hansung.cse.withSpace.service.*;
 import io.jsonwebtoken.Claims;
@@ -128,7 +129,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UUID uuid = UUID.fromString(uuidString);
             return uuid;
         }
-        throw new TokenNotFoundException("request에 JWT 토큰이 없습니다.");
+        throw new TokenInvalidateException("토큰이 유효하지 않습니다.");
     }
 
     public boolean checkUUID(HttpServletRequest request, Long memberId) {

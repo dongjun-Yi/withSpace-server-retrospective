@@ -98,5 +98,7 @@ public class Member {   //회원
         this.updatedAt = LocalDateTime.now();
     }
 
-
+    public void changeUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
 }
