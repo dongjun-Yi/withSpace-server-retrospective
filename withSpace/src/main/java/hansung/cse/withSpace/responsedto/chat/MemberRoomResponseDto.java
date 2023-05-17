@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Data
@@ -26,7 +27,13 @@ public class MemberRoomResponseDto { //회원이 들어가있는 채팅방을 �
 
         if (room.getSpace() == null) {
             type = "개인 채팅방";
-            this.id = room.getFriendId();
+            if(memberId.equals(room.getFriendId())){
+                //친구쪽에서 생성된 채팅방이지만 조회할때
+                this.id = room.getMember1().getId();
+            }else{
+                this.id = room.getFriendId();
+            }
+
 
         } else {
             type = "팀 채팅방";
