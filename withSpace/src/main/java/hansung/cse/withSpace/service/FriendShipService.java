@@ -27,7 +27,6 @@ public class FriendShipService {
         ValidateFriendShip(friendShip);
 
 
-
         return saveFriendRequest.getId();
     }
 
@@ -81,5 +80,12 @@ public class FriendShipService {
     public List<Member> findFriendReceiveList(Long memberId) {
         List<Member> friendReceiveList = friendShipRepository.findFriendReceiveList(memberId, FriendStatus.PENDING);
         return friendReceiveList;
+    }
+
+    // 친구신청 거절은 테이블에 있는 행을 삭제함
+    @Transactional
+    public void rejectFriendShip(Long memberId, Long friendId) {
+        Optional<FriendShip> findFriendShip = friendShipRepository.findFriendShip(memberId, friendId);
+        friendShipRepository.deleteById(findFriendShip.get().getId());
     }
 }

@@ -106,4 +106,13 @@ public class FriendShipController {
         BasicResponse basicResponse = new BasicResponse<>(collect.size(), "친구요청목록 요청 성공", collect);
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
+
+    @PostMapping("/{memberId}/friend/reject")
+    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
+    public ResponseEntity<FriendBasicResponse> friendRequestReject(@PathVariable("memberId") Long memberId, @RequestBody FriendRequestDto friendRequestDto,
+                                                                   HttpServletRequest request) {
+        Member member = memberService.findOne(memberId);
+        friendShipService.rejectFriendShip(member.getId(), friendRequestDto.getFriendId());
+        return new ResponseEntity<>(new FriendBasicResponse(SUCCESS, "친구 신청을 거절했습니다."), HttpStatus.OK);
+    }
 }
