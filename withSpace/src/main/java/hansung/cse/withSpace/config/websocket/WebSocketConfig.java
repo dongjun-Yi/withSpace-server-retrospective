@@ -34,6 +34,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .addInterceptors(handshakeInterceptor)
                 .withSockJS();
 
+        registry.addEndpoint("/chat").
+                setAllowedOrigins("http://localhost:3000").
+                addInterceptors(handshakeInterceptor).
+                withSockJS();
+
+        registry.addEndpoint("/chat").
+                setAllowedOrigins("http://localhost:3000").
+                addInterceptors(handshakeInterceptor);
+
+
 //                .withSockJS()
 //                .setInterceptors(handshakeInterceptor);
     }
