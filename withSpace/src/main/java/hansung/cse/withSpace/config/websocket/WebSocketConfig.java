@@ -28,6 +28,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/chat")
                 .setAllowedOrigins("*")
                 .addInterceptors(handshakeInterceptor);
+
+        registry.addEndpoint("/chat")
+                .setAllowedOrigins("*")
+                .addInterceptors(handshakeInterceptor)
+                .withSockJS();
+
 //                .withSockJS()
 //                .setInterceptors(handshakeInterceptor);
     }
