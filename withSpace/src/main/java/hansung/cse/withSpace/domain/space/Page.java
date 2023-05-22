@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -40,6 +41,8 @@ public class Page {
 //    @OneToMany(mappedBy = "page", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private List<Block> blockList = new ArrayList<>();
     private String title;
+
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     private LocalDateTime createdAt;

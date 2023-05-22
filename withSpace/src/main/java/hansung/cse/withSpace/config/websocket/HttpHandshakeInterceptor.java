@@ -29,16 +29,22 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
 
-        HttpServletRequest servletRequest = (HttpServletRequest) request;
-        String token = jwtAuthenticationFilter.extractToken(servletRequest);
 
-        if (jwtTokenUtil.validateToken(token)) {
-            String username = jwtAuthenticationFilter.getUsernameFromToken(token);
-            // username을 attributes에 저장하고 WebSocketSession에서 사용할 수 있음
-            attributes.put("username", username);
-            return true;
+        if (request instanceof ServletServerHttpRequest) {
+
+            ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
+            HttpServletRequest httpRequest = servletRequest.getServletRequest();
+
+            String token = jwtAuthenticationFilter.extractToken(httpRequest);
+
+            if (token != null && jwtTokenUtil.validateToken(token)) {
+                String username = jwtTokenUtil.getUsernameFromToken(token);
+                attributes.put("username", username);
+                return true;
+            }
         }
-        log.error("검증관련 문제");
+
+        log.error("beforeHandshake 에러");
         return false;
 
     }

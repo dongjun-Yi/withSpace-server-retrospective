@@ -29,13 +29,13 @@ public class WebSocketController {
     private final RoomService roomService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @MessageMapping("/chat/{roomId}/message")  //메세지 보내기
+    @MessageMapping("/chat/{roomId}/message")
     @PreAuthorize("@jwtAuthenticationFilter.isRoomOwner(#request, #roomId)")
     public void sendMessage(@DestinationVariable Long roomId,
                             @Payload Message message, HttpServletRequest request) {
         Room room = roomService.findOne(roomId);
         Member member = jwtAuthenticationFilter.findMemberByUUID(request);
-        Message message1 = messageService.makeMessage(member, room, message.getContent());
-        messagingTemplate.convertAndSend("/topic/chat/" + roomId, message1);
+        Message newMessage = messageService.makeMessage(member, room, message.getContent());
+        messagingTemplate.convertAndSend("/topic/chat/" + roomId, newMessage);
     }
 }
