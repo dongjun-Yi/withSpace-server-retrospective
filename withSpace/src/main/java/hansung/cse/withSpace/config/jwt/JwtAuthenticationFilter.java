@@ -75,10 +75,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
-//    public Authentication getAuthentication() {
+    //    public Authentication getAuthentication() {
 //        return SecurityContextHolder.getContext().getAuthentication();
 //    }
-    private Authentication getAuthentication(String token) {
+    public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()//파싱할 수 있는 빌더객체 생성
                 .setSigningKey(jwtTokenUtil.getSigningKey())//JWT 토큰을 검증할 때 사용할 서명 키를 설정
                 .build()//빌더 객체를 빌드

@@ -37,4 +37,9 @@ public class MyMemberDetailService implements UserDetailsService {
 
     }
 
+
+    public UserDetails getUserDetailsByEmail(String email) throws UsernameNotFoundException {
+        return loadUserByUsername(email);
+    }
+
 }
