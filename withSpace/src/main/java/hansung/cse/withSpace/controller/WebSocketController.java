@@ -2,6 +2,7 @@ package hansung.cse.withSpace.controller;
 
 import hansung.cse.withSpace.config.auth.MyMemberDetailService;
 import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
+import hansung.cse.withSpace.config.websocket.StompHandler;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.chat.Message;
 import hansung.cse.withSpace.domain.chat.Room;
@@ -23,6 +24,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.security.Principal;
 import java.util.Collection;
@@ -45,10 +48,15 @@ public class WebSocketController {
     @SendTo("/topic/chat/{roomId}") // 메시지를 발행할 토픽 주소
     public void sendMessage(@DestinationVariable Long roomId,
                             @Payload Message message, Principal principal) {
+        System.out.println("test22222");
         Room room = roomService.findOne(roomId);
         String userEmail = principal.getName();
         Member member = memberService.findByEmail(userEmail);
         Message newMessage = messageService.makeMessage(member, room, message.getContent());
         messagingTemplate.convertAndSend("/topic/chat/" + roomId, newMessage);
     }
+
+
+
+
 }

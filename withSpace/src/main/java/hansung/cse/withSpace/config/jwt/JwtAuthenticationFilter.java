@@ -1,6 +1,7 @@
 package hansung.cse.withSpace.config.jwt;
 
 import hansung.cse.withSpace.config.auth.CustomUserDetails;
+import hansung.cse.withSpace.config.websocket.StompHandler;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.MemberTeam;
 import hansung.cse.withSpace.domain.Team;
@@ -24,6 +25,10 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -51,6 +56,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final RoomService roomService;
     private final FriendShipService friendShipService;
 
+    private final StompHandler stompHandler;
+
     @Value("${jwt.secret}")
     private String secret;
 
@@ -60,20 +67,50 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException, IOException {
-        String token = extractToken(request); //토큰 추출
-        if (token != null && jwtTokenUtil.validateToken(token)) { //토큰 검증
-            Authentication authentication = getAuthentication(token); //로그인된 사용자
-            System.out.println("authentication = " + authentication);
-            log.info("Authentication before setting in SecurityContextHolder: " + authentication);
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println(request.getRequestURI());
 
-            // Log the state of the authentication object after setting it in the SecurityContextHolder
-            Authentication authenticationAfter = SecurityContextHolder.getContext().getAuthentication();
-            log.info("Authentication after setting in SecurityContextHolder: " + authenticationAfter);
 
+
+        if (request.getRequestURI().startsWith("/chat")) {
+                //|| request.getRequestURI().startsWith("/app") || request.getRequestURI().startsWith("/topic")) {
+            // WebSocket 연결 요청인 경우 StompHandler의 preSend 호출
+            StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
+            accessor.setNativeHeader("Authorization", request.getHeader("Authorization"));
+            Message<?> message = MessageBuilder.createMessage(new byte[0], accessor.getMessageHeaders());
+
+            stompHandler.preSend(message, null);
+
+            System.out.println("StompHandler preSend called");
+            filterChain.doFilter(request, response);
+
+        } else if (request.getRequestURI().startsWith("/app") || request.getRequestURI().startsWith("/topic")) {
+
+
+
+
+            System.out.println("별도의 검사 X");
+
+        } else{
+
+            System.out.println("test2----------");
+            String token = extractToken(request); //토큰 추출
+            if (token != null && jwtTokenUtil.validateToken(token)) { //토큰 검증
+                Authentication authentication = getAuthentication(token); //로그인된 사용자
+                System.out.println("authentication = " + authentication);
+                log.info("Authentication before setting in SecurityContextHolder: " + authentication);
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                // Log the state of the authentication object after setting it in the SecurityContextHolder
+                Authentication authenticationAfter = SecurityContextHolder.getContext().getAuthentication();
+                log.info("Authentication after setting in SecurityContextHolder: " + authenticationAfter);
+
+            }
+            filterChain.doFilter(request, response);
         }
-        filterChain.doFilter(request, response);
+      
+
     }
     //    public Authentication getAuthentication() {
 //        return SecurityContextHolder.getContext().getAuthentication();
