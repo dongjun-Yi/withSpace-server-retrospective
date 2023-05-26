@@ -78,17 +78,17 @@ public class SecurityConfig {
                 //.cors().disable()
                 //.cors().and()
 
-
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> requests //로그인 전
                         //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/", "/home", "/signup", "/member", "/login","/oauth2/**", "/profile").permitAll()
-                        .requestMatchers("/chat/**", "topic/chat/**", "app/chat/**").permitAll()
+                        .requestMatchers("/ws/**", "/topic/ws/**", "/app/ws/**").permitAll()
 
                         //.anyRequest().permitAll() //임시로 모든 페이지 접근 허용
 
                         .anyRequest().authenticated() // 어떠한 요청이라도 인증이 필요
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
 
                 //일반 로그인
                 .formLogin((form) -> form // form 방식 로그인 사용

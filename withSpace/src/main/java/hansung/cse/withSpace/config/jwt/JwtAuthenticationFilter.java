@@ -1,5 +1,7 @@
 package hansung.cse.withSpace.config.jwt;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hansung.cse.withSpace.config.auth.CustomUserDetails;
 import hansung.cse.withSpace.config.websocket.StompHandler;
 import hansung.cse.withSpace.domain.Member;
@@ -22,6 +24,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +39,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.util.*;
@@ -68,53 +73,78 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException, IOException {
 
-        System.out.println(request.getRequestURI());
 
+        String requestURI = request.getRequestURI();
 
+        System.out.println(requestURI);
 
-        if (request.getRequestURI().startsWith("/chat")) {
-                //|| request.getRequestURI().startsWith("/app") || request.getRequestURI().startsWith("/topic")) {
-            // WebSocket 연결 요청인 경우 StompHandler의 preSend 호출
-            StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
-            accessor.setNativeHeader("Authorization", request.getHeader("Authorization"));
-            Message<?> message = MessageBuilder.createMessage(new byte[0], accessor.getMessageHeaders());
-
-            stompHandler.preSend(message, null);
-
-            System.out.println("StompHandler preSend called");
+        if (requestURI.startsWith("/ws") || requestURI.startsWith("/topic/ws") || requestURI.startsWith("/app/ws")) {
             filterChain.doFilter(request, response);
-
-        } else if (request.getRequestURI().startsWith("/app") || request.getRequestURI().startsWith("/topic")) {
-
-
-
-
-            System.out.println("별도의 검사 X");
-
-        } else{
-
-            System.out.println("test2----------");
-            String token = extractToken(request); //토큰 추출
-            if (token != null && jwtTokenUtil.validateToken(token)) { //토큰 검증
-                Authentication authentication = getAuthentication(token); //로그인된 사용자
-                System.out.println("authentication = " + authentication);
-                log.info("Authentication before setting in SecurityContextHolder: " + authentication);
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                // Log the state of the authentication object after setting it in the SecurityContextHolder
-                Authentication authenticationAfter = SecurityContextHolder.getContext().getAuthentication();
-                log.info("Authentication after setting in SecurityContextHolder: " + authenticationAfter);
-
-            }
-            filterChain.doFilter(request, response);
+            return;
         }
+
+
+        String token = extractToken(request); //토큰 추출
+        if (token != null && jwtTokenUtil.validateToken(token)) { //토큰 검증
+            Authentication authentication = getAuthentication(token); //로그인된 사용자
+            System.out.println("authentication = " + authentication);
+            log.info("Authentication before setting in SecurityContextHolder: " + authentication);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // Log the state of the authentication object after setting it in the SecurityContextHolder
+            Authentication authenticationAfter = SecurityContextHolder.getContext().getAuthentication();
+            log.info("Authentication after setting in SecurityContextHolder: " + authenticationAfter);
+
+        }
+        filterChain.doFilter(request, response);
+
+
+//        if (request.getRequestURI().startsWith("/chat")) {
+//            String payload = message.getPayload();
+//            String token = extractTokenFromPayload(payload);
+//
+//
+//            StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
+//            accessor.setNativeHeader("Authorization", request.getHeader("Authorization"));
+//            Message<?> message = MessageBuilder.createMessage(new byte[0], accessor.getMessageHeaders());
+//
+//            stompHandler.preSend(message, null);
+//
+//            System.out.println("StompHandler preSend called");
+//            filterChain.doFilter(request, response);
+//
+//        } else if (request.getRequestURI().startsWith("/app") || request.getRequestURI().startsWith("/topic")) {
+//
+//            System.out.println("별도의 검사 X");
+//
+//        } else{
+//
+//            System.out.println("test2----------");
+//            String token = extractToken(request); //토큰 추출
+//            if (token != null && jwtTokenUtil.validateToken(token)) { //토큰 검증
+//                Authentication authentication = getAuthentication(token); //로그인된 사용자
+//                System.out.println("authentication = " + authentication);
+//                log.info("Authentication before setting in SecurityContextHolder: " + authentication);
+//
+//                SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//                // Log the state of the authentication object after setting it in the SecurityContextHolder
+//                Authentication authenticationAfter = SecurityContextHolder.getContext().getAuthentication();
+//                log.info("Authentication after setting in SecurityContextHolder: " + authenticationAfter);
+//
+//            }
+//            filterChain.doFilter(request, response);
+//        }
       
 
     }
-    //    public Authentication getAuthentication() {
-//        return SecurityContextHolder.getContext().getAuthentication();
-//    }
+
+
+
+
+
+
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()//파싱할 수 있는 빌더객체 생성
                 .setSigningKey(jwtTokenUtil.getSigningKey())//JWT 토큰을 검증할 때 사용할 서명 키를 설정
@@ -182,10 +212,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         UUID uuid = getUUIDFromToken(request);
         return memberService.findByUuid(uuid);
     }
-
-//    public Authentication getAuthentication() { //현재 로그인된 사용자의 인증정보를 가져옴
-//        return SecurityContextHolder.getContext().getAuthentication();
-//    }
 
     public boolean checkSpaceOwner(HttpServletRequest request, Long spaceId) {
         Space space = spaceService.findOne(spaceId); //먼저 스페이스가 있는지 확인해줌

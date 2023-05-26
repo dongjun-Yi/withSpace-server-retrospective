@@ -4,6 +4,7 @@ import hansung.cse.withSpace.config.auth.CustomUserDetails;
 import hansung.cse.withSpace.config.auth.MyMemberDetailService;
 import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
 import hansung.cse.withSpace.config.jwt.JwtTokenUtil;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.slf4j.Logger;
@@ -13,12 +14,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
+import org.springframework.web.socket.server.HandshakeInterceptor;
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -34,7 +46,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final StompHandler stompHandler;
 
 
-
     final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
@@ -47,7 +58,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // 클라이언트에서 메시지를 보낼 주소 prefix 설정
         config.setApplicationDestinationPrefixes("/app");
     }
-
 
 
 //    @Override
@@ -84,28 +94,51 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //        });
 //    }
 
+
     @Override
-    public void configureClientInboundChannel(ChannelRegistration registration){
+    public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(stompHandler);
     }
 
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/chat")
+        registry.addEndpoint("/ws")
                 .setAllowedOrigins("*");
 
-        registry.addEndpoint("/chat")
+        registry.addEndpoint("/ws")
                 .setAllowedOrigins("*")
+//                .setHandshakeHandler(new DefaultHandshakeHandler() {
+//                    @Override
+//                    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+//                        // 이 부분에서 Spring Session의 HTTP 세션을 통해 로그인된 사용자를 가져옴
+//                        // Spring Session이 HTTP와 WebSocket 세션을 자동으로 동기화하므로
+//                        // HTTP 세션에서 가져온 사용자 정보를 그대로 WebSocket 세션에서 사용할 수 있음
+//                        System.out.println("test - - - - -");
+//                        return super.determineUser(request, wsHandler, attributes);
+//                    }
+//                })
                 .withSockJS();
 
-        registry.addEndpoint("/chat").
+        registry.addEndpoint("/ws").
                 setAllowedOrigins("http://localhost:3000").
                 withSockJS();
 
-        registry.addEndpoint("/chat").
-                setAllowedOrigins("http://localhost:3000");
-    }
 
+        registry.addEndpoint("/ws")
+                .setAllowedOrigins("http://localhost:3000")
+//                .setHandshakeHandler(new DefaultHandshakeHandler() {
+//                    @Override
+//                    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+//                        // 이 부분에서 Spring Session의 HTTP 세션을 통해 로그인된 사용자를 가져옴
+//                        // Spring Session이 HTTP와 WebSocket 세션을 자동으로 동기화하므로
+//                        // HTTP 세션에서 가져온 사용자 정보를 그대로 WebSocket 세션에서 사용할 수 있음
+//                        System.out.println("test - - - - -");
+//                        return super.determineUser(request, wsHandler, attributes);
+//                    }
+//                })
+                .withSockJS();
+
+    }
 
 }

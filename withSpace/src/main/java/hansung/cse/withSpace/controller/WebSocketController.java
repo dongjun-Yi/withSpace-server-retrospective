@@ -44,8 +44,8 @@ public class WebSocketController {
 
     private final MemberService memberService;
 
-    @MessageMapping("/chat/{roomId}/message")
-    @SendTo("/topic/chat/{roomId}") // 메시지를 발행할 토픽 주소
+    @MessageMapping("/ws/{roomId}/message")
+    @SendTo("/topic/ws/{roomId}") // 메시지를 발행할 토픽 주소
     public void sendMessage(@DestinationVariable Long roomId,
                             @Payload Message message, Principal principal) {
         System.out.println("test22222");
