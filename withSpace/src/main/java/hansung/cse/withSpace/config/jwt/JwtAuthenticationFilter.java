@@ -3,7 +3,6 @@ package hansung.cse.withSpace.config.jwt;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hansung.cse.withSpace.config.auth.CustomUserDetails;
-import hansung.cse.withSpace.config.websocket.StompHandler;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.MemberTeam;
 import hansung.cse.withSpace.domain.Team;
@@ -61,7 +60,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final RoomService roomService;
     private final FriendShipService friendShipService;
 
-    private final StompHandler stompHandler;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -76,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String requestURI = request.getRequestURI();
 
-        System.out.println(requestURI);
+        System.out.println("request URI = " + requestURI);
 
         if (requestURI.startsWith("/ws") || requestURI.startsWith("/topic/ws") || requestURI.startsWith("/app/ws")) {
             filterChain.doFilter(request, response);

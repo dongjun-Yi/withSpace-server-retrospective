@@ -39,26 +39,52 @@ import java.util.Map;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtTokenUtil jwtTokenUtil;
-
-    private final MyMemberDetailService myMemberDetailService;
-    private final StompHandler stompHandler;
-
+    //private final ChatMessageHandler chatMessageHandler;
+    private final CustomHandshakeInterceptor handshakeInterceptor;
 
     final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // 메시지를 발행할 토픽 주소 설정
-        // 메시지 구독 요청 url -> 메시지 받을 때
-        config.enableSimpleBroker("/topic");
-
-        // 메시지 발행 요청 url -> 메시지 보낼 때
-        // 클라이언트에서 메시지를 보낼 주소 prefix 설정
-        config.setApplicationDestinationPrefixes("/app");
+        config.enableSimpleBroker("/sub");
+        config.setApplicationDestinationPrefixes("/pub");
     }
 
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/ws")
+                .addInterceptors(handshakeInterceptor)
+                .setAllowedOrigins("*");
+
+        registry.addEndpoint("/ws")
+                .setAllowedOrigins("*")
+                //.addInterceptors(handshakeInterceptor)
+                .withSockJS();
+
+        registry.addEndpoint("/ws").
+                setAllowedOrigins("http://localhost:3000").
+                withSockJS();
+
+
+        registry.addEndpoint("/ws")
+                .setAllowedOrigins("http://localhost:3000")
+                .withSockJS();
+
+    }
+
+
+
+//    @Override
+//    public void configureMessageBroker(MessageBrokerRegistry config) {
+//        // 메시지를 발행할 토픽 주소 설정
+//        // 메시지 구독 요청 url -> 메시지 받을 때
+//        config.enableSimpleBroker("/topic");
+//
+//        // 메시지 발행 요청 url -> 메시지 보낼 때
+//        // 클라이언트에서 메시지를 보낼 주소 prefix 설정
+//        config.setApplicationDestinationPrefixes("/app");
+//    }
+//
 
 //    @Override
 //    public void configureClientInboundChannel(ChannelRegistration registration) {
@@ -95,50 +121,50 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 //    }
 
 
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompHandler);
-    }
-
-
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins("*");
-
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins("*")
-//                .setHandshakeHandler(new DefaultHandshakeHandler() {
-//                    @Override
-//                    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-//                        // 이 부분에서 Spring Session의 HTTP 세션을 통해 로그인된 사용자를 가져옴
-//                        // Spring Session이 HTTP와 WebSocket 세션을 자동으로 동기화하므로
-//                        // HTTP 세션에서 가져온 사용자 정보를 그대로 WebSocket 세션에서 사용할 수 있음
-//                        System.out.println("test - - - - -");
-//                        return super.determineUser(request, wsHandler, attributes);
-//                    }
-//                })
-                .withSockJS();
-
-        registry.addEndpoint("/ws").
-                setAllowedOrigins("http://localhost:3000").
-                withSockJS();
-
-
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:3000")
-//                .setHandshakeHandler(new DefaultHandshakeHandler() {
-//                    @Override
-//                    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-//                        // 이 부분에서 Spring Session의 HTTP 세션을 통해 로그인된 사용자를 가져옴
-//                        // Spring Session이 HTTP와 WebSocket 세션을 자동으로 동기화하므로
-//                        // HTTP 세션에서 가져온 사용자 정보를 그대로 WebSocket 세션에서 사용할 수 있음
-//                        System.out.println("test - - - - -");
-//                        return super.determineUser(request, wsHandler, attributes);
-//                    }
-//                })
-                .withSockJS();
-
-    }
+//    @Override
+//    public void configureClientInboundChannel(ChannelRegistration registration) {
+//        registration.interceptors(stompHandler);
+//    }
+//
+//
+//    @Override
+//    public void registerStompEndpoints(StompEndpointRegistry registry) {
+//        registry.addEndpoint("/ws")
+//                .setAllowedOrigins("*");
+//
+//        registry.addEndpoint("/ws")
+//                .setAllowedOrigins("*")
+////                .setHandshakeHandler(new DefaultHandshakeHandler() {
+////                    @Override
+////                    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+////                        // 이 부분에서 Spring Session의 HTTP 세션을 통해 로그인된 사용자를 가져옴
+////                        // Spring Session이 HTTP와 WebSocket 세션을 자동으로 동기화하므로
+////                        // HTTP 세션에서 가져온 사용자 정보를 그대로 WebSocket 세션에서 사용할 수 있음
+////                        System.out.println("test - - - - -");
+////                        return super.determineUser(request, wsHandler, attributes);
+////                    }
+////                })
+//                .withSockJS();
+//
+//        registry.addEndpoint("/ws").
+//                setAllowedOrigins("http://localhost:3000").
+//                withSockJS();
+//
+//
+//        registry.addEndpoint("/ws")
+//                .setAllowedOrigins("http://localhost:3000")
+////                .setHandshakeHandler(new DefaultHandshakeHandler() {
+////                    @Override
+////                    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
+////                        // 이 부분에서 Spring Session의 HTTP 세션을 통해 로그인된 사용자를 가져옴
+////                        // Spring Session이 HTTP와 WebSocket 세션을 자동으로 동기화하므로
+////                        // HTTP 세션에서 가져온 사용자 정보를 그대로 WebSocket 세션에서 사용할 수 있음
+////                        System.out.println("test - - - - -");
+////                        return super.determineUser(request, wsHandler, attributes);
+////                    }
+////                })
+//                .withSockJS();
+//
+//    }
 
 }
