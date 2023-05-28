@@ -18,6 +18,7 @@ import hansung.cse.withSpace.exception.jwt.TokenNotFoundException;
 import hansung.cse.withSpace.service.*;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,8 @@ import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -74,7 +77,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String requestURI = request.getRequestURI();
 
-        System.out.println("request URI = " + requestURI);
 
         if (requestURI.startsWith("/ws") || requestURI.startsWith("/topic/ws") || requestURI.startsWith("/app/ws")) {
             filterChain.doFilter(request, response);
@@ -97,50 +99,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
 
-
-//        if (request.getRequestURI().startsWith("/chat")) {
-//            String payload = message.getPayload();
-//            String token = extractTokenFromPayload(payload);
-//
-//
-//            StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
-//            accessor.setNativeHeader("Authorization", request.getHeader("Authorization"));
-//            Message<?> message = MessageBuilder.createMessage(new byte[0], accessor.getMessageHeaders());
-//
-//            stompHandler.preSend(message, null);
-//
-//            System.out.println("StompHandler preSend called");
-//            filterChain.doFilter(request, response);
-//
-//        } else if (request.getRequestURI().startsWith("/app") || request.getRequestURI().startsWith("/topic")) {
-//
-//            System.out.println("별도의 검사 X");
-//
-//        } else{
-//
-//            System.out.println("test2----------");
-//            String token = extractToken(request); //토큰 추출
-//            if (token != null && jwtTokenUtil.validateToken(token)) { //토큰 검증
-//                Authentication authentication = getAuthentication(token); //로그인된 사용자
-//                System.out.println("authentication = " + authentication);
-//                log.info("Authentication before setting in SecurityContextHolder: " + authentication);
-//
-//                SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//                // Log the state of the authentication object after setting it in the SecurityContextHolder
-//                Authentication authenticationAfter = SecurityContextHolder.getContext().getAuthentication();
-//                log.info("Authentication after setting in SecurityContextHolder: " + authenticationAfter);
-//
-//            }
-//            filterChain.doFilter(request, response);
-//        }
-      
-
     }
-
-
-
-
 
 
     public Authentication getAuthentication(String token) {
@@ -163,7 +122,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
 
-    public String extractToken(HttpServletRequest request) { //토큰 추출
+    private String extractToken(HttpServletRequest request) { //토큰 추출
         String bearerToken = request.getHeader("JWT-Authorization");
         System.out.println("bearerToken = " + bearerToken);
         System.out.println("StringUtils.hasText(bearerToken) = " + StringUtils.hasText(bearerToken));
@@ -174,6 +133,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
 
     public UUID getUUIDFromToken(HttpServletRequest request) {
 

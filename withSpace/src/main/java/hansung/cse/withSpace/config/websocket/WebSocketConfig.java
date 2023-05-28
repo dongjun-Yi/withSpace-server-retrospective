@@ -39,8 +39,8 @@ import java.util.Map;
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 
-    //private final ChatMessageHandler chatMessageHandler;
-    private final CustomHandshakeInterceptor handshakeInterceptor;
+    private final StompHandler stompHandler;
+    //private final CustomHandshakeInterceptor handshakeInterceptor;
 
     final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -51,9 +51,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
+    public void configureClientInboundChannel(ChannelRegistration registration){
+        registration.interceptors(stompHandler);
+    }
+
+    @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .addInterceptors(handshakeInterceptor)
                 .setAllowedOrigins("*");
 
         registry.addEndpoint("/ws")
