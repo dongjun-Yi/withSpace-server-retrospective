@@ -65,9 +65,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 //.addInterceptors(handshakeInterceptor)
                 .withSockJS();
 
-        registry.addEndpoint("/ws").
-                setAllowedOrigins("http://localhost:3000").
-                withSockJS();
+//        registry.addEndpoint("/ws").
+//                setAllowedOrigins("http://localhost:3000").
+//                withSockJS();
 
 
         registry.addEndpoint("/ws")

@@ -32,11 +32,18 @@ public class MemberService {
     private final ScheduleService scheduleService;
     private final PageService pageService;
 
-//    private final SpaceRepository spaceRepository;
-//    private final ScheduleRepository scheduleRepository;
-//    private final PageRepository pageRepository;
+    @Transactional
+    public void setMemberActive(UUID uuid) {
+        Member member = findByUuid(uuid);
+        member.setStatus(true);
+    }
 
-    //final private PasswordEncoder passwordEncoder; //비밀번호 암호화
+    @Transactional
+    public void setMemberInActive(UUID uuid) {
+        Member member = findByUuid(uuid);
+        member.setStatus(false);
+    }
+
 
     public Member findOne(Long memberId) {
         return memberRepository.findById(memberId)
