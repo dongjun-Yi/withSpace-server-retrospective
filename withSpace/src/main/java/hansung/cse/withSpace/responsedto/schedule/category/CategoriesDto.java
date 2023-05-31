@@ -10,7 +10,7 @@ public class CategoriesDto { //카테고리들만 간단히 보여주는 용도
     private Long categoryId;
     private String title;
     private PublicSetting publicSetting;
-    private int color;
+    private String color;
     private boolean end;
     private EndStatus endStatus;
 

@@ -20,7 +20,7 @@ public class EasyCategory {
     private Long id;
     private String title;
     private List<EasyToDoDto> todos = new ArrayList<>();
-    private int color;
+    private String color;
 
     public EasyCategory(Category category) {
         this.id = category.getId();
