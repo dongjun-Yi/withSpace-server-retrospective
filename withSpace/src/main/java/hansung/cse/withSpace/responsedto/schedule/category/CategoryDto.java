@@ -14,7 +14,7 @@ public class CategoryDto {
     private Long categoryId;
     private String title;
     private PublicSetting publicSetting;
-    private int color;
+    private String color;
     private boolean end;
     private EndStatus endStatus;
 

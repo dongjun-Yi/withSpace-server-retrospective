@@ -34,7 +34,7 @@ public class Category {
     private String title; //카테고리 제목
     @Enumerated(EnumType.STRING)
     private PublicSetting publicSetting;
-    private Integer color;
+    private String color;
     private boolean end;
     @Enumerated(EnumType.STRING)
     private EndStatus endStatus;
@@ -60,7 +60,7 @@ public class Category {
     public void changePublicSetting(PublicSetting publicSetting) {
         this.publicSetting = publicSetting;
     }
-    public void changeColor(Integer color) {
+    public void changeColor(String color) {
         this.color = color;
     }
     public void changeToInActive(CategoryInactiveDto categoryInactiveDto) {

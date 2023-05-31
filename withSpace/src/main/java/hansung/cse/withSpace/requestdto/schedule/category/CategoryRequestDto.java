@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 public class CategoryRequestDto {
     private String title;
     private PublicSetting publicSetting;
-    private Integer color;
+    private String color;
 
 }
