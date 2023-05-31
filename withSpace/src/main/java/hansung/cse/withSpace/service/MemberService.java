@@ -32,11 +32,18 @@ public class MemberService {
     private final ScheduleService scheduleService;
     private final PageService pageService;
 
-//    private final SpaceRepository spaceRepository;
-//    private final ScheduleRepository scheduleRepository;
-//    private final PageRepository pageRepository;
+    @Transactional
+    public void setMemberActive(Long memberId) {
+        Member member = findOne(memberId);
+        member.setStatus(true);
+    }
 
-    //final private PasswordEncoder passwordEncoder; //비밀번호 암호화
+    @Transactional
+    public void setMemberInActive(Long memberId) {
+        Member member = findOne(memberId);
+        member.setStatus(false);
+    }
+
 
     public Member findOne(Long memberId) {
         return memberRepository.findById(memberId)
@@ -74,6 +81,10 @@ public class MemberService {
         pageService.makePage(memberSpace.getId(), pageCreateRequestDto);
 
         return member.getId();
+    }
+
+    public long memberCount() {
+        return memberRepository.count();
     }
 
 

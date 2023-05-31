@@ -157,6 +157,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         throw new TokenInvalidateException("토큰이 유효하지 않습니다.");
     }
 
+    public UUID getUUIDFromToken(String token) {
+
+        if (token != null && jwtTokenUtil.validateToken(token)) {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(jwtTokenUtil.getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String uuidString = claims.get("UUID", String.class);
+            UUID uuid = UUID.fromString(uuidString);
+            System.out.println("uuid = " + uuid);
+            return uuid;
+        }
+        throw new TokenInvalidateException("토큰이 유효하지 않습니다.2");
+    }
+
+
     public boolean checkUUID(HttpServletRequest request, Long memberId) {
 
         //토큰의 uuid와 DB상 회원의 uuid가 일치하는지 검사
