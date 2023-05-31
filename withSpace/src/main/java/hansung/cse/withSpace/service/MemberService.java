@@ -33,14 +33,14 @@ public class MemberService {
     private final PageService pageService;
 
     @Transactional
-    public void setMemberActive(UUID uuid) {
-        Member member = findByUuid(uuid);
+    public void setMemberActive(Long memberId) {
+        Member member = findOne(memberId);
         member.setStatus(true);
     }
 
     @Transactional
-    public void setMemberInActive(UUID uuid) {
-        Member member = findByUuid(uuid);
+    public void setMemberInActive(Long memberId) {
+        Member member = findOne(memberId);
         member.setStatus(false);
     }
 
@@ -81,6 +81,10 @@ public class MemberService {
         pageService.makePage(memberSpace.getId(), pageCreateRequestDto);
 
         return member.getId();
+    }
+
+    public long memberCount() {
+        return memberRepository.count();
     }
 
 

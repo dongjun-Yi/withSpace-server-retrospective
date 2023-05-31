@@ -56,9 +56,9 @@
 //    @PostConstruct
 //    public void postConstruct() {
 //        scheduleInit();
-//        friendInit();
-//        teamInit();
-//        pageInit();
+//        //friendInit();
+//        //teamInit();
+//        //pageInit();
 //    }
 //
 //
@@ -156,8 +156,8 @@
 //
 //        Schedule schedule = memberD.getMemberSpace().getSchedule();
 //
-//        Category studyCategory = new Category(schedule, new CategoryRequestDto("공부", PublicSetting.PUBLIC, 1));
-//        Category workOutCategory = new Category(schedule, new CategoryRequestDto("운동", PublicSetting.PRIVATE, 2));
+//        Category studyCategory = new Category(schedule, new CategoryRequestDto("공부", PublicSetting.PUBLIC, ""));
+//        Category workOutCategory = new Category(schedule, new CategoryRequestDto("운동", PublicSetting.PRIVATE, ""));
 //
 //        categoryService.makeCategory(studyCategory);
 //        categoryService.makeCategory(workOutCategory);
