@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -61,15 +62,26 @@ public class StompHandler implements ChannelInterceptor {
             Long id = memberService.findByUuid(uuid).getId();
             memberService.setMemberActive(id);
             String memberId = String.valueOf(id);
+            String session = accessor.getSessionId();
 
             //세션 정보 Redis에 저장
             String memberIdKey = "memberId:"+ memberId;
+            String sessionKey = "Session:" + session;
             stringRedisTemplate.opsForValue().set(memberIdKey, memberId, 5, TimeUnit.SECONDS);
+            stringRedisTemplate.opsForValue().set(sessionKey, memberId);
 
 
             log.info("웹소켓 연결 redis 저장");
             log.info("memberId = " + memberId);
             log.info("LocalDateTime.now() = " + LocalDateTime.now());
+
+        } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+            String session = accessor.getSessionId();
+            String sessionKey = "Session:" + session;
+            String memberId = stringRedisTemplate.opsForValue().get(sessionKey);
+
+            assert memberId != null;
+            memberService.setMemberInActive(Long.valueOf(memberId));
 
         }
 
