@@ -3,38 +3,24 @@ package hansung.cse.withSpace.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hansung.cse.withSpace.config.auth.MyMemberDetailService;
-import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
-import hansung.cse.withSpace.domain.Member;
-import hansung.cse.withSpace.domain.chat.Message;
-import hansung.cse.withSpace.domain.chat.Room;
-import hansung.cse.withSpace.dto.MemberIdDto;
 import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.MessageService;
 import hansung.cse.withSpace.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.socket.WebSocketSession;
 
-import java.security.Principal;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @RestController
 @RequiredArgsConstructor

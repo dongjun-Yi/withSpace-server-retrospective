@@ -1,18 +1,14 @@
 package hansung.cse.withSpace.service;
 
 import hansung.cse.withSpace.domain.Member;
-import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.space.Space;
-import hansung.cse.withSpace.dto.MemberIdDto;
 import hansung.cse.withSpace.exception.member.MemberNotFoundException;
 import hansung.cse.withSpace.exception.member.join.DuplicateEmailException;
-
 import hansung.cse.withSpace.repository.member.MemberRepository;
 import hansung.cse.withSpace.requestdto.member.MemberJoinRequestDto;
 import hansung.cse.withSpace.requestdto.member.MemberUpdateRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.PageCreateRequestDto;
 import hansung.cse.withSpace.responsedto.member.MemberSearchByNameDto;
-import hansung.cse.withSpace.responsedto.team.TeamSearchByNameDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.springframework.stereotype.Service;
@@ -20,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
