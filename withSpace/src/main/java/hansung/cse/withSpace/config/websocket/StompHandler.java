@@ -76,12 +76,17 @@ public class StompHandler implements ChannelInterceptor {
             log.info("LocalDateTime.now() = " + LocalDateTime.now());
 
         } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+
             String session = accessor.getSessionId();
             String sessionKey = "Session:" + session;
             String memberId = stringRedisTemplate.opsForValue().get(sessionKey);
 
-            assert memberId != null;
-            memberService.setMemberInActive(Long.valueOf(memberId));
+            stringRedisTemplate.delete(sessionKey);
+
+//            if (memberId != null) {
+//                //memberService.setMemberInActive(Long.valueOf(memberId));
+//                stringRedisTemplate.delete(sessionKey);
+//            }
 
         }
 

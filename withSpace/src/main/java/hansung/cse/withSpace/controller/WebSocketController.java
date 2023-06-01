@@ -8,6 +8,7 @@ import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.chat.Message;
 import hansung.cse.withSpace.domain.chat.Room;
+import hansung.cse.withSpace.dto.MemberIdDto;
 import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.MessageService;
 import hansung.cse.withSpace.service.RoomService;
@@ -51,8 +52,8 @@ public class WebSocketController {
 
     @MessageMapping("/{roomId}/message/{memberId}") // 채팅 메시지
     public void SendTemplateMessage(@Payload String message, @DestinationVariable String roomId, @DestinationVariable String memberId) {
-        log.trace("SendTemplateMessage 호출");
-        log.trace("들어온 메시지(request body)= " + message);
+        //log.trace("SendTemplateMessage 호출");
+        //log.trace("들어온 메시지(request body)= " + message);
 
         String topic = "/sub/" + roomId;
 
@@ -63,13 +64,13 @@ public class WebSocketController {
 
     @MessageMapping("/heartbeat") // heartbeat 응답
     public void receiveHeartBeat(@Payload String message, SimpMessageHeaderAccessor accessor) throws JsonProcessingException {
-        log.info("heartbeat 응답 호출");
-        log.info("들어온 메시지(request body)= " + message);
+        //log.info("heartbeat 응답 호출");
+        //log.info("들어온 메시지(request body)= " + message);
 //        String sessionId = accessor.getSessionId();
 //
         JsonNode jsonNode = objectMapper.readTree(message);
         String memberId = jsonNode.get("memberId").asText();
-        log.info("추출된 memberId = " + memberId);
+        //log.info("추출된 memberId = " + memberId);
 
         String memberIdKey = "memberId:"+ memberId;
         //stringRedisTemplate.opsForHash().put(memberIdKey, "time", LocalDateTime.now().toString());
@@ -105,28 +106,27 @@ public class WebSocketController {
     @Scheduled(initialDelay = 0, fixedDelay = 3000)
     public void checkHeartBeat() { //3초마다 각 회원의 접속여부 검사
 
-        int memberCount = (int) memberService.memberCount();
 
-        Set<String> keys = stringRedisTemplate.keys("memberId:*");
+        List<Long> membersId = memberService.findMembersId();
 
-        Set<String> existingMemberIds = stringRedisTemplate.keys("memberId:*")
+        Set<Long> memberIdKeys = stringRedisTemplate.keys("memberId:*")
                 .stream()
-                .map(memberIdKey -> memberIdKey.substring(memberIdKey.lastIndexOf(":") + 1))
+                .map(key -> Long.valueOf(key.split(":")[1]))
                 .collect(Collectors.toSet());
 
-        Set<Integer> allMemberIds = IntStream.rangeClosed(1, memberCount)
-                .boxed()
-                .collect(Collectors.toSet());
 
-        Set<Integer> missingMemberIds = allMemberIds.stream()
-                .filter(memberId -> !existingMemberIds.contains(memberId.toString()))
-                .collect(Collectors.toSet());
+        Set<Long> membersIdSet = new HashSet<>(membersId);
 
-        for (Integer missingMemberId : missingMemberIds) {
 
-            memberService.setMemberInActive(Long.valueOf(missingMemberId));
+        Set<Long> onlyInMembersId = new HashSet<>(membersIdSet);
+        onlyInMembersId.removeAll(memberIdKeys);
 
-        }
+        Set<Long> onlyInRedis = new HashSet<>(memberIdKeys);
+        onlyInRedis.removeAll(membersIdSet);
+
+        onlyInMembersId.forEach(memberService::setMemberInActive);
+        onlyInRedis.forEach(memberService::setMemberInActive);
+
 
     }
 

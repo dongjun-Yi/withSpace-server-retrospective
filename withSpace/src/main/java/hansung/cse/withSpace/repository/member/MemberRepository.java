@@ -1,12 +1,15 @@
 package hansung.cse.withSpace.repository.member;
 
 import hansung.cse.withSpace.domain.Member;
+import hansung.cse.withSpace.dto.MemberIdDto;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -24,5 +27,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     List<Member> searchMembersByName(String query, int limit);
 
-    long count();
+    @Query("SELECT DISTINCT m.id FROM Member m")
+    List<Long> getAllMemberIds();
 }

@@ -3,6 +3,7 @@ package hansung.cse.withSpace.service;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.Team;
 import hansung.cse.withSpace.domain.space.Space;
+import hansung.cse.withSpace.dto.MemberIdDto;
 import hansung.cse.withSpace.exception.member.MemberNotFoundException;
 import hansung.cse.withSpace.exception.member.join.DuplicateEmailException;
 
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -43,6 +45,11 @@ public class MemberService {
         Member member = findOne(memberId);
         member.setStatus(false);
     }
+
+    public List<Long> findMembersId() {
+        return memberRepository.getAllMemberIds();
+    }
+
 
 
     public Member findOne(Long memberId) {
