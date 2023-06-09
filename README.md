@@ -23,6 +23,7 @@
 
 
 ## API 문서
+https://inexpensive-porkpie-0bb.notion.site/API-98e83b3b62b74bd8b566d98eabb95b8a?pvs=4
 
 ## 시스템 아키텍처
 ![image](https://github.com/WithSpace-Capston/withSpace-server/assets/90665186/0b2471f4-c21c-4a2d-8d91-7795f5ec048e)
