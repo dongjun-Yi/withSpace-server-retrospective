@@ -1,6 +1,5 @@
 package hansung.cse.withSpace.controller;
 
-import hansung.cse.withSpace.config.jwt.JwtAuthenticationFilter;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.friend.FriendShip;
 import hansung.cse.withSpace.domain.friend.FriendStatus;
@@ -10,11 +9,9 @@ import hansung.cse.withSpace.responsedto.BasicResponse;
 import hansung.cse.withSpace.responsedto.friend.FriendBasicResponse;
 import hansung.cse.withSpace.responsedto.friend.FriendDto;
 import hansung.cse.withSpace.responsedto.friend.SendFriendShipResponseDto;
-import hansung.cse.withSpace.responsedto.schedule.ScheduleDto;
 import hansung.cse.withSpace.service.FriendShipService;
 import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.RoomService;
-import hansung.cse.withSpace.service.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,10 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -39,8 +34,6 @@ public class FriendShipController {
 
     private final FriendShipService friendShipService;
     private final MemberService memberService;
-    private final ScheduleService scheduleService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RoomService roomService;
 
     @GetMapping("/{memberId}/friend")

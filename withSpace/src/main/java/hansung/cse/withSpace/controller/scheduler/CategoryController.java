@@ -1,19 +1,9 @@
 package hansung.cse.withSpace.controller.scheduler;
 
-import hansung.cse.withSpace.domain.space.schedule.Category;
-import hansung.cse.withSpace.domain.space.schedule.EasyToDo;
-import hansung.cse.withSpace.domain.space.schedule.ToDo;
-import hansung.cse.withSpace.requestdto.schedule.category.CategoryDailyEasyDto;
 import hansung.cse.withSpace.requestdto.schedule.category.CategoryInactiveDto;
-import hansung.cse.withSpace.requestdto.schedule.category.CategoryMonthlyEasyDto;
 import hansung.cse.withSpace.requestdto.schedule.category.CategoryUpdateDto;
-import hansung.cse.withSpace.requestdto.schedule.category.CategoryWeeklyEasyDto;
-import hansung.cse.withSpace.requestdto.schedule.todo.ToDoRequestDto;
 import hansung.cse.withSpace.responsedto.schedule.category.CategoryBasicResponse;
-import hansung.cse.withSpace.responsedto.schedule.todo.ToDoBasicResponse;
-import hansung.cse.withSpace.responsedto.schedule.todo.ToDoEasyResponse;
 import hansung.cse.withSpace.service.CategoryService;
-import hansung.cse.withSpace.service.ToDoService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,18 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-
 @RestController
 @RequiredArgsConstructor
 public class CategoryController {
     private static final int SUCCESS_CODE = 200;
-    private static final int CREATED = 201;
-
     private final CategoryService categoryService;
 
     @PatchMapping("/category/{categoryId}") //카테고리 수정
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<CategoryBasicResponse> changeCategoryTitle(@PathVariable("categoryId") Long categoryId,
                                                                      @RequestBody CategoryUpdateDto categoryUpdateDto,
                                                                      HttpServletRequest request) {
