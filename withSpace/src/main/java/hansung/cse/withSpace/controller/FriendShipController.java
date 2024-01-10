@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +36,6 @@ public class FriendShipController {
     private final RoomService roomService;
 
     @GetMapping("/{memberId}/friend")
-    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<BasicResponse> friend(@PathVariable("memberId") Long memberId, HttpServletRequest request) {
         Member member = memberService.findOne(memberId);
         List<Member> friendList = friendShipService.findFriendList(member);
@@ -49,7 +47,6 @@ public class FriendShipController {
     }
 
     @PostMapping("/{memberId}/friend") //친구신청
-    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<SendFriendShipResponseDto> sendFriendShip(@PathVariable("memberId") Long memberId,
                                                                     @RequestBody FriendRequestDto friendRequestDto,
                                                                     HttpServletRequest request) {
@@ -77,7 +74,6 @@ public class FriendShipController {
     }
 
     @DeleteMapping("/friend/{memberId}/{friendId}")
-    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<FriendBasicResponse> deleteFriendShip(@PathVariable("memberId") Long memberId,
                                                                 @PathVariable("friendId") Long friendId,
                                                                 HttpServletRequest request) {
@@ -89,7 +85,6 @@ public class FriendShipController {
     }
 
     @GetMapping("/{memberId}/friendReceive")
-    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<BasicResponse> friendReceiveList(@PathVariable("memberId") Long memberId, HttpServletRequest request) {
         Member member = memberService.findOne(memberId);
         List<Member> friendReceiveList = friendShipService.findFriendReceiveList(member.getId());
@@ -101,7 +96,6 @@ public class FriendShipController {
     }
 
     @PostMapping("/{memberId}/friend/reject")
-    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<FriendBasicResponse> friendRequestReject(@PathVariable("memberId") Long memberId, @RequestBody FriendRequestDto friendRequestDto,
                                                                    HttpServletRequest request) {
         Member member = memberService.findOne(memberId);

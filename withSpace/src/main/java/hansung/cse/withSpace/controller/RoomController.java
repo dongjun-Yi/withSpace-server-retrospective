@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +18,6 @@ public class RoomController {
     private final RoomService roomService;
 
     @GetMapping("/chat/room/{roomId}") //채팅방 조회
-    @PreAuthorize("@jwtAuthenticationFilter.isRoomOwner(#request, #roomId)")
     public ResponseEntity<BasicResponse> getRoom(@PathVariable("roomId") Long roomId, HttpServletRequest request) {
         Room room = roomService.findOne(roomId);
         GetRoomResponseDto roomResponseDto = new GetRoomResponseDto(room);
@@ -28,7 +26,6 @@ public class RoomController {
     }
 
     @GetMapping("/member/{memberId}/chatrooms") //회원이 들어가있는 채팅방 조회
-    @PreAuthorize("@jwtAuthenticationFilter.isMemberOwner(#request, #memberId)")
     public ResponseEntity<BasicResponse> getMemberChatting(@PathVariable("memberId") Long memberId,
                                                            HttpServletRequest request) {
         List<MemberRoomResponseDto> membersRoom = roomService.findMembersRoom(memberId);

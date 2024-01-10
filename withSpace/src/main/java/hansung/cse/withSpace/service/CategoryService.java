@@ -74,6 +74,7 @@ public class CategoryService {
         category.changeToInActive(categoryInactiveDto);
         return categoryId;
     }
+
     public Long activeCategory(Long categoryId) { //카테고리 활성화
         Category category = findCategory(categoryId);
         if (!category.isEnd()) {
@@ -117,6 +118,7 @@ public class CategoryService {
 
         return easyToDo.getId();
     }
+
     @Transactional
     public Long makeWeeklyEasy(Long categoryId, CategoryWeeklyEasyDto weeklyDto) {
         Category category = findCategory(categoryId);
@@ -149,48 +151,6 @@ public class CategoryService {
         return easyToDo.getId();
     }
 
-    @Transactional
-    public Long makeMonthlyDtoEasy(Long categoryId, CategoryMonthlyEasyDto monthlyDto) {
-
-        Category category = findCategory(categoryId);
-
-        LocalDateTime startDay = monthlyDto.getStartDay();
-        LocalDateTime endDay = monthlyDto.getEndDay();
-        Integer[] days = monthlyDto.getDay();
-        boolean isLastDay = monthlyDto.isLastDay();
-
-        List<Integer> daysList = Arrays.asList(days);
-        LocalDateTime currentDateTime = startDay;
-
-        UUID uuid = UUID.randomUUID();
-
-        //조회용 따로 저장
-        EasyToDo easyToDo = new EasyToDo(category, monthlyDto.getDescription(), monthlyDto.getStartDay(),
-                monthlyDto.getEndDay(), uuid, EasyType.MONTHLY);
-        easyToDo.changeMonth(monthlyDto);
-        easyToDoRepository.save(easyToDo);
-
-
-        while (!currentDateTime.isAfter(endDay)) {
-            if (daysList.contains(currentDateTime.getDayOfMonth())) {
-                ToDo todo = new ToDo(category, monthlyDto.getDescription(),
-                        false, currentDateTime, false, uuid);
-                todo.changeDate(startDay, endDay);
-                toDoRepository.save(todo);
-            }
-            if (isLastDay && currentDateTime.getDayOfMonth() == currentDateTime.toLocalDate().lengthOfMonth()) {
-                ToDo todo = new ToDo(category, monthlyDto.getDescription(),
-                        false, currentDateTime, false, uuid);
-                todo.changeDate(startDay, endDay);
-                toDoRepository.save(todo);
-            }
-            currentDateTime = currentDateTime.plusDays(1); //다음 날로 이동
-        }
-
-
-        return easyToDo.getId();
-    }
-
     //-------------------------------------------------------------------------------
 
     public boolean isWithinDateRange(LocalDateTime targetDate, LocalDateTime startDay, LocalDateTime endDay) {
@@ -210,21 +170,6 @@ public class CategoryService {
         }
         return false;
     }
-
-//    private void updateToDos(List<ToDo> toDoList, String description,
-//                             LocalDateTime startDay, LocalDateTime endDay) {
-//        for (ToDo todo : toDoList) {
-//            if (isWithinDateRange(todo.getDate(), startDay, endDay)) {
-//                if (!todo.isActive()) {
-//                    todo.changeDescription(description);
-//                    todo.changeDate(startDay, endDay);
-//                    toDoRepository.save(todo);
-//                }
-//            } else if (!todo.isActive()) {
-//                toDoRepository.delete(todo);
-//            }
-//        }
-//    }
 
 
     @Transactional
@@ -257,26 +202,6 @@ public class CategoryService {
     }
 
     @Transactional
-    public void createNewToDosForMonth(EasyToDo easyToDo, CategoryMonthlyEasyDto monthlyDto) {
-        Category category = easyToDo.getCategory();
-        UUID uuid = easyToDo.getEasyMake();
-        Integer[] days = monthlyDto.getDay();
-        boolean isLastDay = monthlyDto.isLastDay();
-        List<Integer> daysList = Arrays.asList(days);
-        LocalDateTime currentDateTime = monthlyDto.getStartDay();
-
-        while (!currentDateTime.isAfter(monthlyDto.getEndDay())) {
-            if (daysList.contains(currentDateTime.getDayOfMonth()) ||
-                    (isLastDay && currentDateTime.getDayOfMonth() == currentDateTime.toLocalDate().lengthOfMonth())) {
-                ToDo todo = new ToDo(category, monthlyDto.getDescription(),
-                        false, currentDateTime, false, uuid);
-                toDoRepository.save(todo);
-            }
-            currentDateTime = currentDateTime.plusDays(1); //다음 날로 이동
-        }
-    }
-
-    @Transactional
     public void updateToDos(List<ToDo> toDoList, String description, LocalDateTime startDay, LocalDateTime endDay) {
         for (ToDo todo : toDoList) {
             if (!todo.isActive() && isWithinDateRange(todo.getDate(), startDay, endDay)) {
@@ -298,8 +223,6 @@ public class CategoryService {
             }
         }
     }
-
-
 
 
     @Transactional
@@ -351,9 +274,6 @@ public class CategoryService {
 
         //기존 비활성화되어있는 투두 삭제
         deleteInactiveToDos(easyToDo.getEasyMake());
-
-        //새로운 투두 생성
-        createNewToDosForMonth(easyToDo, monthlyDto);
 
         return easyToDoId;
     }

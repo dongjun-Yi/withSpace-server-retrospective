@@ -1,6 +1,5 @@
 package hansung.cse.withSpace.requestdto.member;
 
-import hansung.cse.withSpace.validation.member.UniqueMemberName;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +15,6 @@ public class MemberJoinRequestDto {
     private String email;
 
     @NotEmpty(message = "이름을 입력해주세요.")
-    @UniqueMemberName
     private String memberName;
 
     @NotEmpty(message = "비밀번호를 입력해주세요.")

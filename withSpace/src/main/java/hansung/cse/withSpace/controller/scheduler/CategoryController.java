@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,7 +30,6 @@ public class CategoryController {
     //---------------------------------------------------------------------------------
 
     @PatchMapping("/category/{categoryId}/inactive") //카테고리 비활성화
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<CategoryBasicResponse> inActiveCategory(@PathVariable("categoryId") Long categoryId,
                                                                   @Valid @RequestBody CategoryInactiveDto categoryInactiveDto,
                                                                   HttpServletRequest request) {
@@ -42,7 +40,6 @@ public class CategoryController {
     }
 
     @PatchMapping("/category/{categoryId}/active") //카테고리 활성화
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<CategoryBasicResponse> activeCategory(@PathVariable("categoryId") Long categoryId,
                                                                 HttpServletRequest request) {
         Long updateCategoryId = categoryService.activeCategory(categoryId);

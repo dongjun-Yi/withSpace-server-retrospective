@@ -8,15 +8,12 @@ import hansung.cse.withSpace.responsedto.BasicResponse;
 import hansung.cse.withSpace.responsedto.space.SpaceDto;
 import hansung.cse.withSpace.responsedto.space.page.PageDto;
 import hansung.cse.withSpace.responsedto.space.page.PageTrashCanDto;
-import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.PageService;
 import hansung.cse.withSpace.service.SpaceService;
-import hansung.cse.withSpace.service.TeamService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -24,17 +21,11 @@ import java.util.*;
 @RestController
 @RequiredArgsConstructor
 public class SpaceController {
-    private static final int SUCCESS = 200;
-    private static final int CREATED = 201;
 
     private final SpaceService spaceService;
     private final PageService pageService;
 
-    private final MemberService memberService;
-    private final TeamService teamService;
-
     @PostMapping("/space/{spaceId}/page") //페이지 생성
-    @PreAuthorize("@jwtAuthenticationFilter.isSpaceOwner(#request, #spaceId)")
     public ResponseEntity<BasicResponse> createPage(@PathVariable Long spaceId,
                                                     @RequestBody PageCreateRequestDto pageCreateRequestDto,
                                                     HttpServletRequest request) {
@@ -49,7 +40,6 @@ public class SpaceController {
     }
 
     @GetMapping("/space/{spaceId}") //스페이스 조회
-    @PreAuthorize("@jwtAuthenticationFilter.isSpaceOwner(#request, #spaceId)")
     public ResponseEntity<SpaceDto> getSpace(@PathVariable Long spaceId,
                                              HttpServletRequest request) {
         Space space = spaceService.findOne(spaceId);
@@ -57,7 +47,6 @@ public class SpaceController {
     }
 
     @GetMapping("/space/{spaceId}/trashcan") // 휴지통 조회
-    @PreAuthorize("@jwtAuthenticationFilter.isSpaceOwner(#request, #spaceId)")
     public ResponseEntity<List<PageTrashCanDto>> getTrashCanPage(@PathVariable Long spaceId,
                                                                  HttpServletRequest request) {
         TrashCan trashCan = spaceService.findOne(spaceId).getTrashCan();
@@ -72,7 +61,6 @@ public class SpaceController {
     }
 
     @PatchMapping("/space/{spaceId}/trashcan/{pageId}/restore") // 휴지통의 특정 페이지 복구
-    @PreAuthorize("@jwtAuthenticationFilter.isSpaceOwner(#request, #spaceId)")
     public ResponseEntity<BasicResponse> restorePage(@PathVariable Long spaceId,
                                                      @PathVariable Long pageId,
                                                      @RequestBody PageRestoreRequestDto pageRestoreRequestDto,
@@ -85,7 +73,6 @@ public class SpaceController {
     }
 
     @DeleteMapping("/space/{spaceId}/trashcan/{pageId}") // 휴지통의 페이지 삭제
-    @PreAuthorize("@jwtAuthenticationFilter.isSpaceOwner(#request, #spaceId)")
     public ResponseEntity<BasicResponse> deleteTrashCanPage(@PathVariable Long spaceId,
                                                             @PathVariable Long pageId,
                                                             HttpServletRequest request) {

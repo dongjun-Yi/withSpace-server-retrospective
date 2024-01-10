@@ -102,15 +102,15 @@ public class EasyToDo {
         weeks.addAll(Arrays.asList(week));
     }
     public void changeMonth(CategoryMonthlyEasyDto monthlyDto) {
-
-
-        Integer[] day = monthlyDto.getDay();
-        months = new ArrayList<>(day.length);
-        months.addAll(Arrays.asList(day));
-
-        if (monthlyDto.isLastDay()) {
-            lastDay = true;
-        }
+//
+//
+//        Integer[] day = monthlyDto.getDay();
+//        months = new ArrayList<>(day.length);
+//        months.addAll(Arrays.asList(day));
+//
+//        if (monthlyDto.isLastDay()) {
+//            lastDay = true;
+//        }
 
     }
 

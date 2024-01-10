@@ -19,7 +19,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -34,7 +33,6 @@ public class ToDoController {
     private final ToDoService toDoService;
 
     @PostMapping("/category/{categoryId}/todo") //투두 생성 (카테고리에서 일반생성)
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<ToDoBasicResponse> createToDo(@PathVariable("categoryId") Long categoryId,
                                                         @RequestBody ToDoRequestDto toDoRequestDto,
                                                         HttpServletRequest request) {
@@ -49,7 +47,6 @@ public class ToDoController {
     }
 
     @PatchMapping("/todo/{todoId}/active") //간편으로 입력된 투두 활성화
-    @PreAuthorize("@jwtAuthenticationFilter.isToDoOwner(#request, #todoId)")
     public ResponseEntity<ToDoBasicResponse> activeEasyTodo(@PathVariable("todoId") Long todoId,
                                                             HttpServletRequest request) {
         Long activeToDoId = toDoService.activeToDo(todoId);
@@ -60,7 +57,6 @@ public class ToDoController {
     }
 
     @PatchMapping("/todo/{todoId}/today") // 오늘하기
-    @PreAuthorize("@jwtAuthenticationFilter.isToDoOwner(#request, #todoId)")
     public ResponseEntity<ToDoBasicResponse> changeToday(@PathVariable("todoId") Long todoId,
                                                          HttpServletRequest request) {
         Long activeToDoId = toDoService.changeToday(todoId);
@@ -72,7 +68,6 @@ public class ToDoController {
     }
 
     @PatchMapping("/todo/{todoId}/time") // 날짜 바꾸기
-    @PreAuthorize("@jwtAuthenticationFilter.isToDoOwner(#request, #todoId)")
     public ResponseEntity<ToDoBasicResponse> changeToDoDate(@PathVariable("todoId") Long todoId,
                                                             @RequestBody ChangeToDoRequestDto toDoRequestDto,
                                                             HttpServletRequest request) {
@@ -84,7 +79,6 @@ public class ToDoController {
     }
 
     @PostMapping("/category/{categoryId}/todo/daily") // 간편입력 - 매일반복
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<ToDoEasyResponse> makeDailyEasy(@PathVariable("categoryId") Long categoryId,
                                                           HttpServletRequest request,
                                                           @Valid @RequestBody CategoryDailyEasyDto dailyDto) {
@@ -95,7 +89,6 @@ public class ToDoController {
     }
 
     @PostMapping("/category/{categoryId}/todo/weekly") // 간편입력 - 매주반복
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<ToDoEasyResponse> makeWeeklyEasy(@PathVariable("categoryId") Long categoryId,
                                                            HttpServletRequest request,
                                                            @Valid @RequestBody CategoryWeeklyEasyDto weeklyDto) {
@@ -105,21 +98,9 @@ public class ToDoController {
         return new ResponseEntity<>(toDoEasyResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/category/{categoryId}/todo/monthly") // 간편입력 - 매월반복
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
-    public ResponseEntity<ToDoEasyResponse> makeMonthlyEasy(@PathVariable("categoryId") Long categoryId,
-                                                            HttpServletRequest request,
-                                                            @Valid @RequestBody CategoryMonthlyEasyDto monthlyDto) {
-        Long easyToDoId = categoryService.makeMonthlyDtoEasy(categoryId, monthlyDto);
-        ToDoEasyResponse toDoEasyResponse = new ToDoEasyResponse(easyToDoId, CREATED,
-                "할일 간편입력이 완료되었습니다. - 매월 반복");
-        return new ResponseEntity<>(toDoEasyResponse, HttpStatus.OK);
-    }
-
     //---------------------------------------------------------------------------------
 
     @PatchMapping("/category/{categoryId}/todo/{easyToDoId}/daily") // 간편입력 수정 - 매일반복
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<ToDoEasyResponse> modifyDailyEasy(@PathVariable("categoryId") Long categoryId,
                                                             @PathVariable("easyToDoId") Long easyToDoId,
                                                             HttpServletRequest request,
@@ -131,7 +112,6 @@ public class ToDoController {
     }
 
     @PatchMapping("/category/{categoryId}/todo/{easyToDoId}/weekly") // 간편입력 수정 - 매주반복
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<ToDoEasyResponse> modifyWeeklyEasy(@PathVariable("categoryId") Long categoryId,
                                                              @PathVariable("easyToDoId") Long easyToDoId,
                                                              HttpServletRequest request,
@@ -143,7 +123,6 @@ public class ToDoController {
     }
 
     @PatchMapping("/category/{categoryId}/todo/{easyToDoId}/monthly") // 간편입력 수정 - 매월반복
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<ToDoEasyResponse> modifyMonthlyEasy(@PathVariable("categoryId") Long categoryId,
                                                               @PathVariable("easyToDoId") Long easyToDoId,
                                                               HttpServletRequest request,
@@ -157,7 +136,6 @@ public class ToDoController {
     //---------------------------------------------------------------------------------
 
     @DeleteMapping("/category/{categoryId}") //카테고리 삭제
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<CategoryBasicResponse> deleteCategory(@PathVariable("categoryId") Long categoryId,
                                                                 HttpServletRequest request) {
         categoryService.delete(categoryId);
@@ -167,7 +145,6 @@ public class ToDoController {
     }
 
     @DeleteMapping("/category/{categoryId}/todo/{easyToDoId}") // 간편입력 해제
-    @PreAuthorize("@jwtAuthenticationFilter.isCategoryOwner(#request, #categoryId)")
     public ResponseEntity<CategoryBasicResponse> deleteEasy(@PathVariable("categoryId") Long categoryId,
                                                             @PathVariable("easyToDoId") Long easyToDoId,
                                                             HttpServletRequest request) {
@@ -180,7 +157,6 @@ public class ToDoController {
     }
 
     @PatchMapping("/todo/{todoId}") //투두 수정
-    @PreAuthorize("@jwtAuthenticationFilter.isToDoOwner(#request,#todoId)")
     public ResponseEntity<ToDoBasicResponse> updateToDoDescription(@PathVariable("todoId") Long todoId,
                                                                    @RequestBody ToDoDescriptionUpdateDto toDoDescriptionUpdateDto,
                                                                    HttpServletRequest request) {
@@ -190,7 +166,6 @@ public class ToDoController {
     }
 
     @DeleteMapping("/todo/{todoId}") //투두 삭제
-    @PreAuthorize("@jwtAuthenticationFilter.isToDoOwner(#request,#todoId)")
     public ResponseEntity<ToDoBasicResponse> deleteToDo(@PathVariable("todoId") Long todoId,
                                                         HttpServletRequest request) {
         toDoService.deleteToDo(todoId);

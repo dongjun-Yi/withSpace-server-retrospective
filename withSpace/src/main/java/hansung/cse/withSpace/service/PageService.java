@@ -15,13 +15,8 @@ import hansung.cse.withSpace.requestdto.space.page.PageUpdateContentRequestDto;
 import hansung.cse.withSpace.requestdto.space.page.PageUpdateTitleRequestDto;
 import hansung.cse.withSpace.responsedto.space.page.PageHierarchyDto;
 import hansung.cse.withSpace.responsedto.space.page.PageTrashCanDto;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -58,7 +53,6 @@ public class PageService {
     }
 
 
-
     @Transactional
     public Long makePage(Long spaceId, PageCreateRequestDto pageCreateRequestDto) {
         Space space = spaceService.findOne(spaceId);
@@ -76,9 +70,8 @@ public class PageService {
 
 
             //pageRepository.save(parentPage);
-        }
-        else{ //최상위 페이지인 경우
-            space.setTopLevelPageCount(space.getTopLevelPageCount()+1);
+        } else { //최상위 페이지인 경우
+            space.setTopLevelPageCount(space.getTopLevelPageCount() + 1);
         }
 
         pageRepository.save(page);
@@ -94,7 +87,6 @@ public class PageService {
 //    }
 
 
-
     @Transactional
     public void updatePageTitle(Long pageId, PageUpdateTitleRequestDto requestDto) {
         Page page = findOne(pageId);
@@ -106,6 +98,7 @@ public class PageService {
 //
 //        page.setUpdatedAt(LocalDateTime.now());
     }
+
     @Transactional
     public void updatePageContent(Long pageId, PageUpdateContentRequestDto requestDto) {
         Page page = findOne(pageId);
@@ -120,7 +113,6 @@ public class PageService {
         //쓰레기통으로 옮기는 작업
         TrashCan trashCan = space.getTrashCan();
         List<Page> pageTrashCanList = trashCan.getPageList();
-
 
 
         if (page.getParentPage() != null) { //부모 페이지가 있다면 연결을 끊어줘야함
@@ -147,7 +139,7 @@ public class PageService {
         Optional<Space> optionalSpace = Optional.ofNullable(page.getSpace());
         Space space = optionalSpace.orElseThrow(() -> new PageNotInSpaceException("페이지가 스페이스 내에 없습니다."));
 
-        if (space.getTopLevelPageCount() == 1 && page.getParentPage() == null ) {
+        if (space.getTopLevelPageCount() == 1 && page.getParentPage() == null) {
             //스페이스에 최상위 페이지가 하나 && 삭제하려는 페이지가 또 제일 최상단 부모페이지면 삭제 불가
             throw new PageDeletionNotAllowedException("최상위 페이지가 하나밖에 없는 경우에는 삭제가 불가능합니다.");
         }
@@ -189,7 +181,7 @@ public class PageService {
         if (page.getBeforeParentId() != null) { //끊어진 부모페이지와의 관계 이어줌
             Page beforeParent = findOne(page.getBeforeParentId());
             page.outTrashCan(trashCan, beforeParent); // 쓰레기통에서 페이지 제거
-        }else{
+        } else {
             page.outTrashCan(trashCan); // 쓰레기통에서 페이지 제거
         }
 
@@ -199,9 +191,8 @@ public class PageService {
             childPage.outTrashCan(trashCan); // 쓰레기통에서 페이지 제거
         }
 
-        System.out.println(page.getSpace().getId()+"-----------------");
+        System.out.println(page.getSpace().getId() + "-----------------");
     }
-
 
 
     @Transactional
@@ -216,7 +207,6 @@ public class PageService {
         pageRepository.deleteAll(childPages);
         pageRepository.delete(page);
     }
-
 
 
 }

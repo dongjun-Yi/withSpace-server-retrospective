@@ -1,7 +1,6 @@
 package hansung.cse.withSpace.domain;
 
 
-import hansung.cse.withSpace.domain.chat.Room;
 import hansung.cse.withSpace.domain.friend.FriendShip;
 import hansung.cse.withSpace.domain.space.MemberSpace;
 import jakarta.persistence.*;
@@ -16,8 +15,8 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {   //회원
+@NoArgsConstructor
+public class Member {
 
     @Id
     @GeneratedValue
@@ -39,30 +38,13 @@ public class Member {   //회원
     @OneToMany(mappedBy = "friend", cascade = CascadeType.REMOVE)
     private List<FriendShip> friendReceiver = new ArrayList<>();//친구 신청 받은 사람
 
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//    private List<MemberRoom> memberRooms = new ArrayList<>(); // 일대일 개인채팅방
-
-    // 일대일 개인채팅방
-//    @OneToMany(mappedBy = "member1")
-//    private List<Room> roomList1 = new ArrayList<>(); //참여자1
-//    @OneToMany(mappedBy = "member2")
-//    private List<Room> roomList2 = new ArrayList<>(); //참여자2
-
-    @Column(unique = true)
     private String email;
     private String password;
 
-    @Column(unique = true)
     private String memberName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Boolean status;
-
-    //연관관계 편의 메소드//
-//    public void makeMemberSpace(MemberSpace memberSpace) {
-//        this.memberSpace = memberSpace;
-//        memberSpace.setMember(this);
-//    }
 
     public Member(UUID uuid, String memberName, String email, String password) {
         this.memberName = memberName;
@@ -79,12 +61,6 @@ public class Member {   //회원
         //스페이스 생성
         MemberSpace memberSpace = new MemberSpace(this);
         this.memberSpace = memberSpace;
-
-
-    }
-
-    public void setMemberSpace() {
-
     }
 
     public void update(String email, String password, String memberName) {
@@ -100,9 +76,6 @@ public class Member {   //회원
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void changeUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
     public void setStatus(boolean status) {
         this.status = status;
     }

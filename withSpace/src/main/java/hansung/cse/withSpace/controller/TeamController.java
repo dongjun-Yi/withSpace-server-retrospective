@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +23,6 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class TeamController {
-    private static final int SUCCESS = 200;
     private static final int CREATED = 201;
     private final TeamService teamService;
     private final MemberService memberService;
@@ -84,7 +82,6 @@ public class TeamController {
     }
 
     @GetMapping("/team/{teamId}/space") //팀 스페이스 조회
-    @PreAuthorize("@jwtAuthenticationFilter.isMemberInTeam(#request, #teamId)") // 현재 로그인한 사용자가 team에 가입되어있는 경우에만 접근 허용
     public ResponseEntity<BasicResponse> getTeamSpace(@PathVariable Long teamId,
                                                       HttpServletRequest request) {
         Team team = teamService.findOne(teamId);
@@ -94,7 +91,6 @@ public class TeamController {
     }
 
     @DeleteMapping("/team/{teamId}") //팀 나가기
-    @PreAuthorize("@jwtAuthenticationFilter.isInTeam(#request, #teamId)")
     public ResponseEntity<BasicResponse> getOutTeam(@PathVariable Long teamId,
                                                     HttpServletRequest request) {
         //Team team = teamService.findOne(teamId);

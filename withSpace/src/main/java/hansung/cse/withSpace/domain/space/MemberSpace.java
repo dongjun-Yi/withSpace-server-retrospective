@@ -13,7 +13,7 @@ import hansung.cse.withSpace.domain.Member;
 public class MemberSpace extends Space {
 
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 

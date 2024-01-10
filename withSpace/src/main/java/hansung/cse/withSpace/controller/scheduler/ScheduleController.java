@@ -3,8 +3,6 @@ package hansung.cse.withSpace.controller.scheduler;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.space.schedule.Category;
 import hansung.cse.withSpace.domain.space.schedule.Schedule;
-import hansung.cse.withSpace.domain.space.schedule.ToDo;
-import hansung.cse.withSpace.requestdto.schedule.category.CategoryInactiveDto;
 import hansung.cse.withSpace.requestdto.schedule.category.CategoryRequestDto;
 import hansung.cse.withSpace.responsedto.BasicResponse;
 import hansung.cse.withSpace.responsedto.schedule.ScheduleCategoryDto;
@@ -19,7 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -36,7 +33,6 @@ public class ScheduleController {
     private final CategoryService categoryService;
 
     @GetMapping("/schedule/{scheduleId}") //스케줄 조회
-    @PreAuthorize("@jwtAuthenticationFilter.isScheduleOwner(#request, #scheduleId)")
     public ResponseEntity<BasicResponse> schedule(@PathVariable("scheduleId") Long scheduleId,
                                                   HttpServletRequest request) {
         Schedule schedule = scheduleService.findSchedule(scheduleId);
@@ -46,7 +42,6 @@ public class ScheduleController {
     }
 
     @GetMapping("/friend/{friendId}/schedule") //친구 스케줄 조회
-    @PreAuthorize("@jwtAuthenticationFilter.isFriend(#request, #friendId)")  //서로 친구인지 확인
     public ResponseEntity<BasicResponse> getFriendSchedule(@PathVariable("friendId") Long friendId, HttpServletRequest request) {
         Member friend = memberService.findOne(friendId);
         Schedule friendSchedule = friend.getMemberSpace().getSchedule();
@@ -56,7 +51,6 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedule/{scheduleId}/categories") //카테고리 조회
-    @PreAuthorize("@jwtAuthenticationFilter.isScheduleOwner(#request, #scheduleId)")
     public ResponseEntity<BasicResponse> categories(@PathVariable("scheduleId") Long scheduleId,
                                                     HttpServletRequest request) {
         Schedule schedule = scheduleService.findSchedule(scheduleId);
@@ -66,7 +60,6 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedule/{scheduleId}/easytodo") //간편입력 조회
-    @PreAuthorize("@jwtAuthenticationFilter.isScheduleOwner(#request, #scheduleId)")
     public ResponseEntity<List<EasyCategory>> easyToDo(@PathVariable("scheduleId") Long scheduleId,
                                                        HttpServletRequest request) {
         List<EasyCategory> easyToDo = scheduleService.findEasyToDo(scheduleId);
@@ -78,7 +71,6 @@ public class ScheduleController {
      * 카테고리 생성
      */
     @PostMapping("/schedule/{scheduleId}/category")
-    @PreAuthorize("@jwtAuthenticationFilter.isScheduleOwner(#request, #scheduleId)")
     public ResponseEntity<CategoryBasicResponse> createCategory(@PathVariable("scheduleId") Long scheduleId,
                                                                 @RequestBody CategoryRequestDto categoryRequestDto,
                                                                 HttpServletRequest request) {

@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +21,6 @@ public class PageController {
     private final PageService pageService;
 
     @GetMapping("/page/{pageId}") //페이지 조회
-    //@PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
     public ResponseEntity<PageDetailDto> getPage(@PathVariable Long pageId, HttpServletRequest request) {
         //jwtAuthenticationFilter.isPageOwner(request, pageId); //접근권한 확인
         Page page = pageService.findOne(pageId);
@@ -32,7 +30,6 @@ public class PageController {
     }
 
     @GetMapping("/page/{pageId}/hierarchy") //페이지 계층 조회
-    //@PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
     public ResponseEntity<List<PageHierarchyDto>> getPageHierarchy(@PathVariable Long pageId,
                                                                    HttpServletRequest request) {
         //jwtAuthenticationFilter.isPageOwner(request, pageId); //접근권한 확인
@@ -57,7 +54,6 @@ public class PageController {
     }
 
     @PatchMapping("/page/{pageId}/content")  //페이지 내용 업데이트
-    //@PreAuthorize("@customSecurityUtil.isPageOwner(#pageId)")
     public ResponseEntity<PageBaseResponse> updatePageContent(@PathVariable Long pageId,
                                                               @RequestBody PageUpdateContentRequestDto requestDto,
                                                               HttpServletRequest request) {
@@ -71,7 +67,6 @@ public class PageController {
     }
 
     @PatchMapping("/page/{pageId}/trashcan") //페이지 휴지통 이동
-    @PreAuthorize("@jwtAuthenticationFilter.isPageOwner(#request, #pageId)")
     public ResponseEntity<BasicResponse> throwPage(@PathVariable Long pageId, HttpServletRequest request) {
         //jwtAuthenticationFilter.isPageOwner(request, pageId); //접근권한 확인
         PageTrashCanDto pageTrashCanDto = pageService.throwPage(pageId);
@@ -81,7 +76,6 @@ public class PageController {
 
 
     @DeleteMapping("/page/{pageId}/trashcan") // (쓰레기통에 있는) 페이지 삭제
-    @PreAuthorize("@jwtAuthenticationFilter.isPageOwner(#request, #pageId)")
     public ResponseEntity<BasicResponse> deletePage(@PathVariable Long pageId, HttpServletRequest request) {
         //jwtAuthenticationFilter.isPageOwner(request, pageId); //접근권한 확인
         pageService.deletePage(pageId);
