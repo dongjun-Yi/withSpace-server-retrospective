@@ -35,7 +35,7 @@ public class FriendShipController {
     private final MemberService memberService;
     private final RoomService roomService;
 
-    @GetMapping("/{memberId}/friend")
+    @GetMapping("member/{memberId}/friend")
     public ResponseEntity<BasicResponse> friend(@PathVariable("memberId") Long memberId, HttpServletRequest request) {
         Member member = memberService.findOne(memberId);
         List<Member> friendList = friendShipService.findFriendList(member);
@@ -46,7 +46,7 @@ public class FriendShipController {
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/{memberId}/friend") //친구신청
+    @PostMapping("member/{memberId}/friendRequest") //친구신청
     public ResponseEntity<SendFriendShipResponseDto> sendFriendShip(@PathVariable("memberId") Long memberId,
                                                                     @RequestBody FriendRequestDto friendRequestDto,
                                                                     HttpServletRequest request) {
@@ -73,7 +73,7 @@ public class FriendShipController {
         return new ResponseEntity<>(friendResponseDto, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/friend/{memberId}/{friendId}")
+    @DeleteMapping("/member/{memberId}/friend/{friendId}")
     public ResponseEntity<FriendBasicResponse> deleteFriendShip(@PathVariable("memberId") Long memberId,
                                                                 @PathVariable("friendId") Long friendId,
                                                                 HttpServletRequest request) {
@@ -84,8 +84,8 @@ public class FriendShipController {
         return new ResponseEntity<>(new FriendBasicResponse(SUCCESS, "친구 삭제가 정상적으로 되었습니다."), HttpStatus.OK);
     }
 
-    @GetMapping("/{memberId}/friendReceive")
-    public ResponseEntity<BasicResponse> friendReceiveList(@PathVariable("memberId") Long memberId, HttpServletRequest request) {
+    @GetMapping("member/{memberId}/friendReceived")
+    public ResponseEntity<BasicResponse> friendReceivedList(@PathVariable("memberId") Long memberId, HttpServletRequest request) {
         Member member = memberService.findOne(memberId);
         List<Member> friendReceiveList = friendShipService.findFriendReceiveList(member.getId());
         List<FriendDto> collect = friendReceiveList.stream()
@@ -95,7 +95,7 @@ public class FriendShipController {
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/{memberId}/friend/reject")
+    @PostMapping("member/{memberId}/friendReject")
     public ResponseEntity<FriendBasicResponse> friendRequestReject(@PathVariable("memberId") Long memberId, @RequestBody FriendRequestDto friendRequestDto,
                                                                    HttpServletRequest request) {
         Member member = memberService.findOne(memberId);
