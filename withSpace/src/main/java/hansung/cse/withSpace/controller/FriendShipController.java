@@ -36,7 +36,7 @@ public class FriendShipController {
     private final RoomService roomService;
 
     @GetMapping("member/{memberId}/friend")
-    public ResponseEntity<BasicResponse> friend(@PathVariable("memberId") Long memberId, HttpServletRequest request) {
+    public ResponseEntity<BasicResponse> friend(@PathVariable("memberId") Long memberId) {
         Member member = memberService.findOne(memberId);
         List<Member> friendList = friendShipService.findFriendList(member);
         List<FriendDto> collect = friendList.stream()
@@ -46,10 +46,9 @@ public class FriendShipController {
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
-    @PostMapping("member/{memberId}/friendRequest") //친구신청
+    @PostMapping("member/{memberId}/friend-request") // 친구신청
     public ResponseEntity<SendFriendShipResponseDto> sendFriendShip(@PathVariable("memberId") Long memberId,
-                                                                    @RequestBody FriendRequestDto friendRequestDto,
-                                                                    HttpServletRequest request) {
+                                                                    @RequestBody FriendRequestDto friendRequestDto) {
         //친구 요청 보낸 사람
         Member friendRequester = memberService.findOne(memberId);
         //친구 요청 받은 사람
@@ -75,8 +74,7 @@ public class FriendShipController {
 
     @DeleteMapping("/member/{memberId}/friend/{friendId}")
     public ResponseEntity<FriendBasicResponse> deleteFriendShip(@PathVariable("memberId") Long memberId,
-                                                                @PathVariable("friendId") Long friendId,
-                                                                HttpServletRequest request) {
+                                                                @PathVariable("friendId") Long friendId) {
         friendShipService.deleteFriendShip(memberId, friendId);
 
         roomService.removeFriendRoom(memberId, friendId); //친구 삭제시 채팅방도 삭제
@@ -84,8 +82,8 @@ public class FriendShipController {
         return new ResponseEntity<>(new FriendBasicResponse(SUCCESS, "친구 삭제가 정상적으로 되었습니다."), HttpStatus.OK);
     }
 
-    @GetMapping("member/{memberId}/friendReceived")
-    public ResponseEntity<BasicResponse> friendReceivedList(@PathVariable("memberId") Long memberId, HttpServletRequest request) {
+    @GetMapping("member/{memberId}/friend-received")
+    public ResponseEntity<BasicResponse> friendReceivedList(@PathVariable("memberId") Long memberId) {
         Member member = memberService.findOne(memberId);
         List<Member> friendReceiveList = friendShipService.findFriendReceiveList(member.getId());
         List<FriendDto> collect = friendReceiveList.stream()
@@ -95,9 +93,8 @@ public class FriendShipController {
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
-    @PostMapping("member/{memberId}/friendReject")
-    public ResponseEntity<FriendBasicResponse> friendRequestReject(@PathVariable("memberId") Long memberId, @RequestBody FriendRequestDto friendRequestDto,
-                                                                   HttpServletRequest request) {
+    @PostMapping("member/{memberId}/friend-reject")
+    public ResponseEntity<FriendBasicResponse> friendRequestReject(@PathVariable("memberId") Long memberId, @RequestBody FriendRequestDto friendRequestDto) {
         Member member = memberService.findOne(memberId);
         friendShipService.rejectFriendShip(member.getId(), friendRequestDto.getFriendId());
         return new ResponseEntity<>(new FriendBasicResponse(SUCCESS, "친구 신청을 거절했습니다."), HttpStatus.OK);

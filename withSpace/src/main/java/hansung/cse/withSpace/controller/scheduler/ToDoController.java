@@ -135,15 +135,6 @@ public class ToDoController {
 
     //---------------------------------------------------------------------------------
 
-    @DeleteMapping("/category/{categoryId}") //카테고리 삭제
-    public ResponseEntity<CategoryBasicResponse> deleteCategory(@PathVariable("categoryId") Long categoryId,
-                                                                HttpServletRequest request) {
-        categoryService.delete(categoryId);
-        CategoryBasicResponse categoryBasicResponse = new CategoryBasicResponse(SUCCESS_CODE,
-                "카테고리가 삭제되었습니다.");
-        return new ResponseEntity<>(categoryBasicResponse, HttpStatus.OK);
-    }
-
     @DeleteMapping("/category/{categoryId}/todo/{easyToDoId}") // 간편입력 해제
     public ResponseEntity<CategoryBasicResponse> deleteEasy(@PathVariable("categoryId") Long categoryId,
                                                             @PathVariable("easyToDoId") Long easyToDoId,

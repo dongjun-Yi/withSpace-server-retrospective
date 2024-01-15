@@ -25,12 +25,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class ScheduleController {
-    private static final int CREATED = 201;
     private final MemberService memberService;
 
     private final ScheduleService scheduleService;
-
-    private final CategoryService categoryService;
 
     @GetMapping("/schedule/{scheduleId}") //스케줄 조회
     public ResponseEntity<BasicResponse> schedule(@PathVariable("scheduleId") Long scheduleId,
@@ -65,21 +62,5 @@ public class ScheduleController {
         List<EasyCategory> easyToDo = scheduleService.findEasyToDo(scheduleId);
 
         return new ResponseEntity<>(easyToDo, HttpStatus.OK);
-    }
-
-    /**
-     * 카테고리 생성
-     */
-    @PostMapping("/schedule/{scheduleId}/category")
-    public ResponseEntity<CategoryBasicResponse> createCategory(@PathVariable("scheduleId") Long scheduleId,
-                                                                @RequestBody CategoryRequestDto categoryRequestDto,
-                                                                HttpServletRequest request) {
-        Schedule schedule = scheduleService.findSchedule(scheduleId);
-
-        Category category = new Category(schedule, categoryRequestDto);
-
-        Long saveCategoryId = categoryService.makeCategory(category);
-        CategoryBasicResponse categoryBasicResponse = new CategoryBasicResponse(saveCategoryId, CREATED, "카테고리가 등록되었습니다.");
-        return new ResponseEntity<>(categoryBasicResponse, HttpStatus.CREATED);
     }
 }
