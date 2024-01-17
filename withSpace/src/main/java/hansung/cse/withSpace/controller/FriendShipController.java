@@ -13,6 +13,10 @@ import hansung.cse.withSpace.service.FriendShipService;
 import hansung.cse.withSpace.service.MemberService;
 import hansung.cse.withSpace.service.RoomService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +39,8 @@ public class FriendShipController {
     private final MemberService memberService;
     private final RoomService roomService;
 
-    @GetMapping("member/{memberId}/friend")
-    public ResponseEntity<BasicResponse> friend(@PathVariable("memberId") Long memberId) {
+    @GetMapping("/member/{memberId}/friend")
+    public ResponseEntity<BasicResponse> getFriend(@PathVariable("memberId") Long memberId) {
         Member member = memberService.findOne(memberId);
         List<Member> friendList = friendShipService.findFriendList(member);
         List<FriendDto> collect = friendList.stream()
@@ -46,29 +50,29 @@ public class FriendShipController {
         return new ResponseEntity<>(basicResponse, HttpStatus.OK);
     }
 
-    @PostMapping("member/{memberId}/friend-request") // 친구신청
+    @PostMapping("/member/{memberId}/friend-request") // 친구신청
     public ResponseEntity<SendFriendShipResponseDto> sendFriendShip(@PathVariable("memberId") Long memberId,
-                                                                    @RequestBody FriendRequestDto friendRequestDto) {
+                                                                    @Valid @RequestBody FriendRequestDto friendRequestDto) {
         //친구 요청 보낸 사람
         Member friendRequester = memberService.findOne(memberId);
         //친구 요청 받은 사람
         Member friendReceiver = memberService.findOne(friendRequestDto.getFriendId());
 
-        for (FriendShip requester : friendRequester.getFriendRequester()) {
-            if (Objects.equals(requester.getFriend().getId(), friendReceiver.getId())) {
-                if (requester.getStatus().equals(FriendStatus.ACCEPTED)) //친구신청 목록중에 이미 친구상태이면
-                    throw new FriendAddException("이미 친구관계를 맺은 회원입니다.");
-                else
-                    throw new FriendAddException("이미 친구신청을 보냈습니다."); // 친구신청 목록중에 이미 보냈다면
-            }
-        }
+//        for (FriendShip requester : friendRequester.getFriendRequester()) {
+//            if (Objects.equals(requester.getFriend().getId(), friendReceiver.getId())) {
+//                if (requester.getStatus().equals(FriendStatus.ACCEPTED)) //친구신청 목록중에 이미 친구상태이면
+//                    throw new FriendAddException("이미 친구관계를 맺은 회원입니다.");
+//                else
+//                    throw new FriendAddException("이미 친구신청을 보냈습니다."); // 친구신청 목록중에 이미 보냈다면
+//            }
+//        }
 
         FriendShip friendShip = new FriendShip(friendRequester, friendReceiver);
 
-        friendShipService.addFriend(friendShip);
+        Long friendShipId = friendShipService.addFriend(friendShip);
 
         SendFriendShipResponseDto friendResponseDto
-                = new SendFriendShipResponseDto(friendRequester.getId(), CREATED, "친구신청을 보냈습니다.");
+                = new SendFriendShipResponseDto(friendShipId, CREATED, "친구신청을 보냈습니다.");
         return new ResponseEntity<>(friendResponseDto, HttpStatus.CREATED);
     }
 

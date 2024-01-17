@@ -23,11 +23,15 @@ public class FriendShipService {
 
     @Transactional
     public Long addFriend(FriendShip friendShip) {
+        if (checkIfFriendRequestPresent())
+            throw new FriendAddException("이미 친구신청을 보냈습니다.");
         FriendShip saveFriendRequest = friendShipRepository.save(friendShip);
-        ValidateFriendShip(friendShip);
-
-
+        checkFriendShipStatus(friendShip);
         return saveFriendRequest.getId();
+    }
+
+    private boolean checkIfFriendRequestPresent() {
+        return false;
     }
 
     //id로 두 멤버가 친구인지 확인
@@ -40,16 +44,15 @@ public class FriendShipService {
             return true;
         }
         return false;
-
     }
 
 
-    //친구관계를 맺었는지 확인하는 함수
+    // 친구관계를 맺었는지 확인하는 함수
     @Transactional
-    public void ValidateFriendShip(FriendShip friendShip) {
+    public void checkFriendShipStatus(FriendShip friendShip) {
         Optional<FriendShip> findFriendShip = friendShipRepository.findFriendShip(friendShip.getMember().getId(),
                 friendShip.getFriend().getId());
-        if (!findFriendShip.isEmpty()) {  //상대쪽에서 보내놓은 친구요청이 있는 경우
+        if (findFriendShip.isPresent()) {  //상대쪽에서 보내놓은 친구요청이 있는 경우
             findFriendShip.get().setStatus(FriendStatus.ACCEPTED);
             friendShip.setStatus(FriendStatus.ACCEPTED);
 
