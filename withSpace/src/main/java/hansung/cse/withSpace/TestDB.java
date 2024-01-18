@@ -53,9 +53,9 @@ public class TestDB {
         FriendShip friendShip1 = new FriendShip(member2, member1);
         FriendShip friendShip3 = new FriendShip(member3, member1);
 
-        Long friendShipId1 = friendShipService.addFriend(friendShip);
-        Long friendShipId2 = friendShipService.addFriend(friendShip1);
-        Long friendShipId3 = friendShipService.addFriend(friendShip3);
+        friendShipService.sendFriendRequest(friendShip);
+        friendShipService.sendFriendRequest(friendShip1);
+        friendShipService.sendFriendRequest(friendShip3);
 
         List<Member> friendList = friendShipService.findFriendList(member1);
 

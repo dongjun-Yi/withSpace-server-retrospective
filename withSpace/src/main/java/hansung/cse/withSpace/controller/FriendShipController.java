@@ -69,7 +69,7 @@ public class FriendShipController {
 
         FriendShip friendShip = new FriendShip(friendRequester, friendReceiver);
 
-        Long friendShipId = friendShipService.addFriend(friendShip);
+        Long friendShipId = friendShipService.sendFriendRequest(friendShip);
 
         SendFriendShipResponseDto friendResponseDto
                 = new SendFriendShipResponseDto(friendShipId, CREATED, "친구신청을 보냈습니다.");

@@ -22,7 +22,7 @@ public class FriendShipService {
 
 
     @Transactional
-    public Long addFriend(FriendShip friendShip) {
+    public Long sendFriendRequest(FriendShip friendShip) {
         if (checkIfFriendRequestPresent())
             throw new FriendAddException("이미 친구신청을 보냈습니다.");
         FriendShip saveFriendRequest = friendShipRepository.save(friendShip);
@@ -50,7 +50,7 @@ public class FriendShipService {
     // 친구관계를 맺었는지 확인하는 함수
     @Transactional
     public void checkFriendShipStatus(FriendShip friendShip) {
-        Optional<FriendShip> findFriendShip = friendShipRepository.findFriendShip(friendShip.getMember().getId(),
+        Optional<FriendShip> findFriendShip = friendShipRepository.findFriendRequest(friendShip.getMember().getId(),
                 friendShip.getFriend().getId());
         if (findFriendShip.isPresent()) {  //상대쪽에서 보내놓은 친구요청이 있는 경우
             findFriendShip.get().setStatus(FriendStatus.ACCEPTED);
@@ -83,6 +83,10 @@ public class FriendShipService {
     public List<Member> findFriendReceiveList(Long memberId) {
         List<Member> friendReceiveList = friendShipRepository.findFriendReceiveList(memberId, FriendStatus.PENDING);
         return friendReceiveList;
+    }
+
+    public Optional<FriendShip> findFriendShipWithId(Long memberId, Long friendShipId) {
+        return friendShipRepository.findFriendShip(memberId, friendShipId);
     }
 
     // 친구신청 거절은 테이블에 있는 행을 삭제함
