@@ -59,6 +59,6 @@ class FriendShipServiceTest {
 
         //then
         FriendShip findFriendShip = friendShipService.findFriendShipWithId(memberA.getId(), memberB.getId()).get();
-        assertThat(findFriendShip.getStatus()).isEqualTo(FriendStatus.ACCEPTED);
+        assertThat(findFriendShip.getStatus()).isEqualTo(FriendStatus.FRIEND);
     }
 }

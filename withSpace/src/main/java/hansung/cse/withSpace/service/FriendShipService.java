@@ -36,11 +36,11 @@ public class FriendShipService {
 
     //id로 두 멤버가 친구인지 확인
     public boolean isFriend(Long memberId, Long friendId) {
-        FriendShip friendShip1 = friendShipRepository.findByMemberIdAndFriendIdAndStatus(memberId, friendId, FriendStatus.ACCEPTED);
-        FriendShip friendShip2 = friendShipRepository.findByMemberIdAndFriendIdAndStatus(friendId, memberId, FriendStatus.ACCEPTED);
+        FriendShip friendShip1 = friendShipRepository.findByMemberIdAndFriendIdAndStatus(memberId, friendId, FriendStatus.FRIEND);
+        FriendShip friendShip2 = friendShipRepository.findByMemberIdAndFriendIdAndStatus(friendId, memberId, FriendStatus.FRIEND);
 
         if (friendShip1 != null && friendShip2 != null &&
-                friendShip1.getStatus() == FriendStatus.ACCEPTED && friendShip2.getStatus() == FriendStatus.ACCEPTED) {
+                friendShip1.getStatus() == FriendStatus.FRIEND && friendShip2.getStatus() == FriendStatus.FRIEND) {
             return true;
         }
         return false;
@@ -53,8 +53,8 @@ public class FriendShipService {
         Optional<FriendShip> findFriendShip = friendShipRepository.findFriendRequest(friendShip.getMember().getId(),
                 friendShip.getFriend().getId());
         if (findFriendShip.isPresent()) {  //상대쪽에서 보내놓은 친구요청이 있는 경우
-            findFriendShip.get().setStatus(FriendStatus.ACCEPTED);
-            friendShip.setStatus(FriendStatus.ACCEPTED);
+            findFriendShip.get().setStatus(FriendStatus.FRIEND);
+            friendShip.setStatus(FriendStatus.FRIEND);
 
             //두 회원이 팀을 맺게 됐으므로 채팅방을 생성해줌
             Member member = friendShip.getMember();
@@ -67,7 +67,7 @@ public class FriendShipService {
     }
 
     public List<Member> findFriendList(Member member) {
-        List<Member> friendList = friendShipRepository.findFriendListByMemberId(member.getId(), FriendStatus.ACCEPTED);
+        List<Member> friendList = friendShipRepository.findFriendListByMemberId(member.getId(), FriendStatus.FRIEND);
         return friendList;
     }
 
