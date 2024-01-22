@@ -3,11 +3,14 @@ package hansung.cse.withSpace.repository;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.friend.FriendShip;
 import hansung.cse.withSpace.domain.friend.FriendStatus;
+import hansung.cse.withSpace.repository.member.MemberRepository;
 import hansung.cse.withSpace.service.FriendShipService;
 import hansung.cse.withSpace.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
@@ -19,7 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 class FriendShipRepositoryTest {
 
     @Autowired
-    private MemberService memberService;
+    private MemberRepository memberRepository;
 
     @Autowired
     private FriendShipService friendShipService;
@@ -31,23 +34,18 @@ class FriendShipRepositoryTest {
     @Test
     void findFriendList() {
         //given
-        Member memberA = new Member(UUID.randomUUID(), "memberA", "aaa@naver.com", "awqxxc");
-        Member memberB = new Member(UUID.randomUUID(), "memberB", "bbb@naver.com", "zxv31ia");
-        Member memberC = new Member(UUID.randomUUID(), "memberC", "ccc@naver.com", "pzjvv1");
+        Member memberA = makeMember(UUID.randomUUID(), "memberA", "aaa@naver.com", "awqxxc");
+        Member memberB = makeMember(UUID.randomUUID(), "memberB", "bbb@naver.com", "zxv31ia");
+        Member memberC = makeMember(UUID.randomUUID(), "memberC", "ccc@naver.com", "pzjvv1");
 
-        memberService.save(memberA);
-        memberService.save(memberB);
-        memberService.save(memberC);
+        memberRepository.saveAll(List.of(memberA, memberB, memberC));
 
-        FriendShip friendShip1 = new FriendShip(memberA, memberB);
-        FriendShip friendShip2 = new FriendShip(memberB, memberA);
-        FriendShip friendShip3 = new FriendShip(memberA, memberC);
-        FriendShip friendShip4 = new FriendShip(memberC, memberA);
+        FriendShip friendShip1 = sendFriendShipRequest(memberA, memberB);
+        FriendShip friendShip2 = sendFriendShipRequest(memberB, memberA);
+        FriendShip friendShip3 = sendFriendShipRequest(memberA, memberC);
+        FriendShip friendShip4 = sendFriendShipRequest(memberC, memberA);
 
-        friendShipService.sendFriendRequest(friendShip1);
-        friendShipService.sendFriendRequest(friendShip2);
-        friendShipService.sendFriendRequest(friendShip3);
-        friendShipService.sendFriendRequest(friendShip4);
+        sendRequestFriendShips(List.of(friendShip1, friendShip2, friendShip3, friendShip4));
 
         //when
         List<Member> memberAFriendList = friendShipRepository.findFriendListByMemberId(memberA.getId(), FriendStatus.FRIEND);
@@ -60,4 +58,19 @@ class FriendShipRepositoryTest {
                         tuple("memberC", "ccc@naver.com")
                 );
     }
+
+    private void sendRequestFriendShips(List<FriendShip> friendShips) {
+        for (FriendShip friendShip : friendShips) {
+            friendShipService.sendFriendRequest(friendShip);
+        }
+    }
+
+    private static FriendShip sendFriendShipRequest(Member memberA, Member memberB) {
+        return new FriendShip(memberA, memberB);
+    }
+
+    private Member makeMember(UUID randomUUID, String name, String email, String password) {
+        return new Member(randomUUID, name, email, password);
+    }
+
 }
