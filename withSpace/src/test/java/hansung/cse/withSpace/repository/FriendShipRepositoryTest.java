@@ -5,12 +5,9 @@ import hansung.cse.withSpace.domain.friend.FriendShip;
 import hansung.cse.withSpace.domain.friend.FriendStatus;
 import hansung.cse.withSpace.repository.member.MemberRepository;
 import hansung.cse.withSpace.service.FriendShipService;
-import hansung.cse.withSpace.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
