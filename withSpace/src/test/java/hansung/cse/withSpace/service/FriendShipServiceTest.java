@@ -31,6 +31,7 @@ class FriendShipServiceTest {
         memberService.save(memberB);
 
         FriendShip friendShip = new FriendShip(memberA, memberB);
+
         //when
         Long friendShipId = friendShipService.sendFriendRequest(friendShip);
 
@@ -41,7 +42,7 @@ class FriendShipServiceTest {
         assertThat(findFriendShip.getStatus()).isEqualTo(FriendStatus.PENDING);
     }
 
-    @DisplayName("친구 신청을 보낸 회원에게 친구신청을 보낼 경우 두 회원은 친구가 되어 ACCEPTED 상태가 된다.")
+    @DisplayName("친구 신청을 보낸 회원에게 친구신청을 보낼 경우 두 회원은 친구가 되어 FRIEND 상태가 된다.")
     @Test
     void sendFriendRequestWhoSendAlready() {
         //given
