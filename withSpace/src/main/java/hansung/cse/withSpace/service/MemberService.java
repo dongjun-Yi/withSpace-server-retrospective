@@ -46,11 +46,11 @@ public class MemberService {
     }
 
 
-
     public Member findOne(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
     }
+
     public Member findByUuid(UUID uuid) {
         return memberRepository.findByUuid(uuid)
                 .orElseThrow(() -> new MemberNotFoundException("회원을 찾을 수 없습니다."));
@@ -88,8 +88,6 @@ public class MemberService {
     public long memberCount() {
         return memberRepository.count();
     }
-
-
 
 
 //    public Optional<Member> findOneWithMemberTeams(Long memberId){
@@ -185,5 +183,10 @@ public class MemberService {
     @Transactional
     public void save(Member member) {
         memberRepository.save(member);
+    }
+
+    @Transactional
+    public void saveAllWithList(List<Member> members) {
+        memberRepository.saveAll(members);
     }
 }
