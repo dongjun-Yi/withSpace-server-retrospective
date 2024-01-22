@@ -46,7 +46,7 @@ class FriendShipControllerTest {
         //given
         FriendRequestDto request = new FriendRequestDto(null);
 
-        //when
+        //when, then
         mockMvc.perform(post("/member/1/friend-request")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -55,6 +55,4 @@ class FriendShipControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.message").value("친구의 번호는 필수입니다."));
     }
-
-
 }
