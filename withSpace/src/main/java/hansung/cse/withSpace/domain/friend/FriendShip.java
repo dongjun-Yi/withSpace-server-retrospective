@@ -34,7 +34,7 @@ public class FriendShip {
         this.friend = friend;
     }
 
-    public void setStatus(FriendStatus accepted) {
-        this.status = accepted;
+    public void setStatus(FriendStatus status) {
+        this.status = status;
     }
 }

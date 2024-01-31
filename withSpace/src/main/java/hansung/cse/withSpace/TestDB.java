@@ -36,7 +36,7 @@ public class TestDB {
     @PostConstruct
     public void postConstruct() {
         //scheduleInit();
-        friendInit();
+        //friendInit();
     }
 
     @Transactional

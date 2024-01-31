@@ -3,7 +3,7 @@ package hansung.cse.withSpace.service;
 import hansung.cse.withSpace.domain.Member;
 import hansung.cse.withSpace.domain.friend.FriendShip;
 import hansung.cse.withSpace.domain.friend.FriendStatus;
-import hansung.cse.withSpace.exception.friend.FriendAddException;
+import hansung.cse.withSpace.exception.friend.FriendRequestException;
 import hansung.cse.withSpace.repository.FriendShipRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,15 +22,19 @@ public class FriendShipService {
 
 
     @Transactional
-    public Long sendFriendRequest(FriendShip friendShip) {
-        if (checkIfFriendRequestPresent())
-            throw new FriendAddException("이미 친구신청을 보냈습니다.");
+    public Long sendFriendRequest(FriendShip friendShip) throws FriendRequestException {
+        if (checkIfFriendRequestPresent(friendShip))
+            throw new FriendRequestException("이미 친구신청을 보냈습니다.");
         FriendShip saveFriendRequest = friendShipRepository.save(friendShip);
         checkFriendShipStatus(friendShip);
         return saveFriendRequest.getId();
     }
 
-    private boolean checkIfFriendRequestPresent() {
+    private boolean checkIfFriendRequestPresent(FriendShip friendShip) {
+        Optional<FriendShip> friendRequest = friendShipRepository.findFriendShip(friendShip.getMember().getId(),
+                friendShip.getFriend().getId());
+        if (friendRequest.isPresent())
+            return true;
         return false;
     }
 
