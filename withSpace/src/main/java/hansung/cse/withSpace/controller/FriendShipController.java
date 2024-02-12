@@ -17,7 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -55,15 +57,6 @@ public class FriendShipController {
         Member friendRequester = memberService.findOne(memberId);
         //친구 요청 받은 사람
         Member friendReceiver = memberService.findOne(friendRequestDto.getFriendId());
-
-//        for (FriendShip requester : friendRequester.getFriendRequester()) {
-//            if (Objects.equals(requester.getFriend().getId(), friendReceiver.getId())) {
-//                if (requester.getStatus().equals(FriendStatus.ACCEPTED)) //친구신청 목록중에 이미 친구상태이면
-//                    throw new FriendAddException("이미 친구관계를 맺은 회원입니다.");
-//                else
-//                    throw new FriendAddException("이미 친구신청을 보냈습니다."); // 친구신청 목록중에 이미 보냈다면
-//            }
-//        }
 
         FriendShip friendShip = new FriendShip(friendRequester, friendReceiver);
 

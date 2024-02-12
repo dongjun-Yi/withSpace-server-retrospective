@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -53,9 +54,13 @@ public class TestDB {
         FriendShip friendShip1 = new FriendShip(member2, member1);
         FriendShip friendShip3 = new FriendShip(member3, member1);
 
-        friendShipService.sendFriendRequest(friendShip);
-        friendShipService.sendFriendRequest(friendShip1);
-        friendShipService.sendFriendRequest(friendShip3);
+        try {
+            friendShipService.sendFriendRequest(friendShip);
+            friendShipService.sendFriendRequest(friendShip1);
+            friendShipService.sendFriendRequest(friendShip3);
+        } catch (Exception e) {
+
+        }
 
         List<Member> friendList = friendShipService.findFriendList(member1);
 
